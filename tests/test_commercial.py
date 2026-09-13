@@ -159,7 +159,7 @@ class CommercialTests(unittest.TestCase):
 
     def test_csrf_and_protected_routes(self):
         self.assertEqual(self.client.post('/login',data=dict(username='testadmin',password=self.password)).status_code,400)
-        for path in ['/admin','/admin/clientes','/admin/costos','/admin/cotizaciones','/admin/facturas','/admin/configuracion','/admin/usuarios']:
+        for path in ['/admin','/admin/clientes','/admin/cotizaciones','/admin/facturas','/admin/configuracion','/admin/usuarios']:
             self.assertEqual(self.client.get(path).status_code,302)
         self.login()
         for method in ['post','put','patch','delete']:
@@ -168,9 +168,9 @@ class CommercialTests(unittest.TestCase):
 
     def test_seller_roles(self):
         self.login('seller')
-        for path in ['/admin','/admin/productos','/admin/clientes','/admin/costos','/admin/cotizaciones','/admin/facturas']:
+        for path in ['/admin','/admin/productos','/admin/clientes','/admin/cotizaciones','/admin/facturas']:
             self.assertEqual(self.client.get(path).status_code,200,path)
-        for path in ['/admin/usuarios','/admin/configuracion','/admin/categorias','/admin/costos/materiales',f'/admin/productos/{self.pid}/editar']:
+        for path in ['/admin/costos','/admin/usuarios','/admin/configuracion','/admin/categorias','/admin/costos/materiales',f'/admin/productos/{self.pid}/editar']:
             self.assertEqual(self.client.get(path).status_code,403,path)
         html=self.client.get('/admin').get_data(as_text=True)
         self.assertNotIn('href="/admin/usuarios"',html)
@@ -280,7 +280,7 @@ class CommercialTests(unittest.TestCase):
         self.assertEqual(self.post('/admin/configuracion',self.config_payload()).status_code,302)
 
     def test_calculator_persists_exact_values(self):
-        self.login('seller');self.configure()
+        self.login();self.configure()
         response=self.post('/admin/costos',self.cost_payload());self.assertEqual(response.status_code,200,response.get_data(as_text=True))
         e=CostEstimate.query.one();self.assertEqual(e.result['total'],'6.3360')
         self.assertIn('Recargo sobre costo',response.get_data(as_text=True))
@@ -327,7 +327,9 @@ class CommercialTests(unittest.TestCase):
         q=Quote.query.one();self.assertEqual(len(q.items),2);self.assertEqual(q.total,Decimal('18.7'))
 
     def test_seller_uses_calculation_not_client_totals(self):
-        self.login('seller');self.configure();self.post('/admin/costos',self.cost_payload());e=CostEstimate.query.one()
+        self.login();self.configure();self.post('/admin/costos',self.cost_payload());e=CostEstimate.query.one()
+        e.user_id=User.query.filter_by(role='vendedor').one().id;db.session.commit()
+        self.post('/logout');self.login('seller')
         payload=self.quote_payload(e.id);payload['total']='0.01'
         self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
         self.assertEqual(Quote.query.one().total,Decimal('6.34'))
@@ -550,3 +552,155 @@ class CommercialTests(unittest.TestCase):
                 self.assertEqual([list(r) for r in c.execute('select * from '+table+' order by id')],rows)
             self.assertEqual(c.execute('select count(*) from products').fetchone()[0],173)
             self.assertEqual(c.execute("select count(*) from products where code like '%Ñ%'").fetchone()[0],28)
+
+    def test_linked_material_refresh_and_immutable_documents(self):
+        from app.services.production import recipe_data
+        self.login();self.configure_iva()
+        material=Material(name='TEST material vigente',unit='hoja',unit_cost=Decimal('0.60'),is_active=True)
+        db.session.add(material);db.session.commit()
+        data=self.cost_payload();data.update(material_id=[str(material.id)],material_name=[material.name],material_quantity=['0.5'],material_cost=['999'])
+        self.assertEqual(self.post('/admin/costos',data).status_code,200)
+        estimate=CostEstimate.query.one()
+        self.assertEqual(estimate.input_data['materials'][0]['unit_cost'],'0.60')
+        self.assertEqual(self.post('/admin/costos/recetas/guardar',dict(estimate_id=estimate.id,name='TEST vinculada')).status_code,302)
+        recipe=ProductCostRecipe.query.one()
+        self.assertEqual(recipe.materials[0].material_id,material.id)
+        payload=self.quote_payload(estimate.id)
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        quote=Quote.query.one();snapshot=json.dumps(quote.items[0].cost_snapshot,sort_keys=True);amounts=(quote.subtotal,quote.tax,quote.total)
+        quote.status='accepted';db.session.commit()
+        self.assertEqual(self.post(f'/admin/cotizaciones/{quote.id}/facturar').status_code,302)
+        invoice=Invoice.query.one()
+        self.assertEqual(self.post('/admin/costos/materiales',dict(id=material.id,name=material.name,unit='hoja',unit_cost='0.75',is_active='1')).status_code,302)
+        db.session.refresh(material)
+        self.assertEqual(calculate_cost(recipe_data(recipe))['materials_cost'],Decimal('0.375'))
+        self.assertEqual(estimate.input_data['materials'][0]['unit_cost'],'0.60')
+        payload['item_estimate_id']=[''];payload['item_recipe_id']=[str(recipe.id)]
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        new=Quote.query.order_by(Quote.id.desc()).first()
+        self.assertEqual(new.items[0].cost_snapshot['result']['materials_cost'],'0.375')
+        db.session.refresh(quote);db.session.refresh(invoice)
+        self.assertEqual(json.dumps(quote.items[0].cost_snapshot,sort_keys=True),snapshot)
+        self.assertEqual((quote.subtotal,quote.tax,quote.total),amounts)
+        self.assertEqual((invoice.subtotal,invoice.tax,invoice.total),amounts)
+        self.assertEqual(self.post('/admin/costos/materiales',dict(id=material.id,name=material.name,unit='hoja',unit_cost='0.75')).status_code,302)
+        self.assertEqual(self.client.get(f'/admin/costos?receta={recipe.id}').status_code,200)
+        self.assertEqual(calculate_cost(recipe_data(recipe))['materials_cost'],Decimal('0.375'))
+
+    def test_material_duplicates_negative_units_and_search(self):
+        self.login()
+        self.assertEqual(self.post('/admin/costos/materiales',dict(name='TEST Fomix',unit='hoja',unit_cost='0.60',is_active='1')).status_code,302)
+        self.assertEqual(self.post('/admin/costos/materiales',dict(name=' test   fomix ',unit='hoja',unit_cost='1',is_active='1')).status_code,400)
+        self.assertEqual(self.post('/admin/costos/materiales',dict(name='TEST negativo',unit='hoja',unit_cost='-1')).status_code,400)
+        self.assertEqual(self.post('/admin/costos/materiales',dict(name='TEST unidad',unit='hojas',unit_cost='1')).status_code,400)
+        self.assertEqual(Material.query.count(),1)
+        self.assertIn('TEST Fomix',self.client.get('/admin/costos/materiales?q=fomix&order=cost').get_data(as_text=True))
+        self.assertNotIn('TEST Fomix',self.client.get('/admin/costos/materiales?q=ausente').get_data(as_text=True))
+
+    def test_recipe_activation_and_search(self):
+        self.login();self.configure();recipe=self.good_recipe()
+        self.assertIn(recipe.name,self.client.get('/admin/costos/recetas?q=0.975').get_data(as_text=True))
+        self.assertEqual(self.post(f'/admin/costos/recetas/{recipe.id}/estado',dict(active='0')).status_code,302)
+        payload=self.quote_payload();payload.update(item_unit_price=[''],item_recipe_id=[str(recipe.id)])
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,400)
+        self.assertEqual(self.post(f'/admin/costos/recetas/{recipe.id}/estado',dict(active='1')).status_code,302)
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+
+    def test_seller_cannot_read_or_post_production(self):
+        self.login('seller')
+        for path in ['/admin/costos','/admin/costos/recetas','/admin/costos/materiales']:
+            self.assertEqual(self.client.get(path).status_code,403)
+        self.assertEqual(self.post('/admin/costos',self.cost_payload()).status_code,403)
+        self.assertEqual(CostEstimate.query.count(),0)
+        html=self.client.get('/admin/cotizaciones/nueva').get_data(as_text=True)
+        self.assertNotIn('Costo unitario manual',html)
+        self.assertNotIn('Abrir calculadora',html)
+
+    def test_commercial_preview_matches_rounding_policy(self):
+        from app.services.production import recipe_data,recipe_preview
+        self.login();self.configure_iva();recipe=self.good_recipe()
+        data=recipe_data(recipe);data['quantity']='10'
+        result=recipe_preview(data,db.session.get(TaxSetting,1))
+        self.assertEqual((result['price'],result['subtotal'],result['tax'],result['total']),tuple(map(Decimal,['0.98','9.80','1.47','11.27'])))
+
+    def test_local_timezone_aware_naive_and_render(self):
+        from datetime import datetime,timezone
+        from zoneinfo import ZoneInfo
+        from app.services.dates import localtime
+        expected='12/09/2026 21:30 (America/Guayaquil)'
+        self.assertEqual(localtime(datetime(2026,9,13,2,30)),expected)
+        self.assertEqual(localtime(datetime(2026,9,13,2,30,tzinfo=timezone.utc)),expected)
+        self.assertEqual(localtime(datetime(2026,9,12,21,30,tzinfo=ZoneInfo('America/Guayaquil'))),expected)
+        self.login();db.session.add(AuditEvent(entity='TEST',action='TEST',created_at=datetime(2026,9,13,2,30)));db.session.commit()
+        self.assertIn(expected,self.client.get('/admin').get_data(as_text=True))
+
+    def test_manual_price_override_audit(self):
+        self.login();self.configure();recipe=self.good_recipe()
+        payload=self.quote_payload();payload['item_recipe_id']=[str(recipe.id)];payload['item_unit_price']=['1.23']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        quote=Quote.query.one()
+        self.assertEqual(quote.items[0].unit_price,Decimal('1.23'))
+        self.assertEqual(quote.items[0].cost_snapshot['manual_price'],'1.23')
+        self.assertEqual(AuditEvent.query.filter_by(entity='quote',action='manual_price').count(),1)
+
+    def test_backup_includes_business_data(self):
+        self.login();self.configure();self.good_recipe()
+        result=self.app.test_cli_runner().invoke(args=['backup-db'])
+        self.assertEqual(result.exit_code,0,result.output)
+        backup=next((Path(self.temp.name)/'backups').glob('*.db'))
+        with sqlite3.connect(backup) as connection:
+            self.assertEqual(connection.execute('pragma integrity_check').fetchone(),('ok',))
+            self.assertEqual(connection.execute('select count(*) from product_cost_recipes').fetchone(),(1,))
+            self.assertEqual(connection.execute('select count(*) from customers').fetchone(),(1,))
+
+    def test_units_normalize_without_inventing_options(self):
+        from app.services.production import canonical_unit
+        self.assertEqual([canonical_unit(v) for v in ['Hoja','hojas','Hojas']],['hoja']*3)
+        self.login()
+        payload=self.config_payload();payload['units']='Hoja\nHojas'
+        self.assertEqual(self.post('/admin/configuracion',payload).status_code,400)
+        payload['units']='Hojas\nBarra'
+        self.assertEqual(self.post('/admin/configuracion',payload).status_code,302)
+        self.assertEqual(db.session.get(BusinessSettings,1).units,['hoja','barra'])
+
+    def test_migration_adds_activity_preserving_recipe(self):
+        self.login();recipe=self.good_recipe();recipe_id=recipe.id
+        db.session.remove()
+        with db.engine.begin() as connection:
+            connection.exec_driver_sql('ALTER TABLE product_cost_recipes DROP COLUMN is_active')
+        result=self.app.test_cli_runner().invoke(args=['upgrade-db'])
+        self.assertEqual(result.exit_code,0,result.output)
+        recipe=db.session.get(ProductCostRecipe,recipe_id)
+        self.assertTrue(recipe.is_active)
+        self.assertEqual(recipe.materials[0].quantity,Decimal('0.5'))
+
+    def test_internal_material_data_never_public(self):
+        self.login();self.configure();self.good_recipe()
+        db.session.add(Material(name='TEST SECRETO INTERNO',unit='hoja',unit_cost=Decimal('123.456789')));db.session.commit()
+        public=self.app.test_client()
+        for path in ['/', '/catalogo', '/categorias', '/carrito', '/favoritos']:
+            response=public.get(path);self.assertEqual(response.status_code,200)
+            html=response.get_data(as_text=True)
+            for secret in ['TEST SECRETO INTERNO','123.456789','hourly_cost','profit_percentage','production_cost']:
+                self.assertNotIn(secret,html)
+
+    def test_material_unit_change_cannot_reinterpret_recipe_quantity(self):
+        self.login()
+        m=Material(name='TEST unidad vinculada',unit='hoja',unit_cost=Decimal('1'));db.session.add(m);db.session.commit()
+        recipe=self.good_recipe();recipe.materials[0].material_id=m.id;db.session.commit()
+        response=self.post('/admin/costos/materiales',dict(id=m.id,name=m.name,unit='metro',unit_cost='1',is_active='1'))
+        self.assertEqual(response.status_code,400)
+        db.session.refresh(m);self.assertEqual(m.unit,'hoja')
+        self.assertEqual(recipe.materials[0].quantity,Decimal('0.5'))
+
+    def test_material_and_recipe_pagination(self):
+        self.login()
+        for i in range(26): db.session.add(Material(name=f'TEST {i:02}',unit='hoja',unit_cost=Decimal(i)))
+        db.session.commit()
+        first=self.client.get('/admin/costos/materiales').get_data(as_text=True)
+        second=self.client.get('/admin/costos/materiales?page=2').get_data(as_text=True)
+        self.assertIn('TEST 24',first);self.assertNotIn('TEST 25',first);self.assertIn('TEST 25',second)
+        recipe=self.good_recipe()
+        for i in range(25):
+            self.assertEqual(self.post(f'/admin/costos/recetas/{recipe.id}/duplicar',dict(product_id=self.pid,name=f'TEST copia {i}')).status_code,302)
+        self.assertIn('Página 2',self.client.get('/admin/costos/recetas?page=2').get_data(as_text=True))

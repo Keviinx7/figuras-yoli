@@ -84,13 +84,37 @@ def register_cli(app):
         backup=folder/('tienda-upgrade-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'.db')
         with sqlite3.connect(path) as source, sqlite3.connect(backup) as target:
             source.backup(target)
-            before={t:source.execute('select * from '+t+' order by id').fetchall() for t in ('products','categories','product_images')}
+            tables=[r[0] for r in source.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
+            before={t:([r[1] for r in source.execute('PRAGMA table_info("'+t+'")')],source.execute('SELECT * FROM "'+t+'" ORDER BY rowid').fetchall()) for t in tables}
+        backup.chmod(0o600)
         db.create_all()
+        with db.engine.begin() as connection:
+            columns={row[1] for row in connection.exec_driver_sql('PRAGMA table_info(product_cost_recipes)')}
+            if 'is_active' not in columns:
+                connection.exec_driver_sql('ALTER TABLE product_cost_recipes ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT 1')
         initialize_settings()
         with sqlite3.connect(path) as connection:
-            assert before=={t:connection.execute('select * from '+t+' order by id').fetchall() for t in before}
-            assert connection.execute('pragma integrity_check').fetchone()==('ok',)
+            for table,(columns,rows) in before.items():
+                selected=','.join('"'+column+'"' for column in columns)
+                if connection.execute('SELECT '+selected+' FROM "'+table+'" ORDER BY rowid').fetchall()!=rows:
+                    raise click.ClickException('Los datos previos difieren en '+table+'. Revise el backup: '+str(backup))
+            if connection.execute('pragma integrity_check').fetchone()!=('ok',) or connection.execute('pragma foreign_key_check').fetchall():
+                raise click.ClickException('Falló la verificación SQLite. Backup: '+str(backup))
         click.echo(f'Actualización aditiva terminada. Catálogo intacto. Backup: {backup}')
+
+    @app.cli.command('backup-db')
+    def backup_db():
+        """Consistent full SQLite backup, including all commercial data."""
+        path=Path(db.engine.url.database)
+        if not path.is_file(): raise click.ClickException('No existe la SQLite configurada.')
+        folder=Path(app.instance_path)/'backups';folder.mkdir(exist_ok=True)
+        backup=folder/('tienda-backup-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'.db')
+        with sqlite3.connect('file:'+str(path)+'?mode=ro',uri=True) as source, sqlite3.connect(backup) as target:
+            source.backup(target)
+            if target.execute('PRAGMA integrity_check').fetchone()!=('ok',):
+                raise click.ClickException('La copia no pasó integrity_check.')
+        backup.chmod(0o600)
+        click.echo(f'Backup verificado: {backup}')
 
     @app.cli.command('create-user')
     @click.option('--username',prompt=True)

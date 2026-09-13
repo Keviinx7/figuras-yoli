@@ -9,6 +9,7 @@ from app.models import Product
 from app.models.commercial import Customer,Quote,QuoteItem,Invoice,InvoiceItem,NumberSequence,CostEstimate,ProductCostRecipe
 from app.services.costing import decimal_value,text_value,calculate_cost,json_decimals,precise,ZERO,money,quantize_money
 from app.services.commercial import settings,record
+from app.services.dates import local_today
 
 
 def next_number(kind,prefix):
@@ -28,7 +29,7 @@ def snapshots(customer,business,tax):
 def document_items(rows):
     if not isinstance(rows,list) or not 1<=len(rows)<=50: raise ValueError('Añada de 1 a 50 productos.')
     output=[]
-    from app.costs.routes import recipe_data
+    from app.services.production import recipe_data
     for row in rows:
         product=db.get_or_404(Product,int(row.get('product_id') or 0))
         quantity=decimal_value(row.get('quantity'),'Cantidad','10000')
@@ -37,6 +38,7 @@ def document_items(rows):
         if recipe_id and estimate_id: raise ValueError('Seleccione una receta o un cálculo, no ambos.')
         if recipe_id:
             recipe=db.get_or_404(ProductCostRecipe,int(recipe_id))
+            if not recipe.is_active: raise ValueError('La receta está inactiva. Seleccione una receta vigente.')
             if recipe.product_id!=product.id: raise ValueError('La receta pertenece a otro producto.')
             result=calculate_cost(recipe_data(recipe));cost_snapshot=dict(source='recipe',id=recipe.id,result=json_decimals(result))
         elif estimate_id:
@@ -89,16 +91,19 @@ def save_quote(customer_id,rows,discount='0',notes='',expires_at='',quote=None):
     if expires_at:
         try: quote.expires_at=datetime.strptime(expires_at,'%Y-%m-%d')
         except (ValueError,TypeError): raise ValueError('Fecha de vencimiento inválida.')
-        if quote.expires_at.date()<datetime.now(timezone.utc).replace(tzinfo=None).date(): raise ValueError('El vencimiento no puede estar en el pasado.')
+        if quote.expires_at.date()<local_today(): raise ValueError('El vencimiento no puede estar en el pasado.')
     else: quote.expires_at=None
     quote.items=[QuoteItem(**item) for item in items]
     db.session.add(quote);db.session.flush();record('quote',quote.id,'draft_saved',quote.quote_number)
+    for item in items:
+        if 'manual_price' in item['cost_snapshot']:
+            record('quote',quote.id,'manual_price',item['product_code_snapshot']+' · '+str(item['unit_price']))
     return quote
 
 
 def require_ready(quote):
     if quote.tax_percentage is None or not quote.currency: raise ValueError('Configure moneda e impuesto y vuelva a guardar el borrador antes de continuar.')
-    if quote.expires_at and quote.expires_at.date()<datetime.now(timezone.utc).replace(tzinfo=None).date(): raise ValueError('La cotización ha vencido. Márquela vencida y prepare una nueva.')
+    if quote.expires_at and quote.expires_at.date()<local_today(): raise ValueError('La cotización ha vencido. Márquela vencida y prepare una nueva.')
 
 
 def quote_status(quote,target):

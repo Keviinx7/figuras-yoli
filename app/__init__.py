@@ -59,6 +59,8 @@ def create_app(test_config=None):
     from app.services.commercial import register_cli
     from app.services.costing import money, pct
     register_cli(app)
+    from app.services.dates import localtime
+    app.jinja_env.filters['localtime'] = localtime
     app.jinja_env.filters['money'] = money
     app.jinja_env.filters['pct'] = pct
 

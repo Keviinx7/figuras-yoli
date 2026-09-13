@@ -1,8 +1,9 @@
 // End-to-end checks against the disposable browser_commercial_server fixture only.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-const base='http://127.0.0.1:5001',out='docs/commercial/admin-browser';
+const base=process.env.BROWSER_BASE_URL || 'http://127.0.0.1:5001',out=process.env.BROWSER_OUTPUT_DIR || 'docs/commercial/admin-browser';
 await fs.mkdir(out,{recursive:true});
+const materialName='TEST Material navegador '+Date.now();
 const credentials=JSON.parse(await fs.readFile('instance/commercial-check/credentials.json','utf8'));
 const targets=await (await fetch('http://127.0.0.1:9222/json/list')).json();
 const ws=new WebSocket(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
@@ -26,20 +27,24 @@ try{
  await screenshot('login');await login('admin');
  await check('Admin dashboard and configuration menu',`document.querySelector('h1').textContent==='Resumen' && !!document.querySelector('a[href="/admin/configuracion"]')`);
  await screenshot('dashboard-1440');
- await navigate('/admin/clientes/nuevo');await fill({name:'Cliente navegador '+Date.now(),phone:'0990000000',city:'Ciudad de prueba'});await submit('form.panel',String.raw`/^\/admin\/clientes\/\d+$/.test(location.pathname)`);
- await check('Customer created with optional fields empty',`document.querySelector('h1').textContent.includes('Cliente navegador')`);
+ await navigate('/admin/clientes/nuevo');await fill({name:'TEST Cliente navegador '+Date.now(),phone:'0990000000',city:'Ciudad de prueba'});await submit('form.panel',String.raw`/^\/admin\/clientes\/\d+$/.test(location.pathname)`);
+ await check('Customer created with optional fields empty',`document.querySelector('h1').textContent.includes('TEST Cliente navegador')`);
  const customerId=await evaluate(`location.pathname.split('/').pop()`);
+ await navigate('/admin/costos/materiales');
+ await fill({name:materialName,unit:'hoja',unit_cost:'0.10'});
+ await submit('form.panel',`document.body.textContent.includes(${JSON.stringify(materialName)})`);
  await navigate('/admin/costos');
- await evaluate(`document.querySelector('[data-add-row="material-template"]').click();document.querySelector('[data-add-row="indirect-template"]').click()`);
- await fill({product_id:'1',requested_size:'20 cm',personalization:'Nombre de prueba',material_name:'Material navegador',material_quantity:'2.5',material_unit:'hoja',material_cost:'0.10',indirect_name:'Embalaje prueba',indirect_amount:'0.15',labor_time:'30',labor_unit:'minutes',hourly_cost:'4',profit_method:'margin',profit_percentage:'20',quantity:'2'});
+ await evaluate(`(()=>{const picker=document.getElementById('material-picker');picker.value=[...picker.options].find(o=>o.dataset.name===${JSON.stringify(materialName)}).value;picker.dispatchEvent(new Event('change'));document.querySelector('[data-add-row="indirect-template"]').click();})()`);
+ await check('Saved material is linked and its cost is read only',`!!document.querySelector('[name=material_id]').value && document.querySelector('[name=material_cost]').readOnly`);
+ await fill({product_id:'1',requested_size:'20 cm',personalization:'TEST Nombre de prueba',material_name:materialName,material_quantity:'2.5',material_unit:'hoja',material_cost:'0.10',indirect_name:'TEST Embalaje prueba',indirect_amount:'0.15',labor_time:'30',labor_unit:'minutes',hourly_cost:'4',profit_method:'margin',profit_percentage:'20',quantity:'2'});
  await check('Margin explanation distinct from markup',`document.getElementById('profit-formula').textContent.includes('÷')`);
  await submit('form.cost-form',`!!document.getElementById('cost-result')`);
  await check('Server calculates materials labor margin and configured tax',`document.getElementById('cost-result').textContent.includes('6.60') && document.getElementById('cost-result').textContent.includes('Margen sobre precio')`);
  await screenshot('cost-result-1440');
  const estimateId=await evaluate(`document.querySelector('[name=estimate_id]').value`);
- await fill({name:'Receta navegador',notes:'Receta sintética de prueba'});
+ await fill({name:'TEST Receta navegador',notes:'Receta sintética de prueba'});
  await submit('form.recipe-save',`location.search.includes('receta=') && !document.getElementById('cost-result')`);
- await check('Cost recipe saved and reopenable',`document.querySelector('[name=material_name]').value==='Material navegador'`);
+ await check('Cost recipe saved and reopenable',`document.querySelector('[name=material_name]').value===${JSON.stringify(materialName)}`);
  const recipeId=await evaluate(`new URLSearchParams(location.search).get('receta')`);
  await navigate('/admin/cotizaciones/nueva?calculo='+estimateId);
  await fill({customer_id:customerId});
@@ -63,7 +68,7 @@ try{
  await call('Emulation.setEmulatedMedia',{media:'print'});await screenshot('invoice-print');await call('Emulation.setEmulatedMedia',{media:''});
  for(const width of [1440,768,390,320]){
   await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
-  for(const [path,label] of [['/admin','dashboard'],['/admin/clientes/'+customerId,'customer-history'],['/admin/costos?receta='+recipeId,'costs'],['/admin/cotizaciones/nueva','quote-form'],['/admin/facturas/'+invoiceId,'invoice']]){
+  for(const [path,label] of [['/admin','dashboard'],['/admin/clientes/'+customerId,'customer-history'],['/admin/costos?receta='+recipeId,'costs'],['/admin/cotizaciones/nueva','quote-form'],['/admin/costos/materiales','materials'],['/admin/costos/recetas','recipes'],['/admin/clientes','customers'],['/admin/usuarios','users'],['/admin/configuracion','configuration'],['/admin/cotizaciones','quotes'],['/admin/facturas','invoices'],['/admin/facturas/'+invoiceId,'invoice']]){
    await navigate(path);
    await check(`${label} fits viewport ${width}`,`document.documentElement.scrollWidth<=innerWidth`);
    await screenshot(label+'-'+width);
@@ -72,7 +77,7 @@ try{
  await postAction('/logout');await until(`location.pathname==='/login'`);results.push('Logout removes administrative session');
  await login('vendedor');
  await check('Seller menu excludes users and configuration',`!document.querySelector('a[href="/admin/usuarios"]') && !document.querySelector('a[href="/admin/configuracion"]')`);
- await navigate('/admin/costos');await check('Seller can calculate but not grant discounts',`!!document.querySelector('form.cost-form') && document.querySelector('[name=discount]').type==='hidden'`);
+ assert.equal(await evaluate(`fetch('/admin/costos').then(r=>r.status)`),403);results.push('Seller cannot access internal calculator');
  const denied=await evaluate(`fetch('/admin/usuarios').then(r=>r.status)`);assert.equal(denied,403);results.push('Seller cannot access users even by direct URL');
  await postAction('/logout');await until(`location.pathname==='/login'`);
  assert.deepEqual(errors,[]);results.push('No uncaught JavaScript errors');

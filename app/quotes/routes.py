@@ -44,6 +44,10 @@ def edit(id=None):
             row['estimate_id']=source['id'] if source['source']=='estimate' else ''
             if source['source']!='manual' and 'manual_price' not in source: row['unit_price']=''
             items.append(row)
+    selected_recipe=request.args.get('receta',type=int)
+    if not quote and selected_recipe:
+        recipe=db.get_or_404(ProductCostRecipe,selected_recipe)
+        items=[dict(product_id=recipe.product_id,recipe_id=recipe.id,requested_size=recipe.requested_size or '',personalization=recipe.personalization or '')]
     selected=request.args.get('calculo',type=int)
     if not quote and selected:
         estimate=db.get_or_404(CostEstimate,selected)
@@ -51,7 +55,10 @@ def edit(id=None):
             from flask import abort
             abort(403)
         items=[dict(product_id=estimate.product_id,estimate_id=estimate.id,quantity=estimate.input_data.get('quantity','1'),requested_size=estimate.requested_size or '',personalization=estimate.personalization or '',discount=estimate.input_data.get('discount','0'),surcharge='0')]
-    return render_template('admin/quote_form.html',quote=quote,customers=Customer.query.order_by(Customer.name).all(),products=Product.query.order_by(Product.code).all(),recipes=ProductCostRecipe.query.all(),estimates=estimates.order_by(CostEstimate.id.desc()).limit(100).all(),items=items or [{}],customer_id=request.args.get('cliente',type=int))
+    from app.services.production import recipe_preview,recipe_data
+    available_recipes=ProductCostRecipe.query.filter_by(is_active=True).all()
+    prices={r.id:recipe_preview(recipe_data(r),None)['price'] for r in available_recipes}
+    return render_template('admin/quote_form.html',quote=quote,customers=Customer.query.order_by(Customer.name).all(),products=Product.query.order_by(Product.code).all(),recipes=available_recipes,recipe_prices=prices,estimates=estimates.order_by(CostEstimate.id.desc()).limit(100).all(),items=items or [{}],customer_id=request.args.get('cliente',type=int))
 
 
 @bp.get('/<int:id>')

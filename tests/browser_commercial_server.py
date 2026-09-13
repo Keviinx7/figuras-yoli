@@ -33,8 +33,9 @@ def main():
         db.session.commit()
     path=folder/'credentials.json'
     with open(path,'w',opener=lambda p,f:os.open(p,f,0o600)) as output: json.dump(credentials,output)
-    print('Servidor de pruebas aislado: http://127.0.0.1:5001',flush=True)
-    app.run(host='127.0.0.1',port=5001,use_reloader=False)
+    port=int(os.environ.get('BROWSER_PORT','5001'))
+    print(f'Servidor de pruebas aislado: http://127.0.0.1:{port}',flush=True)
+    app.run(host='127.0.0.1',port=port,use_reloader=False)
 
 
 if __name__=='__main__': main()

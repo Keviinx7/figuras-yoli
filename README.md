@@ -156,3 +156,43 @@ Respaldar `instance/tienda.db` junto con las imágenes verificadas. La clave pue
 `python -m unittest discover -s tests -v` ejecuta también las comprobaciones de procedencia, códigos, imágenes, filtros, fichas, paginación, importación idempotente y cotización usando SQLite aislado. Usar el Python de `.venv`.
 
 `node tests/test_storage.cjs` comprueba almacenamiento y límites del carrito. `node tests/browser_check.mjs` requiere Flask en 127.0.0.1:5000 y Chrome headless con DevTools en 127.0.0.1:9222 y perfil desechable: borra solo el localStorage de ese perfil. Guarda capturas y resultados en `docs/name-review/`, sin abrir WhatsApp ni enviar mensajes.
+
+Producción con datos reales (panel administrativo)
+------------------------------------------------
+
+Materiales, recetas y calculadora requieren rol **admin**. El vendedor puede
+cotizar con recetas activas, sin editar costos ni autorizar precios manuales.
+Desde **Materiales**, registre las unidades configuradas y el costo real. Desde
+**Calculadora**, seleccione el material guardado para vincularlo a la receta;
+las filas ingresadas a mano mantienen sus propios costos. Una receta corresponde
+a una variante y a una figura. Puede registrar tiempo en horas o minutos; los
+indirectos son importes fijos por figura. Guarde el cálculo como receta y use
+**Recetas** para buscar, duplicar, actualizar, activar/desactivar o cotizar.
+
+Un nuevo cálculo de una receta vinculada usa el costo vigente del material.
+Los cálculos guardados, cotizaciones y facturas conservan sus importes históricos.
+Las recetas anteriores sin vínculo se conservan: el administrador debe sustituir
+expresamente sus filas por materiales guardados si desea actualizar costos
+mediante ese vínculo. No se asocian materiales por coincidencia de nombre.
+
+Antes de usar esta versión en otra copia SQLite existente:
+
+```bash
+.venv/bin/python -m flask --app run upgrade-db
+```
+
+La migración respalda la base y añade `product_cost_recipes.is_active`. Para una
+copia de seguridad completa en cualquier momento:
+
+```bash
+.venv/bin/python -m flask --app run backup-db
+```
+
+Las copias verificadas quedan en `instance/backups/`. Conserve también una copia
+fuera del equipo; el respaldo SQLite cubre todos los datos comerciales, pero no
+las imágenes, el PDF ni la clave de sesión. Para recuperar datos, detenga Flask,
+verifique la copia con `PRAGMA integrity_check`, pruébela como una base separada
+y conserve la base actual antes de sustituirla. No use `init-db` ni reimporte
+el catálogo como procedimiento de recuperación.
+
+Informe y evidencias de esta fase: [docs/production-review/report.md](docs/production-review/report.md).

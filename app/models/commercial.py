@@ -101,6 +101,7 @@ class ProductCostRecipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False, index=True)
     name = db.Column(db.String(140), nullable=False)
+    is_active = db.Column(db.Boolean, nullable=False, default=True, server_default='1')
     requested_size = db.Column(db.String(120))
     personalization = db.Column(db.String(500))
     labor_hours = db.Column(ExactDecimal, nullable=False)
