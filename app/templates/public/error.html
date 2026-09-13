@@ -1,0 +1,8 @@
+{% extends 'public/base.html' %}
+{% block title %}Revisa tu solicitud · Yoli{% endblock %}
+{% block content %}<section class="container section narrow">
+<span class="eyebrow">REVISEMOS LOS DETALLES</span>
+<h1>No pudimos preparar la solicitud</h1>
+<p role="alert">{{ message }}</p>
+<a class="button" href="{{ url_for('orders.cart') }}">Volver al carrito →</a>
+</section>{% endblock %}

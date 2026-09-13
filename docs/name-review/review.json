@@ -415,10 +415,10 @@
   },
   {
     "code": "FY.CH.003",
-    "old_name": "Endocrino",
-    "name": "Sistema urinario",
+    "old_name": "Sistema urinario",
+    "name": "Endocrino",
     "status": "corrected",
-    "reason": "El rótulo Endocrino contradice los riñones, uréteres y vejiga visibles. Se corrige a Sistema urinario.",
+    "reason": "Auditoría semántica: el rótulo explícito ENDOCRINO en la página 9 manda sobre la interpretación anatómica de la imagen.",
     "image": "FY.CH.003.png",
     "image_sha256": "712b8a918eb2c96a26b617a947ed877e34aee1c1ea4a0d9f69dafe8eb432056c"
   },

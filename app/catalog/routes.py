@@ -16,19 +16,19 @@ def catalog():
     if page < 1:
         abort(404)
     pagination = query.order_by(Product.code).paginate(page=page, per_page=12, error_out=False)
-    return render_template('catalog.html', pagination=pagination, term=term, category_slug=category_slug)
+    return render_template('public/catalog.html', pagination=pagination, term=term, category_slug=category_slug)
 
 
 @bp.get('/categorias')
 def categories():
-    return render_template('categories.html')
+    return render_template('public/categories.html')
 
 
 @bp.get('/producto/<slug>')
 def detail(slug):
     product = public_products().filter(Product.slug == slug).first_or_404()
     message = f'Hola, Yoli Figuras de Fomix. Quisiera consultar por {product.code} — {product.display_name}. Por favor confirmar precio, disponibilidad y personalización.'
-    return render_template('product_detail.html', product=product, consultation_url=whatsapp_url(PHONES[0], message))
+    return render_template('public/product_detail.html', product=product, consultation_url=whatsapp_url(PHONES[0], message))
 
 
 @bp.get('/api/productos')

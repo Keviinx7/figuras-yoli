@@ -2,7 +2,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 const baseline = process.argv.includes('--names-baseline');
-const outputDir = 'docs/name-review';
+const baseURL = process.env.BROWSER_BASE_URL || 'http://127.0.0.1:5000';
+const outputDir = process.env.BROWSER_OUTPUT_DIR || 'docs/name-review';
+await fs.mkdir(outputDir, {recursive: true});
 const targets = await (await fetch('http://127.0.0.1:9222/json/list')).json();
 const ws = new WebSocket(targets.find(t => t.type === 'page').webSocketDebuggerUrl);
 await new Promise((resolve, reject) => { ws.onopen = resolve; ws.onerror = reject; });
@@ -34,7 +36,7 @@ async function until(expression) {
   throw Error('Timed out: ' + expression);
 }
 async function navigate(path) {
-  await call('Page.navigate', {url: 'http://127.0.0.1:5000' + path});
+  await call('Page.navigate', {url: baseURL + path});
   await until(`location.pathname === ${JSON.stringify(path.split('?')[0])} && document.readyState === 'complete' && !!window.Yoli`);
 }
 async function check(name, expression) { assert.ok(await evaluate(expression), name); results.push(name); }

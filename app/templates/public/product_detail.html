@@ -1,0 +1,44 @@
+{% extends 'public/base.html' %}
+{% block title %}{{ product.display_name }} · Yoli Figuras de Fomix{% endblock %}
+{% block content %}<section class="container section">
+<nav class="breadcrumbs" aria-label="Ruta de navegación">
+<a href="{{ url_for('catalog.catalog') }}">Catálogo</a> / <a href="{{ url_for('catalog.catalog', categoria=product.category.slug) }}">{{ product.category.name }}</a> / {{ product.code }}</nav>
+<div class="detail-grid">
+<div>
+<div class="detail-image">
+<img id="main-product-image" src="{{ url_for('static', filename=product.image_path) }}" data-placeholder="{{ url_for('static', filename='img/placeholder.svg') }}" alt="{{ product.display_name }}" width="640" height="480">
+</div>{% if product.images|length > 1 %}<div class="gallery">{% for image in product.images %}<button type="button" data-gallery-src="{{ url_for('static', filename=image.file_path) }}" data-gallery-alt="{{ image.alt_text or product.display_name }}" aria-label="Ver imagen {{ loop.index }}">
+<img src="{{ url_for('static', filename=image.file_path) }}" alt="{{ image.alt_text or product.display_name }}" data-placeholder="{{ url_for('static', filename='img/placeholder.svg') }}" width="100" height="80" loading="lazy">
+</button>{% endfor %}</div>{% endif %}</div>
+<div class="detail-copy">
+<span class="eyebrow">{{ product.category.name }}</span>
+<h1>{{ product.display_name }}</h1>
+<p class="product-code">Código: {{ product.code }}</p>
+<p>{{ product.description or 'Descripción pendiente.' }}</p>
+<p class="detail-price">Precio según tamaño y personalización</p>
+<p>
+<strong>Tamaño:</strong> {{ product.size_notes or 'Por confirmar.' }}</p>
+<form id="product-form" data-code="{{ product.code }}">
+<div class="field">
+<label for="requested-size">Tamaño solicitado <span>(opcional)</span>
+</label>
+<input id="requested-size" name="requested_size" maxlength="120" placeholder="Cuéntanos qué tamaño necesitas">
+</div>{% if product.allows_customization %}<div class="field">
+<label for="personalization">Personalización <span>(opcional)</span>
+</label>
+<textarea id="personalization" name="personalization" maxlength="500" rows="3" placeholder="Nombre, colores u otros detalles">
+</textarea>
+</div>{% else %}<p class="muted">Opciones de personalización por confirmar. Consúltanos por WhatsApp.</p>{% endif %}<div class="field quantity-field">
+<label for="quantity">Cantidad</label>
+<input id="quantity" name="quantity" type="number" min="1" max="99" value="1" required>
+</div>
+<div class="button-row">
+<button type="submit" class="button">Agregar al carrito +</button>
+<button type="button" class="button button-outline" data-favorite="{{ product.code }}" aria-pressed="false">♡ Favorito</button>
+</div>
+</form>
+<a class="text-link consultation" href="{{ consultation_url }}" target="_blank" rel="noopener noreferrer">Consultar este producto por WhatsApp ↗</a>
+<p class="fine-print">Confirmaremos precio, disponibilidad, tiempo de elaboración y envío.</p>
+</div>
+</div>
+</section>{% endblock %}

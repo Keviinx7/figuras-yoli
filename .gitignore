@@ -6,3 +6,6 @@ instance/browser-check/
 instance/browser-check-*/
 *.log
 .DS_Store
+instance/backups/
+instance/commercial-check/
+instance/.session_key

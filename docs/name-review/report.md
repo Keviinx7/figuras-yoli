@@ -1,5 +1,7 @@
 # Revisión de nombres y presentación — 13 de septiembre de 2026
 
+> Informe histórico de la revisión visual inicial. La [auditoría semántica posterior](catalog-name-audit.md) rectifica FY.CH.003 a **Endocrino**: el cambio a Sistema urinario documentado abajo fue incorrecto. Para nombres vigentes y validaciones nuevas, consultar esa auditoría.
+
 Se trabajó sobre el CSV, SQLite y las imágenes ya existentes. No se volvió a extraer ni a importar el PDF completo. Se revisaron visualmente **173 productos** en las 15 hojas de contacto `sheet-01.jpg` a `sheet-15.jpg`, generadas a partir de sus recortes originales, y se ampliaron las imágenes ambiguas.
 
 ## Resultado

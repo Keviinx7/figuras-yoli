@@ -1,0 +1,106 @@
+{
+  "products": 173,
+  "product_images": 173,
+  "categories": 17,
+  "unicode_codes": [
+    [
+      "FY.ÑA.001"
+    ],
+    [
+      "FY.ÑA.002"
+    ],
+    [
+      "FY.ÑA.003"
+    ],
+    [
+      "FY.ÑA.004"
+    ],
+    [
+      "FY.ÑA.005"
+    ],
+    [
+      "FY.ÑA.006"
+    ],
+    [
+      "FY.ÑA.007"
+    ],
+    [
+      "FY.ÑA.008"
+    ],
+    [
+      "FY.ÑA.009"
+    ],
+    [
+      "FY.ÑA.010"
+    ],
+    [
+      "FY.ÑA.012"
+    ],
+    [
+      "FY.ÑA.013"
+    ],
+    [
+      "FY.ÑA.014"
+    ],
+    [
+      "FY.ÑA.015"
+    ],
+    [
+      "FY.ÑA.016"
+    ],
+    [
+      "FY.ÑA.017"
+    ],
+    [
+      "FY.ÑA.018"
+    ],
+    [
+      "FY.ÑO.001"
+    ],
+    [
+      "FY.ÑO.002"
+    ],
+    [
+      "FY.ÑO.003"
+    ],
+    [
+      "FY.ÑO.004"
+    ],
+    [
+      "FY.ÑO.005"
+    ],
+    [
+      "FY.ÑO.006"
+    ],
+    [
+      "FY.ÑO.007"
+    ],
+    [
+      "FY.ÑO.008"
+    ],
+    [
+      "FY.ÑO.009"
+    ],
+    [
+      "FY.ÑO.010"
+    ],
+    [
+      "FY.ÑO.011"
+    ]
+  ],
+  "catalog_unchanged": true,
+  "image_files_unchanged": true,
+  "integrity": "ok",
+  "foreign_key_errors": [],
+  "business_data": {
+    "users": 0,
+    "customers": 0,
+    "materials": 0,
+    "product_cost_recipes": 0,
+    "cost_estimates": 0,
+    "quotes": 0,
+    "invoices": 0
+  },
+  "currency": null,
+  "tax_percentage": null
+}

@@ -138,13 +138,43 @@ class ReviewedCatalogTests(unittest.TestCase):
             html = self.client.get('/catalogo', query_string={'q': term}).get_data(as_text=True)
             self.assertIn('>Gato</a>', html)
             self.assertIn('Código: FY.AN.001', html)
-        self.assertEqual(Product.query.filter_by(code='FY.CH.003').one().name, 'Sistema urinario')
+        self.assertEqual(Product.query.filter_by(code='FY.CH.003').one().name, 'Endocrino')
         self.assertEqual(Product.query.filter_by(code='FY.ÑA.012').one().name, 'Niña con libro rojo')
         self.assertEqual(Product.query.filter_by(code='FY.NA.012').count(), 0)
         with (ROOT/'docs/name-review/before.csv').open() as source:
             before = {row['code']: row for row in csv.DictReader(source)}
         for row in self.rows:
             self.assertEqual({k:v for k,v in row.items() if k != 'name'}, {k:v for k,v in before[row['code']].items() if k != 'name'})
+
+    def test_semantic_audit_covers_source_and_preserves_explicit_names(self):
+        audit = json.loads((ROOT/'docs/name-review/semantic-audit.json').read_text())
+        source = {i['code']: i for i in self.manifest['items'] if i['status'] == 'importable'}
+        self.assertEqual(len(audit), 173)
+        self.assertEqual({a['code'] for a in audit}, set(source))
+        for item in audit:
+            with self.subTest(code=item['code']):
+                original = source[item['code']]
+                for key in ('page', 'slot', 'printed_code', 'image', 'image_sha256'):
+                    self.assertEqual(item[key], original[key])
+                product = Product.query.filter_by(code=item['code']).one()
+                self.assertEqual(product.name or '', item['name'])
+                if item['basis'] == 'explicit':
+                    label = item['explicit_pdf_name']
+                    if item['code'] == 'FY.NAV.006':
+                        label = 'Muñeco de nieve'  # Orthographic normalization documented in audit.
+                    self.assertEqual(product.name, label)
+                if item['basis'] == 'pending':
+                    self.assertEqual(item['code'], 'FY.VAR.019')
+                    self.assertFalse(product.name)
+        from scripts.update_catalog_names import apply_names
+        product = Product.query.filter_by(code='FY.CH.003').one()
+        product.name = 'Sistema urinario'
+        db.session.flush()
+        self.assertEqual(apply_names(self.rows, audit_as_review := [
+            dict(code=a['code'], old_name=a['current_name'], name=a['name']) for a in audit
+        ]), ['FY.CH.003'])
+        self.assertEqual(apply_names(self.rows, audit_as_review), [])
+        self.assertEqual(product.name, 'Endocrino')
 
     def test_names_only_update_is_idempotent_and_rejects_partial_catalog(self):
         from scripts.update_catalog_names import apply_names

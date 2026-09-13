@@ -1,0 +1,70 @@
+{
+  "products": 173,
+  "images": 173,
+  "codes_unchanged": true,
+  "csv_sqlite_equal": true,
+  "unicode_codes": [
+    "FY.ÑA.001",
+    "FY.ÑA.002",
+    "FY.ÑA.003",
+    "FY.ÑA.004",
+    "FY.ÑA.005",
+    "FY.ÑA.006",
+    "FY.ÑA.007",
+    "FY.ÑA.008",
+    "FY.ÑA.009",
+    "FY.ÑA.010",
+    "FY.ÑA.012",
+    "FY.ÑA.013",
+    "FY.ÑA.014",
+    "FY.ÑA.015",
+    "FY.ÑA.016",
+    "FY.ÑA.017",
+    "FY.ÑA.018",
+    "FY.ÑO.001",
+    "FY.ÑO.002",
+    "FY.ÑO.003",
+    "FY.ÑO.004",
+    "FY.ÑO.005",
+    "FY.ÑO.006",
+    "FY.ÑO.007",
+    "FY.ÑO.008",
+    "FY.ÑO.009",
+    "FY.ÑO.010",
+    "FY.ÑO.011"
+  ],
+  "explicit": 23,
+  "inferred": 149,
+  "pending": [
+    "FY.VAR.019"
+  ],
+  "changed": [
+    "FY.CH.003"
+  ],
+  "differences": [
+    {
+      "table": "products",
+      "id": 47,
+      "field": "name",
+      "before": "Sistema urinario",
+      "after": "Endocrino"
+    },
+    {
+      "table": "products",
+      "id": 47,
+      "field": "updated_at",
+      "before": "2026-09-13 05:10:07.819062",
+      "after": "2026-09-13 14:07:57.836773"
+    },
+    {
+      "table": "product_images",
+      "id": 47,
+      "field": "alt_text",
+      "before": "Sistema urinario",
+      "after": "Endocrino"
+    }
+  ],
+  "integrity": "ok",
+  "foreign_key_errors": [],
+  "idempotent": true
+}

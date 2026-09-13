@@ -15,7 +15,7 @@ def group(prefix, labels, start=1):
 group('AN', 'Gato|Gallina|Perro|Caballo|Pato|Pato sentado|Roedor|Capibara con bebida|Capibara con sandía|Caracol|Cocodrilo|Elefante|Oruga|Ardilla|Hormiga|Jirafa|León|Mariposa|Mariquita|Mono|Oso saludando|Oso sentado|Panda|Pelícano|Pollito|Insecto verde|Rana|Serpiente|Tortuga|Tigre|Cebra|Vaca|Loro|Dinosaurio|Unicornio|Cerdo|Paloma|Conejo')
 group('CD', 'Niño con bastón y gafas')
 group('CAR', 'Bienvenidos al año lectivo|Banderín de bienvenida|Bienvenidos al nuevo año lectivo|Bienvenida con nombre de profesora|Banderín con nombre de profesora')
-names.update({'FY.CH.003': 'Sistema urinario', 'FY.CH.008': 'Esqueleto humano', 'FY.CH.009': 'Cerebro', 'FY.CH.010': 'Corazón humano'})
+names.update({'FY.CH.003': 'Endocrino', 'FY.CH.008': 'Esqueleto humano', 'FY.CH.009': 'Cerebro', 'FY.CH.010': 'Corazón humano'})
 group('ER', 'Pareja con tocados de plumas|Pareja con pañuelo y falda|Pareja con sombreros|Pareja con pañuelos amarillos')
 group('IM', 'Bajo eléctrico|Guitarra|Maracas|Saxofón|Tambor|Violín|Arpa')
 group('ÑA', 'Niña con lápiz y manzana|Niña con libro azul|Niña con lápiz y cuaderno|Niña con vestido rosa|Niña sentada leyendo|Niña abrazando un lápiz|Niña escribiendo|Niña con delantal y manzana|Niña con brazos abiertos|Niña con libros')
@@ -43,7 +43,7 @@ for row in rows:
     status = 'corrected' if old and old != new else 'named' if new and not old else 'retained' if new else 'pending'
     reason = pending.get(row['code'], 'Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.' if status == 'named' else 'Nombre previo compatible con la imagen.')
     if status == 'corrected':
-        reason = 'El rótulo Endocrino contradice los riñones, uréteres y vejiga visibles. Se corrige a Sistema urinario.'
+        reason = 'El nombre explícito del PDF tiene prioridad sobre cualquier inferencia visual.'
     review.append({'code': row['code'], 'old_name': old, 'name': new, 'status': status, 'reason': reason,
                    'image': row['image'], 'image_sha256': hashlib.sha256((ROOT/'app/static/img/products'/row['image']).read_bytes()).hexdigest()})
     row['name'] = new

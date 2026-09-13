@@ -1,0 +1,44 @@
+{% extends 'public/base.html' %}
+{% block title %}Mi carrito · Yoli Figuras de Fomix{% endblock %}
+{% block content %}<section class="page-intro container">
+<span class="eyebrow">UN PASO MÁS CERCA DE TU IDEA</span>
+<h1>Mi carrito</h1>
+<p>Revisa tus figuras y cuéntanos los detalles. Precio y envío por confirmar.</p>
+</section>
+<section class="container section-bottom">
+<div id="cart-empty" class="empty-state" hidden>
+<span class="empty-icon">✧</span>
+<h2>Aquí reuniremos tus ideas</h2>
+<p>Explora el catálogo y agrega las figuras que quieras cotizar.</p>
+<a class="button" href="{{ url_for('catalog.catalog') }}">Explorar catálogo →</a>
+</div>
+<div class="cart-layout" id="cart-content">
+<div id="cart-list">
+<p>Cargando carrito…</p>
+</div>
+<aside class="quote-panel">
+<span class="eyebrow">SOLICITA TU COTIZACIÓN</span>
+<h2>Conversemos</h2>
+<p class="price-note">Precio y envío por confirmar</p>
+<form id="quote-form" action="{{ url_for('orders.preview') }}" method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<input type="hidden" id="cart-payload" name="cart">
+<div class="field">
+<label for="name">Tu nombre</label>
+<input id="name" name="name" maxlength="100" autocomplete="given-name" required>
+</div>
+<div class="field">
+<label for="city">Ciudad</label>
+<input id="city" name="city" maxlength="100" autocomplete="address-level2" required>
+</div>
+<div class="field">
+<label for="delivery">Entrega o retiro</label>
+<select id="delivery" name="delivery" required>
+<option value="">Selecciona una opción</option>{% for value, label in delivery_options.items() %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+</div>
+<button class="button full-width" type="submit" id="quote-submit" disabled>Revisar cotización →</button>
+<p class="fine-print">Verás el mensaje antes de abrir WhatsApp. Tu nombre y ciudad no se guardan en el carrito.</p>
+</form>
+</aside>
+</div>
+</section>{% endblock %}
