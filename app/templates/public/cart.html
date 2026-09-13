@@ -3,7 +3,7 @@
 {% block content %}<section class="page-intro container">
 <span class="eyebrow">UN PASO MÁS CERCA DE TU IDEA</span>
 <h1>Mi carrito</h1>
-<p>Revisa tus figuras y cuéntanos los detalles. Precio y envío por confirmar.</p>
+<p>Este carrito reúne tu solicitud de cotización. Escribe el tamaño y la personalización de cada figura; confirmaremos su precio y el envío.</p>
 </section>
 <section class="container section-bottom">
 <div id="cart-empty" class="empty-state" hidden>
@@ -19,7 +19,7 @@
 <aside class="quote-panel">
 <span class="eyebrow">SOLICITA TU COTIZACIÓN</span>
 <h2>Conversemos</h2>
-<p class="price-note">Precio y envío por confirmar</p>
+<p class="price-note">Precio según tamaño · Envío por confirmar</p>
 <form id="quote-form" action="{{ url_for('orders.preview') }}" method="post">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 <input type="hidden" id="cart-payload" name="cart">
@@ -36,7 +36,7 @@
 <select id="delivery" name="delivery" required>
 <option value="">Selecciona una opción</option>{% for value, label in delivery_options.items() %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
 </div>
-<button class="button full-width" type="submit" id="quote-submit" disabled>Revisar cotización →</button>
+<button class="button full-width" type="submit" id="quote-submit" disabled>Revisar solicitud →</button>
 <p class="fine-print">Verás el mensaje antes de abrir WhatsApp. Tu nombre y ciudad no se guardan en el carrito.</p>
 </form>
 </aside>

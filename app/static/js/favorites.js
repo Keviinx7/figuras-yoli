@@ -30,7 +30,7 @@
         const title = Yoli.node('h3');
         if (product) { const link = Yoli.node('a', '', product.name); link.href = product.url; title.append(link); }
         else title.textContent = code;
-        info.append(title, Yoli.node('p', 'product-code', 'Código: ' + code), Yoli.node('p', 'price-note', product ? 'Precio por confirmar' : 'Producto no publicado actualmente.'));
+        info.append(title, Yoli.node('p', 'product-code', 'Código: ' + code), Yoli.node('p', 'price-note', product ? 'Precio según tamaño' : 'Producto no publicado actualmente.'));
         if (product) {
           const add = Yoli.node('button', 'button button-outline full-width', 'Agregar al carrito +');
           add.type = 'button'; add.dataset.addCart = code; info.append(add);

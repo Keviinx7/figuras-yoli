@@ -15,14 +15,15 @@
 <h1>{{ product.display_name }}</h1>
 <p class="product-code">Código: {{ product.code }}</p>
 <p>{{ product.description or 'Descripción pendiente.' }}</p>
-<p class="detail-price">Precio según tamaño y personalización</p>
+<p class="detail-price">Precio según tamaño</p>
 <p>
 <strong>Tamaño:</strong> {{ product.size_notes or 'Por confirmar.' }}</p>
 <form id="product-form" data-code="{{ product.code }}">
 <div class="field">
 <label for="requested-size">Tamaño solicitado <span>(opcional)</span>
 </label>
-<input id="requested-size" name="requested_size" maxlength="120" placeholder="Cuéntanos qué tamaño necesitas">
+<input id="requested-size" name="requested_size" maxlength="120" aria-describedby="size-help" placeholder="Cuéntanos qué tamaño necesitas">
+<p id="size-help" class="fine-print">Escribe el tamaño que necesitas. Confirmaremos contigo las opciones y el precio antes de acordar el pedido.</p>
 </div>{% if product.allows_customization %}<div class="field">
 <label for="personalization">Personalización <span>(opcional)</span>
 </label>
@@ -33,7 +34,7 @@
 <input id="quantity" name="quantity" type="number" min="1" max="99" value="1" required>
 </div>
 <div class="button-row">
-<button type="submit" class="button">Agregar al carrito +</button>
+<button type="submit" class="button">Agregar a solicitud +</button>
 <button type="button" class="button button-outline" data-favorite="{{ product.code }}" aria-pressed="false">♡ Favorito</button>
 </div>
 </form>

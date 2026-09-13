@@ -35,6 +35,17 @@ test('Different personalizations remain separate', () => {
   yoli.addCart('FY.ÑA.001', 1, '30 cm', 'Uno'); yoli.addCart('FY.ÑA.001', 2, '30 cm', 'Dos');
   assert.equal(yoli.read('cart').length, 2); assert.equal(cartCount.textContent, 3);
 });
+test('Different requested sizes remain separate without assigning prices', () => {
+  yoli.addCart('FY.ÑA.001', 1, 'Tamaño de prueba A', '');
+  yoli.addCart('FY.ÑA.001', 1, 'Tamaño de prueba B', '');
+  assert.equal(yoli.read('cart').length, 2);
+  assert.deepEqual(Array.from(yoli.read('cart'), line => line.requested_size), ['Tamaño de prueba A', 'Tamaño de prueba B']);
+});
+test('Stored administrative or client prices cannot become request prices', () => {
+  yoli.write('cart', [{product_code:'FY.ÑA.001', quantity:1, requested_size:'', personalization:'',
+    price:'7654.32', total:'7654.32', recipe_id:123}]);
+  assert.deepEqual(Object.keys(yoli.read('cart')[0]).sort(), ['personalization', 'product_code', 'quantity', 'requested_size']);
+});
 test('Matching selections merge quantities', () => {
   yoli.addCart('FY.ÑA.001', 1, '30 cm', 'Uno'); yoli.addCart('FY.ÑA.001', 2, '30 cm', 'Uno');
   assert.equal(yoli.read('cart').length, 1); assert.equal(yoli.read('cart')[0].quantity, 3);

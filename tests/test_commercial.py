@@ -659,6 +659,69 @@ class CommercialTests(unittest.TestCase):
         self.assertEqual(quote.tax,Decimal('0.17'))
         self.assertEqual(quote.total,Decimal('1.30'))
 
+    def test_administrative_recipe_prices_never_become_public_catalog_prices(self):
+        from app.services.whatsapp import validate_cart
+        self.login();self.configure_iva();recipe=self.good_recipe()
+        recipe.profit_percentage=Decimal('917.3');db.session.commit()
+        self.good_estimate()
+        self.post('/logout')
+        for path in ['/', '/catalogo', '/producto/'+self.product.slug, '/favoritos', '/carrito']:
+            html=self.client.get(path).get_data(as_text=True)
+            self.assertNotIn('917.3',html)
+            self.assertNotIn(recipe.name,html)
+            self.assertNotRegex(html,r'(?:USD|\$)\s*\d|\d[.,]\d{2}\s*USD')
+        public=self.client.get('/api/productos',query_string={'code':self.product.code}).get_json()['products'][0]
+        self.assertEqual(set(public),{'code','name','category','url','image','allows_customization'})
+        # Prices submitted from local storage are discarded, never quoted as official.
+        cart=[dict(product_code=self.product.code,quantity=2,requested_size='Tamaño de prueba A',
+                   personalization='',unit_price='7654.32',total='15308.64',recipe_id=recipe.id)]
+        validated=validate_cart(cart)[0]
+        self.assertEqual(set(validated),{'product_code','name','quantity','requested_size','personalization'})
+        response=self.post('/cotizacion',dict(cart=json.dumps(cart),name='Prueba',city='Tulcán',delivery='shipping'))
+        self.assertEqual(response.status_code,200)
+        html=response.get_data(as_text=True)
+        self.assertIn('Tamaño de prueba A',html)
+        self.assertIn('precio según el tamaño solicitado',html)
+        self.assertNotIn('7654.32',html);self.assertNotIn('15308.64',html)
+        self.assertEqual(Quote.query.count(),0)
+
+    def test_admin_assigns_independent_real_prices_to_requested_sizes(self):
+        self.login();self.configure_iva()
+        listing=self.client.get('/admin/productos').get_data(as_text=True)
+        self.assertIn(f'/admin/cotizaciones/nueva?producto={self.pid}',listing)
+        response=self.client.get(f'/admin/cotizaciones/nueva?producto={self.pid}')
+        self.assertEqual(response.status_code,200)
+        html=response.get_data(as_text=True)
+        self.assertIn(f'value="{self.pid}" selected',html)
+        self.assertIn('name="item_unit_price" value=""',html)
+        self.assertIn('name="item_requested_size" value=""',html)
+        self.assertIn('no precios oficiales del catálogo',html)
+        payload=self.quote_payload()
+        for key in list(payload):
+            if key.startswith('item_'): payload[key]=payload[key]*2
+        # Synthetic business-approved amounts and sizes, never seeded in the catalog.
+        payload['item_quantity']=['1','1']
+        payload['item_requested_size']=['Tamaño de prueba A','Tamaño de prueba B']
+        payload['item_personalization']=['Variante de prueba A','Variante de prueba B']
+        payload['item_unit_price']=['7.31','12.43']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        quote=Quote.query.one()
+        self.assertEqual([(i.requested_size,i.unit_price) for i in quote.items],
+                         [('Tamaño de prueba A',Decimal('7.31')),('Tamaño de prueba B',Decimal('12.43'))])
+        self.assertEqual(quote.subtotal,Decimal('19.74'))
+        self.assertEqual(quote.tax,Decimal('2.96'));self.assertEqual(quote.total,Decimal('22.70'))
+        snapshot=[(i.requested_size,i.personalization,i.unit_price,i.cost_snapshot.copy()) for i in quote.items]
+        quote.status='accepted';db.session.commit()
+        # A later price for the same code/size belongs only to the new proposal.
+        later=self.quote_payload();later['item_requested_size']=['Tamaño de prueba A'];later['item_unit_price']=['8.17']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',later).status_code,302)
+        db.session.refresh(quote)
+        self.assertEqual([(i.requested_size,i.personalization,i.unit_price,i.cost_snapshot) for i in quote.items],snapshot)
+        public=self.client.get('/producto/'+self.product.slug).get_data(as_text=True)
+        for value in ['7.31','12.43','8.17','Tamaño de prueba A','Tamaño de prueba B']:
+            self.assertNotIn(value,public)
+        self.assertEqual(self.client.get('/admin/cotizaciones/nueva?producto=99999999').status_code,404)
+
     def test_commercial_preview_matches_rounding_policy(self):
         from app.services.production import recipe_data,recipe_preview
         self.login();self.configure_iva();recipe=self.good_recipe()

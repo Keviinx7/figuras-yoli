@@ -44,6 +44,11 @@ def edit(id=None):
             row['estimate_id']=source['id'] if source['source']=='estimate' else ''
             if source['source']!='manual' and 'manual_price' not in source: row['unit_price']=''
             items.append(row)
+    selected_product=request.args.get('producto',type=int)
+    if not quote and selected_product:
+        product=db.get_or_404(Product,selected_product)
+        # Selecting a catalog product never supplies a recipe or an official price.
+        items=[dict(product_id=product.id)]
     selected_recipe=request.args.get('receta',type=int)
     if not quote and selected_recipe:
         recipe=db.get_or_404(ProductCostRecipe,selected_recipe)

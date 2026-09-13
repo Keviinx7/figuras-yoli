@@ -78,6 +78,22 @@ class ReviewedCatalogTests(unittest.TestCase):
         self.assertIn('0 productos', self.client.get('/catalogo?q=FY.NA.012').get_data(as_text=True))
         self.assertIn('1 productos', self.client.get('/catalogo?q=CELULA%20VEGETAL').get_data(as_text=True))
 
+    def test_every_product_requests_size_without_official_numeric_price(self):
+        import re
+        for product in Product.query.all():
+            with self.subTest(code=product.code):
+                html = self.client.get('/producto/' + product.slug).get_data(as_text=True)
+                self.assertIn('<p class="detail-price">Precio según tamaño</p>', html)
+                self.assertIn('Agregar a solicitud', html)
+                self.assertRegex(html, r'<input id="requested-size" name="requested_size"[^>]+>')
+                self.assertNotRegex(html, r'<(?:select|datalist)[^>]*(?:size|tama)')
+                self.assertNotRegex(html, r'(?:USD|\$)\s*\d|\d[.,]\d{2}\s*USD')
+                self.assertNotIn('itemprop="price"', html)
+        for page in range(1, 16):
+            html = self.client.get('/catalogo', query_string={'page': page}).get_data(as_text=True)
+            prices = re.findall(r'<p class="price-note">(.*?)</p>', html)
+            self.assertEqual(prices, ['Precio según tamaño'] * (12 if page < 15 else 5))
+
     def test_all_categories_and_pagination(self):
         self.assertEqual(Category.query.count(), 17)
         for category in Category.query.all():

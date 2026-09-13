@@ -54,7 +54,7 @@ def build_message(lines, name, city, delivery):
             parts.append(f'  Personalización: {line["personalization"]}')
         parts.append('')
     parts += [f'Nombre: {name}', f'Ciudad: {city}', f'Modalidad: {DELIVERY[delivery]}', '',
-              'Por favor confirmar:', '- precio', '- disponibilidad', '- tiempo de elaboración', '- envío', '', 'Gracias.']
+              'Por favor confirmar:', '- precio según el tamaño solicitado y la personalización', '- disponibilidad', '- tiempo de elaboración', '- envío', '', 'Gracias.']
     return '\n'.join(parts)
 
 

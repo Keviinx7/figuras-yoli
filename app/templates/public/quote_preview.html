@@ -3,7 +3,7 @@
 {% block content %}<section class="container section narrow">
 <span class="eyebrow">REVISA ANTES DE ENVIAR</span>
 <h1>Tu idea está lista<br>para conversar.</h1>
-<p>Este es el mensaje que prepararemos en WhatsApp. Selecciona cualquiera de nuestros números.</p>
+<p>Esta es tu solicitud de cotización, con precios pendientes de confirmar según el tamaño. Este es el mensaje que prepararemos en WhatsApp. Selecciona cualquiera de nuestros números.</p>
 <label class="sr-only" for="quote-message">Mensaje de cotización</label>
 <textarea id="quote-message" class="message-preview" readonly rows="18">{{ message }}</textarea>{% if long_message %}<p class="notice">Tu solicitud es extensa. Copia el mensaje y pégalo en WhatsApp para evitar que se corte.</p>{% endif %}<div class="button-row">{% for phone, link in links %}<a class="button{% if loop.index == 2 %} button-outline{% endif %}" href="{{ 'https://wa.me/' ~ phone if long_message else link }}" target="_blank" rel="noopener noreferrer">WhatsApp {{ '0969080116' if loop.first else '0986791895' }} ↗</a>{% endfor %}<button class="button button-outline" type="button" id="copy-message">Copiar mensaje</button>
 </div>

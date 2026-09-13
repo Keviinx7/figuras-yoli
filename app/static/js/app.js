@@ -49,7 +49,7 @@
       if (cart.length >= 50) return notify('Puedes cotizar hasta 50 líneas por solicitud.');
       cart.push({product_code: code, quantity, requested_size: size, personalization});
     }
-    if (write('cart', cart)) notify('Figura agregada al carrito.');
+    if (write('cart', cart)) notify('Figura agregada a tu solicitud.');
   }
   function node(tag, className, text) {
     const el = document.createElement(tag);
