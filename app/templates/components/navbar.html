@@ -20,6 +20,8 @@
 </a>
 <a class="bag-link" href="{{ url_for('orders.cart') }}">Mi carrito <span data-cart-count class="count">0</span>
 </a>
+{% if account %}<a href="{{ url_for('portal.panel') }}">Mi cuenta</a><form class="nav-logout" method="post" action="{{ url_for('portal.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit">Salir</button></form>
+{% else %}<a href="{{ url_for('portal.login') }}">Cuenta</a>{% endif %}
 </div>
   </div>
 </header>

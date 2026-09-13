@@ -10,8 +10,23 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from app import create_app
 from app.extensions import db
+from app.models import Product, Category
 from app.models.commercial import User,BusinessSettings,TaxSetting
 from app.services.commercial import initialize_settings
+
+
+def seed_portal_product():
+    """Guarantee one public, customizable product for the customer-portal E2E."""
+    category = Category.query.filter_by(slug='portal-e2e').first()
+    if not category:
+        category = Category(name='Fomix E2E', slug='portal-e2e')
+        db.session.add(category)
+        db.session.flush()
+    if not Product.query.filter_by(code='FY.EZE.777').first():
+        db.session.add(Product(code='FY.EZE.777', name='Figura E2E del portal',
+                               slug='figura-e2e-del-portal', category_id=category.id,
+                               description='Producto de prueba del portal de clientes.',
+                               allows_customization=True, is_active=True, is_featured=False))
 
 
 def main():
@@ -25,7 +40,7 @@ def main():
     app=create_app({'TESTING':True,'SECRET_KEY':secrets.token_hex(32),'SQLALCHEMY_DATABASE_URI':'sqlite:///'+str(database)})
     credentials={'admin':secrets.token_urlsafe(24),'vendedor':secrets.token_urlsafe(24)}
     with app.app_context():
-        db.create_all();initialize_settings()
+        db.create_all();initialize_settings();seed_portal_product()
         for role,password in credentials.items():
             u=User(username='browser_'+role,role=role);u.set_password(password);db.session.add(u)
         business=db.session.get(BusinessSettings,1);business.currency='USD'

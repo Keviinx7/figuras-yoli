@@ -986,3 +986,98 @@ input::placeholder,textarea::placeholder {
 [hidden] {
   display:none!important;
 }
+/* Cuentas de clientes */
+.nav-logout {
+  display:inline-flex;
+  align-items:center;
+}
+.nav-logout button {
+  background:transparent;
+  border:0;
+  padding:0;
+  color:inherit;
+  font:inherit;
+  cursor:pointer;
+  text-decoration:underline;
+}
+.nav-logout button:hover {
+  color:var(--blue);
+}
+@media(max-width:1100px) {
+  .nav-logout {
+    display:none;
+  }
+}
+.account-panel .account-menu {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:22px 0;
+}
+.panel-soft {
+  background:#f3f7f8;
+  border-radius:14px;
+  padding:24px;
+  margin-top:22px;
+}
+.request-row {
+  border-top:1px solid var(--line);
+  padding:16px 0;
+}
+.request-head {
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.request-status {
+  display:inline-block;
+  font-size:.72rem;
+  font-weight:bold;
+  padding:4px 10px;
+  border-radius:999px;
+}
+.status-pending {
+  background:#f0ead2;
+  color:#6b5d1e;
+}
+.status-processing {
+  background:#e1ecf8;
+  color:#285071;
+}
+.status-completed {
+  background:#deefe3;
+  color:#205438;
+}
+.status-rejected {
+  background:#f8e3dd;
+  color:#803326;
+}
+.account-form .field {
+  margin-bottom:16px;
+}
+.preserve {
+  white-space:pre-line;
+}
+.request-table {
+  overflow:auto;
+}
+.request-table table {
+  width:100%;
+  border-collapse:collapse;
+}
+.request-table th,
+.request-table td {
+  text-align:left;
+  padding:10px 8px;
+  border-bottom:1px solid var(--line);
+  font-size:.9rem;
+  vertical-align:top;
+}
+.request-table th {
+  font-size:.68rem;
+  letter-spacing:.08em;
+  color:var(--muted);
+  text-transform:uppercase;
+}

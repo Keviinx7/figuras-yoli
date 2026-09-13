@@ -1,0 +1,192 @@
+"""Customer portal logic: session helpers, validation and persisted requests.
+
+The portal never records prices, costs or margins: public requests are the
+starting point that staff later turns into an internal quote or invoice.
+"""
+import hashlib
+import re
+import secrets
+from datetime import datetime, timedelta, timezone
+from functools import wraps
+from flask import current_app, request, redirect, url_for, session
+from flask_login import logout_user
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from werkzeug.security import generate_password_hash
+from app.extensions import db
+from app.models import Product
+from app.models.commercial import Customer, LoginAttempt, AuditEvent
+from app.models.customer_account import CustomerAccount, CustomerRequest, CustomerRequestItem
+from app.services.search import public_products
+from app.services.whatsapp import clean_text, validate_cart, DELIVERY
+
+SESSION_ACCOUNT_ID = 'customer_account_id'
+SESSION_ACCOUNT_TOKEN = 'customer_session_token'
+
+# Constant hash only for timing-compatible password checks; never a real password.
+DUMMY_HASH = generate_password_hash('dummy-hash-para-comparar-tiempo', method='scrypt')
+
+EMAIL_PATTERN = re.compile(r'[^\s@]+@[^\s@]+\.[^\s@]+')
+PHONE_PATTERN = re.compile(r'[0-9+ ()-]{7,20}')
+PASSWORD_RULE = 'La contraseña debe tener entre 12 y 200 caracteres.'
+
+
+def now():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def normalize_email(value):
+    email = clean_text(value, 'Correo', 180, True).lower()
+    if not EMAIL_PATTERN.fullmatch(email):
+        raise ValueError('Correo inválido.')
+    return email
+
+
+def clean_phone(value):
+    phone = clean_text(value, 'Teléfono', 50, True)
+    if not PHONE_PATTERN.fullmatch(phone):
+        raise ValueError('Teléfono inválido.')
+    return phone
+
+
+def clean_notes(value):
+    if not isinstance(value, str):
+        raise ValueError('Notas: texto inválido.')
+    value = value.strip()
+    if len(value) > 3000 or '\x00' in value:
+        raise ValueError('Notas: máximo 3000 caracteres.')
+    return value
+
+
+def current_account():
+    """The authenticated CustomerAccount for this request, or None."""
+    account_id = session.get(SESSION_ACCOUNT_ID)
+    token = session.get(SESSION_ACCOUNT_TOKEN)
+    if not account_id or not token:
+        return None
+    account = db.session.get(CustomerAccount, account_id)
+    if not account or not account.is_active or account.session_token != token:
+        return None
+    return account
+
+
+def customer_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not current_account():
+            return redirect(url_for('portal.login', next=request.path))
+        return view(*args, **kwargs)
+    return wrapped
+
+
+def safe_next():
+    target = request.args.get('next') or request.form.get('next') or ''
+    if target.startswith('/') and not target.startswith('//') and '\\' not in target:
+        return target
+    return url_for('portal.panel')
+
+
+def account_login(account):
+    """Rotate the session token (invalidates prior sessions), then start fresh."""
+    account.session_token = secrets.token_hex(24)
+    account.last_login = now()
+    db.session.commit()
+    logout_user()
+    session.clear()
+    session[SESSION_ACCOUNT_ID] = account.id
+    session[SESSION_ACCOUNT_TOKEN] = account.session_token
+    session.permanent = True
+    session['csrf_token'] = secrets.token_hex(24)
+
+
+def account_logout():
+    session.pop(SESSION_ACCOUNT_ID, None)
+    session.pop(SESSION_ACCOUNT_TOKEN, None)
+
+
+def _failure_key():
+    return hashlib.sha256((request.remote_addr or 'local').encode()).hexdigest()
+
+
+def login_blocked():
+    attempt = db.session.get(LoginAttempt, _failure_key())
+    return attempt and now() - attempt.window_start < timedelta(minutes=15) and attempt.failures >= 10
+
+
+def register_login_failure():
+    key = _failure_key()
+    attempt = db.session.get(LoginAttempt, key)
+    if not attempt:
+        attempt = LoginAttempt(key=key, failures=0, window_start=now())
+        db.session.add(attempt)
+    if now() - attempt.window_start >= timedelta(minutes=15):
+        attempt.window_start = now()
+        attempt.failures = 0
+    attempt.failures += 1
+    db.session.commit()
+
+
+def delete_login_peak():
+    attempt = db.session.get(LoginAttempt, _failure_key())
+    if attempt:
+        db.session.delete(attempt)
+
+
+def save_customer_request(cart_json, account, delivery, notes=''):
+    """Validate the cart (server side) and persist a request WITHOUT any price data."""
+    if delivery not in DELIVERY:
+        raise ValueError('Seleccione una modalidad de entrega válida.')
+    lines = validate_cart(cart_json)
+    customer = account.customer
+    if not customer:
+        raise ValueError('Falta tu ficha de cliente. Actualiza tu perfil.')
+    codes = [line['product_code'] for line in lines]
+    products = {p.code: p for p in public_products().filter(Product.code.in_(codes)).all()}
+    missing = [code for code in codes if code not in products]
+    if missing:
+        raise ValueError('El carrito contiene productos no publicados. Revísalo.')
+    items = []
+    for line in lines:
+        product = products[line['product_code']]
+        items.append(CustomerRequestItem(
+            product_id=product.id,
+            product_code_snapshot=product.code,
+            product_name_snapshot=product.display_name,
+            quantity=line['quantity'],
+            requested_size=line['requested_size'] or None,
+            personalization=line['personalization'] or None))
+    request_record = CustomerRequest(
+        customer_id=customer.id,
+        account_id=account.id,
+        delivery=delivery,
+        delivery_label=DELIVERY[delivery],
+        customer_snapshot={'name': customer.name, 'phone': customer.phone,
+                           'email': customer.email, 'city': customer.city},
+        notes=clean_notes(notes) or None)
+    request_record.items = items
+    db.session.add(request_record)
+    db.session.flush()
+    db.session.add(AuditEvent(entity='customer_request', entity_id=request_record.id,
+                              action='created_by_customer'))
+    db.session.commit()
+    return request_record.id
+
+
+def recovery_serializer():
+    return URLSafeTimedSerializer(current_app.config['SECRET_KEY'], salt='account-recovery')
+
+
+def recovery_token(account):
+    """Signed, one-time link whose nonce is the account's current session token."""
+    return recovery_serializer().dumps({'id': account.id, 'nonce': account.session_token})
+
+
+def consume_recovery_token(token):
+    max_age = int(current_app.config.get('ACCOUNT_RECOVERY_LIFETIME_HOURS', 1)) * 3600
+    try:
+        data = recovery_serializer().loads(token, max_age=max_age)
+    except (BadSignature, SignatureExpired, TypeError, ValueError):
+        return None
+    account = db.session.get(CustomerAccount, data.get('id'))
+    if not account or not account.is_active or account.session_token != data.get('nonce'):
+        return None
+    return account

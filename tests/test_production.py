@@ -17,7 +17,9 @@ ENV_KEYS = ('APP_ENV', 'FLASK_ENV', 'YOLI_ENV', 'SECRET_KEY', 'DATABASE_URL',
             'FLASK_DEBUG', 'SESSION_COOKIE_SECURE', 'SESSION_COOKIE_HTTPONLY',
             'SESSION_COOKIE_SAMESITE', 'SESSION_LIFETIME_HOURS', 'LOG_LEVEL',
             'LOG_FILE', 'TRUSTED_HOSTS', 'BEHIND_PROXY', 'HSTS_ENABLED',
-            'HSTS_MAX_AGE', 'MAX_CONTENT_LENGTH_BYTES', 'BACKUP_DIR')
+            'HSTS_MAX_AGE', 'MAX_CONTENT_LENGTH_BYTES', 'BACKUP_DIR',
+            'ACCOUNT_RECOVERY_ENABLED', 'ACCOUNT_RECOVERY_LIFETIME_HOURS',
+            'EMAIL_VERIFICATION_ENABLED')
 
 
 def strong_key():
@@ -65,6 +67,9 @@ class ConfigTest(EnvIsolationMixin, unittest.TestCase):
         self.assertFalse(conf['HSTS_ENABLED'])
         self.assertIsNone(conf['TRUSTED_HOSTS'])
         self.assertFalse(conf['ALLOWED_HOSTS'])
+        self.assertFalse(conf['ACCOUNT_RECOVERY_ENABLED'])
+        self.assertFalse(conf['EMAIL_VERIFICATION_ENABLED'])
+        self.assertEqual(conf['ACCOUNT_RECOVERY_LIFETIME_HOURS'], 1)
 
     def test_production_security_defaults(self):
         os.environ['APP_ENV'] = 'production'

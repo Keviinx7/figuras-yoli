@@ -100,6 +100,12 @@ def get_config():
         'HSTS_MAX_AGE': _int_env('HSTS_MAX_AGE', 31536000),
         'BACKUP_DIR': os.environ.get('BACKUP_DIR') or None,
         'CATALOG_PDF': os.environ.get('CATALOG_PDF') or str(ROOT / 'docs' / 'catalogo-productos.pdf'),
+        # Cuentas de clientes. La recuperación automática y la verificación por
+        # correo requieren un envío real que aún no está contratado; se mantienen
+        # apagadas por defecto y nunca simulan haberse ejecutado.
+        'ACCOUNT_RECOVERY_ENABLED': _truthy(os.environ.get('ACCOUNT_RECOVERY_ENABLED')),
+        'ACCOUNT_RECOVERY_LIFETIME_HOURS': _int_env('ACCOUNT_RECOVERY_LIFETIME_HOURS', 1),
+        'EMAIL_VERIFICATION_ENABLED': _truthy(os.environ.get('EMAIL_VERIFICATION_ENABLED')),
     }
 
 

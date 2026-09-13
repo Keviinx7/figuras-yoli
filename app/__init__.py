@@ -80,16 +80,19 @@ def create_app(test_config=None):
     from app.main import bp as main_bp
     from app.catalog import bp as catalog_bp
     from app.orders import bp as orders_bp
+    from app.portal import bp as portal_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(catalog_bp)
     app.register_blueprint(orders_bp)
+    app.register_blueprint(portal_bp)
     from app.auth import bp as auth_bp
     from app.admin import bp as admin_bp
     from app.customers import bp as customers_bp
     from app.costs import bp as costs_bp
     from app.quotes import bp as quotes_bp
     from app.invoices import bp as invoices_bp
-    for blueprint in (auth_bp, admin_bp, customers_bp, costs_bp, quotes_bp, invoices_bp):
+    from app.requests_admin import bp as requests_admin_bp
+    for blueprint in (auth_bp, admin_bp, customers_bp, costs_bp, quotes_bp, invoices_bp, requests_admin_bp):
         app.register_blueprint(blueprint)
     from app.services.commercial import register_cli
     from app.services.costing import money, pct
@@ -122,10 +125,12 @@ def create_app(test_config=None):
     @app.context_processor
     def common():
         from app.models import Category
+        from app.services.customer_portal import current_account
         if 'csrf_token' not in session:
             session['csrf_token'] = secrets.token_hex(24)
         return {'categories': Category.query.filter_by(is_active=True).order_by(Category.sort_order, Category.name).all(),
-                'csrf_token': session['csrf_token']}
+                'csrf_token': session['csrf_token'],
+                'account': current_account()}
 
     @app.after_request
     def headers(response):
@@ -136,7 +141,7 @@ def create_app(test_config=None):
         response.headers['Content-Security-Policy'] = "default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
         if app.config.get('HSTS_ENABLED') and request.is_secure:
             response.headers['Strict-Transport-Security'] = f"max-age={app.config.get('HSTS_MAX_AGE', 31536000)}; includeSubDomains"
-        if request.endpoint == 'orders.preview' or request.blueprint in ('auth', 'admin', 'customers', 'costs', 'quotes', 'invoices') or request.endpoint == 'main.health':
+        if request.endpoint == 'orders.preview' or request.blueprint in ('auth', 'admin', 'customers', 'costs', 'quotes', 'invoices', 'portal') or request.endpoint == 'main.health':
             response.headers['Cache-Control'] = 'no-store'
         return response
 

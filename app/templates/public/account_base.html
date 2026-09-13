@@ -1,0 +1,1 @@
+{% extends 'public/base.html' %}{% block content %}{% for message in get_flashed_messages() %}<p class="notice" role="status">{{ message }}</p>{% endfor %}{% block account %}{% endblock %}{% endblock %}

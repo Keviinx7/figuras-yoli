@@ -1,0 +1,12 @@
+{% extends 'public/account_base.html' %}{% block title %}Recuperar contraseña · Yoli Figuras de Fomix{% endblock %}{% block account %}<section class="container section narrow account-form">
+<span class="eyebrow">RECUPERAR ACCESO</span>
+<h1>Restablece tu contraseña</h1>
+<p class="muted">La recuperación automática aún no está activa y no queremos hacerte creer que te enviamos un correo si no podemos hacerlo.</p>
+<form method="post" action="{{ url_for('portal.recover') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="field"><label for="email">Tu correo</label><input id="email" name="email" type="email" maxlength="180" required autocomplete="email"></div>
+<button class="button full-width" type="submit">Registrar mi solicitud</button>
+</form>
+<p class="fine-print">Escríbenos por WhatsApp al <a class="text-link" href="https://wa.me/593969080116" target="_blank" rel="noopener noreferrer">0969080116 ↗</a> y te ayudaremos a recuperar tu acceso.</p>
+<p class="fine-print"><a class="text-link" href="{{ url_for('portal.login') }}">← Volver a iniciar sesión</a></p>
+</section>{% endblock %}

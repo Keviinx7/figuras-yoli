@@ -1,0 +1,16 @@
+{% extends 'public/account_base.html' %}{% block title %}Mi perfil · Yoli Figuras de Fomix{% endblock %}{% block account %}<section class="container section narrow account-form">
+<span class="eyebrow">EDITAR PERFIL</span>
+<h1>Mis datos</h1>
+<p class="muted">El correo con el que accedes no puede cambiarse desde aquí.</p>
+{% if error %}<p class="notice" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="{{ url_for('portal.profile') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="field"><label for="name">Tu nombre</label><input id="name" name="name" maxlength="180" required autocomplete="given-name" value="{{ customer.name }}"></div>
+<div class="field"><label for="email">Correo de acceso</label><input id="email" name="email" type="email" maxlength="180" disabled value="{{ customer.email }}"></div>
+<div class="field"><label for="phone">Teléfono / WhatsApp</label><input id="phone" name="phone" maxlength="50" required autocomplete="tel" value="{{ customer.phone or '' }}"></div>
+<div class="field"><label for="address">Dirección</label><textarea id="address" name="address" maxlength="300" autocomplete="street-address">{{ customer.address or '' }}</textarea></div>
+<div class="field"><label for="city">Ciudad</label><input id="city" name="city" maxlength="100" autocomplete="address-level2" value="{{ customer.city or '' }}"></div>
+<button class="button full-width" type="submit">Guardar cambios →</button>
+</form>
+<p class="fine-print"><a class="text-link" href="{{ url_for('portal.panel') }}">← Volver a mi cuenta</a></p>
+</section>{% endblock %}

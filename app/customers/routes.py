@@ -3,6 +3,7 @@ from flask import request,render_template,redirect,url_for
 from sqlalchemy import or_
 from app.extensions import db
 from app.models.commercial import Customer,Quote,Invoice,AuditEvent
+from app.models.customer_account import CustomerAccount
 from app.services.commercial import record,commit
 from app.services.costing import text_value
 from app.admin.routes import field,form
@@ -43,4 +44,4 @@ def edit(id=None):
 @bp.get('/<int:id>')
 def detail(id):
     c=db.get_or_404(Customer,id)
-    return render_template('admin/customer.html',customer=c,quotes=Quote.query.filter_by(customer_id=id).order_by(Quote.id.desc()).all(),invoices=Invoice.query.filter_by(customer_id=id).order_by(Invoice.id.desc()).all(),events=AuditEvent.query.filter_by(entity='customer',entity_id=id).order_by(AuditEvent.id.desc()).all())
+    return render_template('admin/customer.html',customer=c,quotes=Quote.query.filter_by(customer_id=id).order_by(Quote.id.desc()).all(),invoices=Invoice.query.filter_by(customer_id=id).order_by(Invoice.id.desc()).all(),events=AuditEvent.query.filter_by(entity='customer',entity_id=id).order_by(AuditEvent.id.desc()).all(),account=CustomerAccount.query.filter_by(customer_id=id).first())

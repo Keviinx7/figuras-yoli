@@ -1,0 +1,25 @@
+{% extends 'public/account_base.html' %}{% block title %}Solicitud #{{ '%04d'|format(req.id) }} · Yoli Figuras de Fomix{% endblock %}{% block account %}<section class="container section narrow">
+<span class="eyebrow">TU SOLICITUD</span>
+<h1>Solicitud #{{ '%04d'|format(req.id) }}</h1>
+<p class="muted">Pedido guardado el {{ req.created_at|localtime }} · {{ req.delivery_label }}</p>
+<p><span class="request-status status-{{ req.status }}">{{ labels[req.status] }}</span></p>
+{% if req.notes %}<section class="panel-soft"><h2>Notas que nos dejaste</h2><p class="preserve">{{ req.notes }}</p></section>{% endif %}
+<section class="panel-soft">
+<h2>Lo que pediste</h2>
+<div class="request-table"><table>
+<thead><tr><th>Producto</th><th>Cantidad</th><th>Tamaño solicitado</th><th>Personalización</th></tr></thead>
+<tbody>
+{% for item in req.items %}
+<tr><td>{{ item.product_name_snapshot }}<br><span class="product-code">Código: {{ item.product_code_snapshot }}</span></td><td>{{ item.quantity }}</td><td>{{ item.requested_size or 'Por definir' }}</td><td>{{ item.personalization or '—' }}</td></tr>
+{% endfor %}
+</tbody>
+</table></div>
+<p class="fine-print">Confirmamos precio según el tamaño final, la personalización, la disponibilidad, el tiempo de elaboración y el envío. No incluimos costos internos porque tú pagas por el resultado final, no por nuestra producción.</p>
+</section>
+<section class="panel-soft">
+<h2>Cómo seguimos</h2>
+<p class="muted">Te responderemos por WhatsApp o correo para confirmar tu pedido. Mientras tanto puedes ver el estado aquí.</p>
+<a class="button button-outline" href="{{ url_for('portal.requests_index') }}">Ver todos mis pedidos</a>
+<a class="button button-outline" href="{{ url_for('orders.cart') }}">Hacer otra solicitud</a>
+</section>
+</section>{% endblock %}

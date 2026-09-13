@@ -5,6 +5,7 @@ from flask_login import current_user
 from app.extensions import db
 from app.models import Product,Category
 from app.models.commercial import Customer,Quote,Invoice,User,AuditEvent
+from app.models.customer_account import CustomerRequest
 from app.services.commercial import roles_required,settings,record,commit
 from app.services.costing import text_value,decimal_value,pct
 from app.auth.routes import validate_user
@@ -25,7 +26,7 @@ def dashboard():
     paid=Invoice.query.filter_by(status='paid').all()
     totals={}
     for invoice in paid: totals[invoice.currency]=totals.get(invoice.currency,Decimal('0'))+invoice.total
-    return render_template('admin/dashboard.html',metrics=[('Productos',Product.query.count()),('Categorías',Category.query.count()),('Clientes',Customer.query.count()),('Cotizaciones',Quote.query.count()),('Facturas',Invoice.query.count()),('Ventas pagadas',len(paid))],sales=totals,events=AuditEvent.query.order_by(AuditEvent.id.desc()).limit(15).all())
+    return render_template('admin/dashboard.html',metrics=[('Productos',Product.query.count()),('Categorías',Category.query.count()),('Clientes',Customer.query.count()),('Solicitudes de clientes',CustomerRequest.query.count()),('Cotizaciones',Quote.query.count()),('Facturas',Invoice.query.count()),('Ventas pagadas',len(paid))],sales=totals,events=AuditEvent.query.order_by(AuditEvent.id.desc()).limit(15).all())
 
 
 @bp.get('/productos')
