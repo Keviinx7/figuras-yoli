@@ -6,7 +6,7 @@ from app.extensions import db
 from app.models import Product,Category
 from app.models.commercial import Customer,Quote,Invoice,User,AuditEvent
 from app.services.commercial import roles_required,settings,record,commit
-from app.services.costing import text_value,decimal_value
+from app.services.costing import text_value,decimal_value,pct
 from app.auth.routes import validate_user
 from . import bp
 
@@ -117,9 +117,15 @@ def configuration():
             setattr(business,k,value or None)
         tax.percentage=decimal_value(request.form.get('tax_percentage'),'Impuesto','100',True)
         tax.name=text_value(request.form.get('tax_name',''),'Nombre del impuesto',100,True)
+        if '%' in tax.name: raise ValueError('El nombre del impuesto es una etiqueta (ej. IVA); no incluya el símbolo % ni porcentajes. El porcentaje se guarda en su propio campo.')
         for k in ('units','payment_methods'):
             values=[text_value(v,'Opción',40,True) for v in request.form.get(k,'').splitlines() if v.strip()]
             if not 1<=len(values)<=30 or len(set(values))!=len(values): raise ValueError('Ingrese de 1 a 30 opciones distintas, una por línea.')
             setattr(business,k,values)
         record('settings',1,'updated');commit();flash('Configuración guardada. Los documentos anteriores conservan sus datos.');return redirect(url_for('admin.configuration'))
-    return form('Configuración del negocio',[*[field(k,label,getattr(business,k),required=k=='business_name') for k,label in labels.items()],field('tax_name','Nombre del impuesto',tax.name,required=True),field('tax_percentage','Impuesto % (vacío = pendiente; 0 = sin impuesto)',tax.percentage),field('units','Unidades, una por línea','\n'.join(business.units),'textarea',True),field('payment_methods','Formas de pago, una por línea','\n'.join(business.payment_methods),'textarea',True)],note='Configure moneda e impuesto antes de enviar cotizaciones o emitir facturas internas. No hay integración tributaria.')
+    alerts=[]
+    if tax.percentage is None or not business.currency:
+        alerts=[dict(kind='error',text='Configuración pendiente: hasta guardar la moneda y un porcentaje de impuesto (o 0 explícito), los documentos nuevos se crean sin impuesto y no pueden enviarse ni facturarse. El impuesto no configurado no se trata como 0.')]
+    else:
+        alerts=[dict(kind='notice',text='Impuesto vigente para documentos nuevos: '+tax.name+' · '+pct(tax.percentage)+'%. Moneda: '+business.currency+'. Los documentos ya emitidos conservan sus snapshots y su moneda/impuesto.' )]
+    return form('Configuración del negocio',[*[field(k,label,getattr(business,k),required=k=='business_name') for k,label in labels.items()],field('tax_name','Nombre del impuesto (etiqueta, ej. IVA)',tax.name,required=True),field('tax_percentage','Porcentaje de impuesto en números (ej. 15). Vacío = pendiente; 0 = sin impuesto',tax.percentage),field('units','Unidades, una por línea','\n'.join(business.units),'textarea',True),field('payment_methods','Formas de pago, una por línea','\n'.join(business.payment_methods),'textarea',True)],note='Configure moneda e impuesto antes de enviar cotizaciones o emitir facturas internas. No hay integración tributaria.',alerts=alerts)

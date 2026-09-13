@@ -57,9 +57,10 @@ def create_app(test_config=None):
     for blueprint in (auth_bp, admin_bp, customers_bp, costs_bp, quotes_bp, invoices_bp):
         app.register_blueprint(blueprint)
     from app.services.commercial import register_cli
-    from app.services.costing import money
+    from app.services.costing import money, pct
     register_cli(app)
     app.jinja_env.filters['money'] = money
+    app.jinja_env.filters['pct'] = pct
 
     @app.before_request
     def protect_post():

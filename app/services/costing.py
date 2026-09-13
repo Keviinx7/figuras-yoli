@@ -47,6 +47,14 @@ def money(value):
         return format(Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP), ',.2f')
 
 
+def pct(value):
+    if value is None:
+        return ''
+    with localcontext() as context:
+        context.prec = 40
+        return format(Decimal(value).normalize(), 'f')
+
+
 def json_decimals(value):
     if isinstance(value, Decimal):
         return format(value, 'f')

@@ -214,6 +214,71 @@ class CommercialTests(unittest.TestCase):
         self.assertEqual(self.post('/admin/configuracion',data).status_code,302)
         db.session.refresh(tax);self.assertEqual(tax.percentage,Decimal('7.25'))
 
+    def config_payload(self,**changes):
+        data=dict(business_name='Yoli Figuras de Fomix',email='',phone_1='',phone_2='',city='',branch='',currency='USD',invoice_prefix='FAC',quote_prefix='COT',tax_name='IVA',tax_percentage='15',units='hoja\nmetro',payment_methods='efectivo\ntransferencia')
+        data.update(changes);return data
+
+    def test_config_iva_15_quote_exact(self):
+        self.login()
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload()).status_code,302)
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',self.quote_payload()).status_code,302)
+        q=Quote.query.order_by(Quote.id.desc()).first()
+        self.assertEqual(q.subtotal,Decimal('10.00'))
+        self.assertEqual(q.discount,Decimal('0'))
+        self.assertEqual(q.tax,Decimal('1.50'))
+        self.assertEqual(q.tax_percentage,Decimal('15'))
+        self.assertEqual(q.total,Decimal('11.50'))
+        self.assertEqual(q.currency,'USD')
+        self.assertEqual(q.business_snapshot['tax_name'],'IVA')
+        html=self.client.get(f'/admin/cotizaciones/{q.id}/imprimir').get_data(as_text=True)
+        self.assertIn('IVA (15%)',html);self.assertIn('11.50',html)
+        self.assertNotIn('provisional',html)
+
+    def test_tax_empty_zero_and_positive_quote_level(self):
+        self.login()
+        one=self.quote_payload();one['item_quantity']=['1']
+        # Sin configuración -> pendiente (None), nunca 0.
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',one).status_code,302)
+        pending=Quote.query.order_by(Quote.id.desc()).first()
+        self.assertIsNone(pending.tax_percentage);self.assertIsNone(pending.tax);self.assertEqual(pending.total,Decimal('5'));self.assertIsNone(pending.currency)
+        # Impuesto 0 -> explícitamente sin impuesto, total = subtotal.
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload(tax_percentage='0')).status_code,302)
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',one).status_code,302)
+        zero=Quote.query.order_by(Quote.id.desc()).first()
+        self.assertEqual(zero.tax_percentage,Decimal('0'));self.assertEqual(zero.tax,Decimal('0'));self.assertEqual(zero.total,Decimal('5'))
+        # Impuesto 15 -> cálculo real con subtotal 5.00.
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload()).status_code,302)
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',one).status_code,302)
+        taxed=Quote.query.order_by(Quote.id.desc()).first()
+        self.assertEqual(taxed.subtotal,Decimal('5.00'));self.assertEqual(taxed.tax,Decimal('0.75'));self.assertEqual(taxed.total,Decimal('5.75'))
+
+    def test_historical_quote_keeps_snapshot_after_config_change(self):
+        self.login()
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',self.quote_payload()).status_code,302)
+        old=Quote.query.order_by(Quote.id.desc()).first()
+        self.assertIsNone(old.tax_percentage);self.assertIsNone(old.currency);self.assertEqual(old.business_snapshot['tax_name'],'Impuesto configurado')
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload()).status_code,302)
+        db.session.expire_all()
+        self.assertIsNone(old.tax_percentage);self.assertIsNone(old.currency);self.assertEqual(old.total,Decimal('10'))
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',self.quote_payload()).status_code,302)
+        new=Quote.query.order_by(Quote.id.desc()).first()
+        self.assertEqual(new.tax_percentage,Decimal('15'));self.assertEqual(new.currency,'USD');self.assertEqual(new.total,Decimal('11.50'))
+
+    def test_config_page_alerts(self):
+        self.login()
+        page=self.client.get('/admin/configuracion').get_data(as_text=True)
+        self.assertIn('Configuración pendiente',page);self.assertIn('no se trata como 0',page)
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload()).status_code,302)
+        page=self.client.get('/admin/configuracion').get_data(as_text=True)
+        self.assertIn('Impuesto vigente para documentos nuevos: IVA · 15%. Moneda: USD.',page)
+        self.assertNotIn('Configuración pendiente',page)
+
+    def test_config_rejects_percent_as_tax_name(self):
+        self.login()
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload(tax_name='Impuesto %: 15')).status_code,400)
+        db.session.refresh(db.session.get(TaxSetting,1));self.assertNotEqual(db.session.get(TaxSetting,1).name,'Impuesto %: 15')
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload()).status_code,302)
+
     def test_calculator_persists_exact_values(self):
         self.login('seller');self.configure()
         response=self.post('/admin/costos',self.cost_payload());self.assertEqual(response.status_code,200,response.get_data(as_text=True))
