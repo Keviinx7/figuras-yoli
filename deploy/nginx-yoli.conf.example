@@ -1,0 +1,50 @@
+# Server block de ejeplo para Nginx. Reemplaza example.com por tu dominio real.
+# La app escucha solo en 127.0.0.1:8000 vía Gunicorn; Nginx termina HTTPS.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com www.example.com;
+    # Redirige todo a HTTPS en los primeros despliegues.
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name example.com www.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    # Solicitudes permitidas: catálogo, procesar formulario de WhatsApp, /health.
+    client_max_body_size 64k;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_read_timeout 30s;
+    }
+
+    # La app sirve sus propias imágenes estáticas desde app/static.
+    location /static/ {
+        alias /home/yoli/figuras-yoli/app/static/;
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+
+    location = /health {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_buffering off;
+    }
+}

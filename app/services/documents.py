@@ -1,7 +1,6 @@
 """Transactional numbering, immutable snapshots and server-side document totals."""
 from datetime import datetime, timezone
 from decimal import Decimal
-from sqlalchemy.dialects.sqlite import insert
 from flask import abort
 from flask_login import current_user
 from app.extensions import db
@@ -14,6 +13,10 @@ from app.services.dates import local_today
 
 def next_number(kind,prefix):
     # Atomic UPSERT in the SAME transaction as the document. Unique constraints are a second guard.
+    if db.engine.dialect.name == 'sqlite':
+        from sqlalchemy.dialects.sqlite import insert
+    else:
+        from sqlalchemy.dialects.postgresql import insert
     stmt=insert(NumberSequence).values(kind=kind,value=1)
     stmt=stmt.on_conflict_do_update(index_elements=['kind'],set_={'value':NumberSequence.value+1}).returning(NumberSequence.value)
     number=db.session.execute(stmt).scalar_one()

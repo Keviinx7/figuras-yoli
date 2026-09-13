@@ -21,7 +21,13 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-El servidor de `run.py` es para desarrollo local. El despliegue público necesitará un servidor WSGI, HTTPS, configuración de cookies seguras y respaldos. No se ha desplegado la tienda.
+El servidor de `run.py` es para desarrollo local. Para un despliegue real use
+`wsgi.py` con Gunicorn, Nginx con HTTPS y las variables de entorno descritas en
+`.env.example`; la guía completa está en [docs/deployment.md](docs/deployment.md)
+y los respaldos en [docs/production-backup.md](docs/production-backup.md).
+La tienda aún no se ha desplegado: la configuración por entorno, la seguridad
+web y los comandos de respaldo están preparados, pero el servidor público no
+existe.
 
 ## Estado del catálogo
 
@@ -89,14 +95,18 @@ app/
       banners/               Reservado para recursos de portada
 instance/
   tienda.db                  SQLite local, excluido de Git
-  .secret_key                Clave local generada con permisos restringidos
+  .session_key               Clave de desarrollo generada con permisos restringidos
   .gitkeep
 data/catalog_seed.csv       173 productos verificados en el PDF
 docs/                       PDF, manifiesto, imágenes de revisión y resultados de pruebas
+deploy/                     Ejemplos de Nginx y systemd
 tests/                      unittest de Python y pruebas de almacenamiento JS
-config.py
-run.py
+config.py                   Configuración por entorno (get_config)
+.env.example                Plantilla sin secretos con todas las variables
+wsgi.py                     Entrada WSGI para Gunicorn
+run.py                      Servidor de desarrollo
 requirements.txt
+requirements-postgres.txt   Opcional: solo para PostgreSQL
 .gitignore
 README.md
 ```
@@ -143,13 +153,22 @@ node --check app/static/js/favorites.js
 node --check app/static/js/cart.js
 ```
 
-Node se usa únicamente para pruebas opcionales del JavaScript; no es dependencia de ejecución de la tienda y no requiere paquetes npm. Python usa `unittest`, incluido en la biblioteca estándar. Las pruebas crean archivos temporales dentro de `instance/` y los eliminan al finalizar; nunca modifican `tienda.db`.
+Node se usa únicamente para pruebas opcionales del JavaScript; no es dependencia de ejecución de la tienda y no requiere paquetes npm. Python usa `unittest`, incluido en la biblioteca estándar. Las pruebas crean archivos temporales dentro de `instance/` y los eliminan al finalizar; nunca modifican `tienda.db`. `tests/test_production.py` cubre la configuración por entorno (incluye el rechazo de `SECRET_KEY` débil en producción), la cabecera de seguridad, `/health`, las páginas 403/404/429/500 y el control de hosts confiables.
 
-## Administración posterior
+## Panel administrativo
 
-Incorporar un blueprint `app/admin/` con prefijo `/admin` cuando se autorice: autenticación segura, edición de productos y categorías, publicación, destacados, orden, imágenes e importación con revisión de errores. Reutilizar los modelos y servicios actuales. Añadir migraciones cuando cambie el esquema con datos reales. Solo crear tablas de solicitudes si se decide conservarlas. Actualmente `/admin` no está implementado.
+El blueprint `app/admin/` (prefijo `/admin`) ofrece autenticación y edición de
+productos, categorías, destacados, orden, imágenes e importación con control de
+errores, más la operación comercial (materiales, recetas, cálculos, clientes,
+cotizaciones y facturas). Las migraciones de esquema se aplican con el
+procedimiento verificado de la sección de producción; cuando haya una base
+PostgreSQL con datos reales se introducirá Alembic.
 
-Respaldar `instance/tienda.db` junto con las imágenes verificadas. La clave puede configurarse mediante la variable de entorno `SECRET_KEY`; la alternativa local se genera en `instance/.secret_key`. No compartir esa clave ni subirla a Git.
+Respaldar `instance/tienda.db` junto con las imágenes verificadas
+(`backup-db`, ver [docs/production-backup.md](docs/production-backup.md)). La
+clave se configura con `SECRET_KEY` (requerida y validada en staging/production);
+la alternativa local se genera en `instance/.session_key`. No compartir esa clave
+ni subirla a Git.
 
 ### Verificación del catálogo real y navegador
 
@@ -196,3 +215,28 @@ y conserve la base actual antes de sustituirla. No use `init-db` ni reimporte
 el catálogo como procedimiento de recuperación.
 
 Informe y evidencias de esta fase: [docs/production-review/report.md](docs/production-review/report.md).
+
+## Preparación para despliegue (no publicado)
+
+El código está listo para una futura puesta en producción sin que la tienda esté
+desplegada todavía. Comprende:
+
+- Configuración por entorno en `config.py` (`APP_ENV`, `SECRET_KEY` validada en
+  staging/production, `DATABASE_URL`, cookies, hosts confiables, log).
+- Servidor WSGI (`wsgi.py`) y Gunicorn en `requirements.txt`.
+- Ajustes de seguridad: cookies seguras, `X-Content-Type-Options`,
+  `Referrer-Policy`, `X-Frame-Options: DENY`, `Permissions-Policy`, CSP y HSTS
+  condicional bajo HTTPS; `ProxyFix` detrás de Nginx; páginas 403/404/429/413/500
+  sin volcar excepciones; `/health` para sondeos de carga.
+- Portabilidad de base: numeración atómica (`documents.next_number` — upsert),
+  serialización de escritura (`BEGIN IMMEDIATE`) y búsqueda (`search_normalize`)
+  detectan el dialecto; `requirements-postgres.txt` instala el driver solo cuando
+  `DATABASE_URL` use PostgreSQL. Alembic se documenta para esa fase futura.
+- Operación: `backup-db` y `upgrade-db` verificados (SQLite), respaldo externo y
+  guías en `docs/deployment.md` y `docs/production-backup.md`; ejemplos de Nginx
+  y systemd en `deploy/` con placeholders de dominio.
+- Pruebas nuevas en `tests/test_production.py`; todas las suites siguen en verde.
+
+Sin cambios sobre `instance/tienda.db` (intacta y fuera de los commits): no se
+migró a PostgreSQL, no se reimportó el catálogo y no se instaló nada en ningún
+servidor.

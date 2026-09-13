@@ -1,5 +1,6 @@
 import unicodedata
 from sqlalchemy import func, or_
+from app.extensions import db
 from app.models import Product, Category
 
 
@@ -17,8 +18,16 @@ def normalize_search(value):
 
 def search_products(query, term):
     term = normalize_search(term.strip())
-    return query.filter(or_(*(func.search_normalize(column).contains(term, autoescape=True)
-                             for column in (Product.name, Product.code, Category.name)))) if term else query
+    if not term:
+        return query
+    columns = (Product.name, Product.code, Category.name)
+    # SQLite uses its registered search_normalize SQL function; other
+    # backends (PostgreSQL) use a parametrized, escaped ILIKE match.
+    if db.engine.dialect.name == 'sqlite':
+        return query.filter(or_(*(func.search_normalize(column).contains(term, autoescape=True)
+                                 for column in columns)))
+    pattern = '%' + term.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
+    return query.filter(or_(*(column.ilike(pattern, escape='\\') for column in columns)))
 
 
 def public_products():

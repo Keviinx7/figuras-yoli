@@ -1,0 +1,27 @@
+# Unidad de ejeplo para systemd. Copiar a /etc/systemd/system/yoli.service
+# y editar User, WorkingDirectory y EnvironmentFile según tu servidor.
+# El archivo de entorno (/etc/yoli/yoli.env) NO debe vivir en el repo de Git.
+
+[Unit]
+Description=Yoli Figuras de Fomix (Gunicorn)
+After=network.target
+
+[Service]
+Type=notify
+User=yoli
+Group=yoli
+WorkingDirectory=/home/yoli/figuras-yoli
+EnvironmentFile=/etc/yoli/yoli.env
+ExecStart=/home/yoli/figuras-yoli/.venv/bin/gunicorn \
+    --bind 127.0.0.1:8000 \
+    --workers 2 --threads 2 \
+    --timeout 30 \
+    --access-logfile - --error-logfile - \
+    wsgi:app
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -29,7 +29,8 @@ def staff_only():
     if not current_user.is_active or current_user.role not in ('admin','vendedor'):
         abort(403)
     # Serialize administrative writes BEFORE reading mutable document state.
-    if request.method == 'POST':
+    # BEGIN IMMEDIATE only applies to SQLite; PostgreSQL uses READ COMMITTED.
+    if request.method == 'POST' and db.engine.dialect.name == 'sqlite':
         db.session.execute(text('BEGIN IMMEDIATE'))
 
 
@@ -78,9 +79,11 @@ def register_cli(app):
     @app.cli.command('upgrade-db')
     def upgrade_db():
         """Backup SQLite, then add missing commercial tables. Never reimport products."""
+        if db.engine.dialect.name != 'sqlite':
+            raise click.ClickException('upgrade-db migra la SQLite local; en PostgreSQL use Alembic (ver docs/deployment.md).')
         path=Path(db.engine.url.database)
         if not path.is_file(): raise click.ClickException('No existe la SQLite actual; revise la configuración.')
-        folder=Path(app.instance_path)/'backups';folder.mkdir(exist_ok=True)
+        folder=Path(app.config.get('BACKUP_DIR') or Path(app.instance_path)/'backups');folder.mkdir(exist_ok=True)
         backup=folder/('tienda-upgrade-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'.db')
         with sqlite3.connect(path) as source, sqlite3.connect(backup) as target:
             source.backup(target)
@@ -105,9 +108,11 @@ def register_cli(app):
     @app.cli.command('backup-db')
     def backup_db():
         """Consistent full SQLite backup, including all commercial data."""
+        if db.engine.dialect.name != 'sqlite':
+            raise click.ClickException('backup-db respalda la SQLite local; en PostgreSQL use pg_dump (ver docs/production-backup.md).')
         path=Path(db.engine.url.database)
         if not path.is_file(): raise click.ClickException('No existe la SQLite configurada.')
-        folder=Path(app.instance_path)/'backups';folder.mkdir(exist_ok=True)
+        folder=Path(app.config.get('BACKUP_DIR') or Path(app.instance_path)/'backups');folder.mkdir(exist_ok=True)
         backup=folder/('tienda-backup-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'.db')
         with sqlite3.connect('file:'+str(path)+'?mode=ro',uri=True) as source, sqlite3.connect(backup) as target:
             source.backup(target)

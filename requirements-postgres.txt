@@ -1,0 +1,4 @@
+# Opcional: instalar solo cuando DATABASE_URL apunte a PostgreSQL
+# en staging/producción. `requirements.txt` base no incluye ningún driver.
+# Instalación: .venv/bin/python -m pip install -r requirements-postgres.txt
+psycopg[binary]>=3.2,<4

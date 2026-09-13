@@ -28,7 +28,8 @@ def login():
     if current_user.is_authenticated: return redirect(url_for('admin.dashboard'))
     error=None
     if request.method=='POST':
-        db.session.execute(text('BEGIN IMMEDIATE'))
+        if db.engine.dialect.name == 'sqlite':
+            db.session.execute(text('BEGIN IMMEDIATE'))
         username=request.form.get('username','').strip().lower()[:80]
         password=request.form.get('password','')
         now=datetime.now(timezone.utc).replace(tzinfo=None)

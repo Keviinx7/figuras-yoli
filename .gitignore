@@ -4,8 +4,13 @@ __pycache__/
 .pytest_cache/
 instance/browser-check/
 instance/browser-check-*/
-*.log
-.DS_Store
+instance/*.db
 instance/backups/
 instance/commercial-check/
 instance/.session_key
+.env
+.env.*
+!.env.example
+logs/
+*.log
+.DS_Store
