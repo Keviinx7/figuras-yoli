@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Yoli Figuras de Fomix. Figuras para tus ideas educativas y creativas. San Gabriel y Tulcán. Envíos a todo Ecuador.">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}Yoli Figuras de Fomix{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+  <script defer src="{{ url_for('static', filename='js/app.js') }}">
+</script>
+  <script defer src="{{ url_for('static', filename='js/catalog.js') }}">
+</script>
+  <script defer src="{{ url_for('static', filename='js/favorites.js') }}">
+</script>
+  <script defer src="{{ url_for('static', filename='js/cart.js') }}">
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+<div class="announcement">Hecho para acompañar tus ideas <span>San Gabriel · Tulcán · Envíos a todo Ecuador</span>
+</div>
+{% include 'components/navbar.html' %}
+<main id="main">{% block content %}
+{% endblock %}</main>
+{% include 'components/footer.html' %}
+<div id="toast" class="toast" role="status" aria-live="polite" hidden>
+</div>
+<noscript>
+<div class="noscript">Puedes explorar el catálogo y consultar por WhatsApp. Activa JavaScript para usar favoritos y carrito.</div>
+</noscript>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "checks": 1,
+  "results": [
+    "[{\"name\":\"Paloma\",\"top\":575,\"buttonBottom\":983.71875},{\"name\":\"Conejo\",\"top\":575,\"buttonBottom\":983.71875},{\"name\":\"Bienvenidos al año lectivo\",\"top\":575,\"buttonBottom\":983.71875},{\"name\":\"Banderín de bienvenida\",\"top\":575,\"buttonBottom\":983.71875},{\"name\":\"Bienvenidos al nuevo año lectivo\",\"top\":1029,\"buttonBottom\":1457.53125},{\"name\":\"Bienvenida con nombre de profesora\",\"top\":1029,\"buttonBottom\":1457.53125},{\"name\":\"Banderín con nombre de profesora\",\"top\":1029,\"buttonBottom\":1457.53125},{\"name\":\"Niño con bastón y gafas\",\"top\":1029,\"buttonBottom\":1437.5},{\"name\":\"Digestivo\",\"top\":1503,\"buttonBottom\":1911.3125},{\"name\":\"Circulatorio\",\"top\":1503,\"buttonBottom\":1911.3125},{\"name\":\"Sistema urinario\",\"top\":1503,\"buttonBottom\":1911.3125},{\"name\":\"Nervioso\",\"top\":1503,\"buttonBottom\":1911.3125}]"
+  ],
+  "errors": []
+}

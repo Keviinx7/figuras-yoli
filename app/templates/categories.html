@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Categorías · Yoli Figuras de Fomix{% endblock %}
+{% block content %}<section class="page-intro container">
+<span class="eyebrow">EXPLORA A TU MANERA</span>
+<h1>Un mundo de categorías</h1>
+<p>Encuentra el tema para tu próxima creación.</p>
+</section>
+<section class="container section-bottom">
+<div class="category-grid">{% for category in categories %}
+{% set category_index = loop.index %}
+{% include 'components/category_card.html' %}
+{% else %}<p>Las categorías estarán disponibles próximamente.</p>{% endfor %}</div>
+</section>{% endblock %}

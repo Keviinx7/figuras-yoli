@@ -1,0 +1,174 @@
+code,name,category,image,description,size_notes,allows_customization,is_active
+FY.AN.001,Gato,Animales,FY.AN.001.png,,,1,1
+FY.AN.002,Gallina,Animales,FY.AN.002.png,,,1,1
+FY.AN.003,Perro,Animales,FY.AN.003.png,,,1,1
+FY.AN.004,Caballo,Animales,FY.AN.004.png,,,1,1
+FY.AN.005,Pato,Animales,FY.AN.005.png,,,1,1
+FY.AN.006,Pato sentado,Animales,FY.AN.006.png,,,1,1
+FY.AN.007,Roedor,Animales,FY.AN.007.png,,,1,1
+FY.AN.008,Capibara con bebida,Animales,FY.AN.008.png,,,1,1
+FY.AN.009,Capibara con sandía,Animales,FY.AN.009.png,,,1,1
+FY.AN.010,Caracol,Animales,FY.AN.010.png,,,1,1
+FY.AN.011,Cocodrilo,Animales,FY.AN.011.png,,,1,1
+FY.AN.012,Elefante,Animales,FY.AN.012.png,,,1,1
+FY.AN.013,Oruga,Animales,FY.AN.013.png,,,1,1
+FY.AN.014,Ardilla,Animales,FY.AN.014.png,,,1,1
+FY.AN.015,Hormiga,Animales,FY.AN.015.png,,,1,1
+FY.AN.016,Jirafa,Animales,FY.AN.016.png,,,1,1
+FY.AN.017,León,Animales,FY.AN.017.png,,,1,1
+FY.AN.018,Mariposa,Animales,FY.AN.018.png,,,1,1
+FY.AN.019,Mariquita,Animales,FY.AN.019.png,,,1,1
+FY.AN.020,Mono,Animales,FY.AN.020.png,,,1,1
+FY.AN.021,Oso saludando,Animales,FY.AN.021.png,,,1,1
+FY.AN.022,Oso sentado,Animales,FY.AN.022.png,,,1,1
+FY.AN.023,Panda,Animales,FY.AN.023.png,,,1,1
+FY.AN.024,Pelícano,Animales,FY.AN.024.png,,,1,1
+FY.AN.025,Pollito,Animales,FY.AN.025.png,,,1,1
+FY.AN.026,Insecto verde,Animales,FY.AN.026.png,,,1,1
+FY.AN.027,Rana,Animales,FY.AN.027.png,,,1,1
+FY.AN.028,Serpiente,Animales,FY.AN.028.png,,,1,1
+FY.AN.029,Tortuga,Animales,FY.AN.029.png,,,1,1
+FY.AN.030,Tigre,Animales,FY.AN.030.png,,,1,1
+FY.AN.031,Cebra,Animales,FY.AN.031.png,,,1,1
+FY.AN.032,Vaca,Animales,FY.AN.032.png,,,1,1
+FY.AN.033,Loro,Animales,FY.AN.033.png,,,1,1
+FY.AN.034,Dinosaurio,Animales,FY.AN.034.png,,,1,1
+FY.AN.035,Unicornio,Animales,FY.AN.035.png,,,1,1
+FY.AN.036,Cerdo,Animales,FY.AN.036.png,,,1,1
+FY.AN.037,Paloma,Animales,FY.AN.037.png,,,1,1
+FY.AN.038,Conejo,Animales,FY.AN.038.png,,,1,1
+FY.CD.001,Niño con bastón y gafas,Capacidades diferentes,FY.CD.001.png,,,1,1
+FY.CAR.001,Bienvenidos al año lectivo,Carteles,FY.CAR.001.png,,,1,1
+FY.CAR.002,Banderín de bienvenida,Carteles,FY.CAR.002.png,,,1,1
+FY.CAR.003,Bienvenidos al nuevo año lectivo,Carteles,FY.CAR.003.png,,,1,1
+FY.CAR.004,Bienvenida con nombre de profesora,Carteles,FY.CAR.004.png,,,1,1
+FY.CAR.005,Banderín con nombre de profesora,Carteles,FY.CAR.005.png,,,1,1
+FY.CH.001,Digestivo,Cuerpo humano y células,FY.CH.001.png,,,1,1
+FY.CH.002,Circulatorio,Cuerpo humano y células,FY.CH.002.png,,,1,1
+FY.CH.003,Sistema urinario,Cuerpo humano y células,FY.CH.003.png,,,1,1
+FY.CH.004,Nervioso,Cuerpo humano y células,FY.CH.004.png,,,1,1
+FY.CH.005,Respiratorio,Cuerpo humano y células,FY.CH.005.png,,,1,1
+FY.CH.006,Reproductor femenino,Cuerpo humano y células,FY.CH.006.png,,,1,1
+FY.CH.007,Reproductor masculino,Cuerpo humano y células,FY.CH.007.png,,,1,1
+FY.CH.008,Esqueleto humano,Cuerpo humano y células,FY.CH.008.png,,,1,1
+FY.CH.009,Cerebro,Cuerpo humano y células,FY.CH.009.png,,,1,1
+FY.CH.010,Corazón humano,Cuerpo humano y células,FY.CH.010.png,,,1,1
+FY.CH.011,Célula animal,Cuerpo humano y células,FY.CH.011.png,,,1,1
+FY.CH.012,Célula procariota,Cuerpo humano y células,FY.CH.012.png,,,1,1
+FY.CH.013,Célula vegetal,Cuerpo humano y células,FY.CH.013.png,,,1,1
+FY.ER.001,Pareja con tocados de plumas,Etnias y regiones,FY.ER.001.png,,,1,1
+FY.ER.002,Pareja con pañuelo y falda,Etnias y regiones,FY.ER.002.png,,,1,1
+FY.ER.003,Pareja con sombreros,Etnias y regiones,FY.ER.003.png,,,1,1
+FY.ER.004,Pareja con pañuelos amarillos,Etnias y regiones,FY.ER.004.png,,,1,1
+FY.IM.001,Bajo eléctrico,Instrumentos musicales,FY.IM.001.png,,,1,1
+FY.IM.002,Guitarra,Instrumentos musicales,FY.IM.002.png,,,1,1
+FY.IM.003,Maracas,Instrumentos musicales,FY.IM.003.png,,,1,1
+FY.IM.004,Saxofón,Instrumentos musicales,FY.IM.004.png,,,1,1
+FY.IM.005,Tambor,Instrumentos musicales,FY.IM.005.png,,,1,1
+FY.IM.006,Violín,Instrumentos musicales,FY.IM.006.png,,,1,1
+FY.IM.007,Arpa,Instrumentos musicales,FY.IM.007.png,,,1,1
+FY.NAV.001,Melchor,Navideños,FY.NAV.001.png,,,1,1
+FY.NAV.002,Baltazar,Navideños,FY.NAV.002.png,,,1,1
+FY.NAV.003,Gaspar,Navideños,FY.NAV.003.png,,,1,1
+FY.NAV.004,Bota navideña,Navideños,FY.NAV.004.png,,,1,1
+FY.NAV.005,Reno navideño,Navideños,FY.NAV.005.png,,,1,1
+FY.NAV.006,Muñeco de nieve,Navideños,FY.NAV.006.png,,,1,1
+FY.ÑA.001,Niña con lápiz y manzana,Niñas,FY.ÑA.001.png,,,1,1
+FY.ÑA.002,Niña con libro azul,Niñas,FY.ÑA.002.png,,,1,1
+FY.ÑA.003,Niña con lápiz y cuaderno,Niñas,FY.ÑA.003.png,,,1,1
+FY.ÑA.004,Niña con vestido rosa,Niñas,FY.ÑA.004.png,,,1,1
+FY.ÑA.005,Niña sentada leyendo,Niñas,FY.ÑA.005.png,,,1,1
+FY.ÑA.006,Niña abrazando un lápiz,Niñas,FY.ÑA.006.png,,,1,1
+FY.ÑA.007,Niña escribiendo,Niñas,FY.ÑA.007.png,,,1,1
+FY.ÑA.008,Niña con delantal y manzana,Niñas,FY.ÑA.008.png,,,1,1
+FY.ÑA.009,Niña con brazos abiertos,Niñas,FY.ÑA.009.png,,,1,1
+FY.ÑA.010,Niña con libros,Niñas,FY.ÑA.010.png,,,1,1
+FY.ÑA.012,Niña con libro rojo,Niñas,FY.ÑA.012.png,,,1,1
+FY.ÑA.013,Niña con vestido y diadema,Niñas,FY.ÑA.013.png,,,1,1
+FY.ÑA.014,Niña graduada,Niñas,FY.ÑA.014.png,,,1,1
+FY.ÑA.015,Niña con cuaderno y lazo,Niñas,FY.ÑA.015.png,,,1,1
+FY.ÑA.016,Niña leyendo un libro rojo,Niñas,FY.ÑA.016.png,,,1,1
+FY.ÑA.017,Niña con cuerda de saltar,Niñas,FY.ÑA.017.png,,,1,1
+FY.ÑA.018,Niña con overol y lápiz,Niñas,FY.ÑA.018.png,,,1,1
+FY.ÑO.001,Niño con camiseta roja,Niños,FY.ÑO.001.png,,,1,1
+FY.ÑO.002,Niño con libro amarillo,Niños,FY.ÑO.002.png,,,1,1
+FY.ÑO.003,Niño con libro en la mano,Niños,FY.ÑO.003.png,,,1,1
+FY.ÑO.004,Niño en patineta,Niños,FY.ÑO.004.png,,,1,1
+FY.ÑO.005,Niño saludando,Niños,FY.ÑO.005.png,,,1,1
+FY.ÑO.006,Niño con overol azul,Niños,FY.ÑO.006.png,,,1,1
+FY.ÑO.007,Niño leyendo un libro verde,Niños,FY.ÑO.007.png,,,1,1
+FY.ÑO.008,Niño con mochila,Niños,FY.ÑO.008.png,,,1,1
+FY.ÑO.009,Niño graduado,Niños,FY.ÑO.009.png,,,1,1
+FY.ÑO.010,Niño con balón de fútbol,Niños,FY.ÑO.010.png,,,1,1
+FY.ÑO.011,Niño con lápiz,Niños,FY.ÑO.011.png,,,1,1
+FY.OP.001,Bombero,Oficios y profesiones,FY.OP.001.png,,,1,1
+FY.OP.002,Mecánico,Oficios y profesiones,FY.OP.002.png,,,1,1
+FY.OP.003,Policía con uniforme verde,Oficios y profesiones,FY.OP.003.png,,,1,1
+FY.OP.004,Enfermera con uniforme blanco,Oficios y profesiones,FY.OP.004.png,,,1,1
+FY.OP.005,Enfermera con uniforme azul,Oficios y profesiones,FY.OP.005.png,,,1,1
+FY.OP.006,Maestra,Oficios y profesiones,FY.OP.006.png,,,1,1
+FY.OP.007,Policía con radio,Oficios y profesiones,FY.OP.007.png,,,1,1
+FY.OP.008,Cocinero,Oficios y profesiones,FY.OP.008.png,,,1,1
+FY.OP.009,Carpintero,Oficios y profesiones,FY.OP.009.png,,,1,1
+FY.PAQ.001,Paquete de útiles escolares,Paquetes,FY.PAQ.001.png,,,1,1
+FY.PAQ.002,Paquete de estrellas,Paquetes,FY.PAQ.002.png,,,1,1
+FY.PAQ.003,Paquete de los cinco sentidos,Paquetes,FY.PAQ.003.png,,,1,1
+FY.PAQ.004,Paquete de corazones,Paquetes,FY.PAQ.004.png,,,1,1
+FY.PAQ.005,Paquete de flores,Paquetes,FY.PAQ.005.png,,,1,1
+FY.PAQ.006,Paquete de huellas y huesos,Paquetes,FY.PAQ.006.png,,,1,1
+FY.PE.001,Pez azul y amarillo,Peces,FY.PE.001.png,,,1,1
+FY.PE.002,Pez verde y rosa,Peces,FY.PE.002.png,,,1,1
+FY.PE.003,Pez naranja y amarillo,Peces,FY.PE.003.png,,,1,1
+FY.PE.004,Pez amarillo y verde,Peces,FY.PE.004.png,,,1,1
+FY.PE.005,Pez azul,Peces,FY.PE.005.png,,,1,1
+FY.PE.006,Pez naranja con franjas blancas,Peces,FY.PE.006.png,,,1,1
+FY.PER.001,Oso con vaso,Personajes,FY.PER.001.png,,,1,1
+FY.PER.002,Criatura azul de orejas grandes,Personajes,FY.PER.002.png,,,1,1
+FY.PER.003,Erizo azul,Personajes,FY.PER.003.png,,,1,1
+FY.PER.004,Superhéroe con telarañas,Personajes,FY.PER.004.png,,,1,1
+FY.PER.005,Auto de carreras rojo,Personajes,FY.PER.005.png,,,1,1
+FY.PER.006,Perro con libro,Personajes,FY.PER.006.png,,,1,1
+FY.PER.007,Niño con traje rojo,Personajes,FY.PER.007.png,,,1,1
+FY.PER.008,Gatita con flor,Personajes,FY.PER.008.png,,,1,1
+FY.PER.009,Hada con vestido verde,Personajes,FY.PER.009.png,,,1,1
+FY.PER.010,Perro bombero con cartel,Personajes,FY.PER.010.png,,,1,1
+FY.PER.011,Perro policía con cartel,Personajes,FY.PER.011.png,,,1,1
+FY.PER.012,Perro constructor con cartel,Personajes,FY.PER.012.png,,,1,1
+FY.PER.013,Ratona con lazo rojo,Personajes,FY.PER.013.png,,,1,1
+FY.PER.014,Cara de perro policía,Personajes,FY.PER.014.png,,,1,1
+FY.PER.015,Cara de perro bombero,Personajes,FY.PER.015.png,,,1,1
+FY.PER.016,Cara de perro constructor,Personajes,FY.PER.016.png,,,1,1
+FY.RE.001,Sacerdote,Religiosos,FY.RE.001.png,,,1,1
+FY.RE.002,Ángel con alas rosas,Religiosos,FY.RE.002.png,,,1,1
+FY.RE.003,Ángel con alas azules,Religiosos,FY.RE.003.png,,,1,1
+FY.RE.004,Hombre con túnica,Religiosos,FY.RE.004.png,,,1,1
+FY.RE.005,Monja con rosario,Religiosos,FY.RE.005.png,,,1,1
+FY.RE.006,Virgen con manto verde,Religiosos,FY.RE.006.png,,,1,1
+FY.RE.007,Virgen de la Medalla Milagrosa,Religiosos,FY.RE.007.png,,,1,1
+FY.RE.008,Virgen con manto azul,Religiosos,FY.RE.008.png,,,1,1
+FY.RE.009,Bebé en pesebre,Religiosos,FY.RE.009.png,,,1,1
+FY.RE.010,María,Religiosos,FY.RE.010.png,,,1,1
+FY.RE.011,José,Religiosos,FY.RE.011.png,,,1,1
+FY.TOP.001,Topper Felicitaciones,Toppers,FY.TOP.001.png,,,1,1
+FY.TOP.002,Topper Feliz Día Mamá,Toppers,FY.TOP.002.png,,,1,1
+FY.TOP.003,Topper Feliz Cumple,Toppers,FY.TOP.003.png,,,1,1
+FY.TOP.004,Topper Feliz Día,Toppers,FY.TOP.004.png,,,1,1
+FY.VAR.001,Mazo de juez,Varios,FY.VAR.001.png,,,1,1
+FY.VAR.002,Frasco con pastillas,Varios,FY.VAR.002.png,,,1,1
+FY.VAR.003,Identificativos,Varios,FY.VAR.003.png,,,1,1
+FY.VAR.004,Volcán,Varios,FY.VAR.004.png,,,1,1
+FY.VAR.005,Estetoscopio,Varios,FY.VAR.005.png,,,1,1
+FY.VAR.006,Planeta Tierra en una mano,Varios,FY.VAR.006.png,,,1,1
+FY.VAR.007,Esposas,Varios,FY.VAR.007.png,,,1,1
+FY.VAR.008,Ciclo del agua,Varios,FY.VAR.008.png,,,1,1
+FY.VAR.009,Chaleco de policía,Varios,FY.VAR.009.png,,,1,1
+FY.VAR.010,Botiquín,Varios,FY.VAR.010.png,,,1,1
+FY.VAR.011,Bandera tricolor,Varios,FY.VAR.011.png,,,1,1
+FY.VAR.012,Animal con cartel Feliz Día,Varios,FY.VAR.012.png,,,1,1
+FY.VAR.013,Iglesia,Varios,FY.VAR.013.png,,,1,1
+FY.VAR.014,Mapa del Ecuador,Varios,FY.VAR.014.png,,,1,1
+FY.VAR.015,Casa,Varios,FY.VAR.015.png,,,1,1
+FY.VAR.016,Identificativos,Varios,FY.VAR.016.png,,,1,1
+FY.VAR.017,Cerdo con órganos internos,Varios,FY.VAR.017.png,,,1,1
+FY.VAR.018,Anatomía interna del cerdo,Varios,FY.VAR.018.png,,,1,1
+FY.VAR.019,,Varios,FY.VAR.019.png,,,1,1

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Página no encontrada · Yoli{% endblock %}
+{% block content %}<section class="container section empty-state">
+<span class="eyebrow">404</span>
+<h1>Esta página no está aquí</h1>
+<p>La figura o página que buscas no está publicada en este momento.</p>
+<a class="button" href="{{ url_for('catalog.catalog') }}">Explorar catálogo →</a>
+</section>{% endblock %}

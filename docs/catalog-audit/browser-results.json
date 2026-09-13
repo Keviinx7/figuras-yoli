@@ -1,0 +1,24 @@
+{
+  "checks": 18,
+  "results": [
+    "Catalog displays 173 real products and 12 first-page cards",
+    "Product photos load",
+    "Exact Ñ search",
+    "Catalog buttons persist favorite and cart",
+    "Favorite resolves actual product",
+    "Cart persists and merges quantity",
+    "Cart edit persists",
+    "Quote includes real code, quantity and personalization",
+    "Both WhatsApp quote URLs retain Ñ and message",
+    "Category filter displays 17 girls",
+    "Mobile catalog has no horizontal overflow",
+    "Mobile navigation opens",
+    "Mobile detail has no horizontal overflow",
+    "Distinct personalization remains a separate cart line",
+    "Mobile cart has no horizontal overflow",
+    "Removing all lines disables quote",
+    "Removing favorite updates empty state",
+    "No uncaught JavaScript exceptions"
+  ],
+  "errors": []
+}

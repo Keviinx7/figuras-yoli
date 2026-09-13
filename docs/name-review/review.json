@@ -1,0 +1,1559 @@
+[
+  {
+    "code": "FY.AN.001",
+    "old_name": "",
+    "name": "Gato",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.001.png",
+    "image_sha256": "a22e80c59ab86ec01d9b1a5dc109e40894cf7fbb6d3303b89137ff1253bbd829"
+  },
+  {
+    "code": "FY.AN.002",
+    "old_name": "",
+    "name": "Gallina",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.002.png",
+    "image_sha256": "f48081dfa71de9bb5fc4adb6eb439eef82b3b37efff2d19814a561c6a0312e63"
+  },
+  {
+    "code": "FY.AN.003",
+    "old_name": "",
+    "name": "Perro",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.003.png",
+    "image_sha256": "33e57d8fd21dcc21c382a82e301b136892d5a2d10ee6c7d8aa8ec1aa89352430"
+  },
+  {
+    "code": "FY.AN.004",
+    "old_name": "",
+    "name": "Caballo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.004.png",
+    "image_sha256": "cc0906c18ebf426eeb960dd2135e9a52a3950f3d53f5f53d6746ccd864d51133"
+  },
+  {
+    "code": "FY.AN.005",
+    "old_name": "",
+    "name": "Pato",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.005.png",
+    "image_sha256": "2361df0697def2f7fae6c246b68a7f8d36077c30500f690ab13c6df66a480679"
+  },
+  {
+    "code": "FY.AN.006",
+    "old_name": "",
+    "name": "Pato sentado",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.006.png",
+    "image_sha256": "a6c6f3688cdb08d9cbf4455dbcfb79c5314f33e122b23f253d0c0aece9ff0ab0"
+  },
+  {
+    "code": "FY.AN.007",
+    "old_name": "",
+    "name": "Roedor",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.007.png",
+    "image_sha256": "97feae27dac39add0dc8ac4ce1b603c61a8fe799a447d3dc687b54ad57f2f680"
+  },
+  {
+    "code": "FY.AN.008",
+    "old_name": "",
+    "name": "Capibara con bebida",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.008.png",
+    "image_sha256": "828ed6407061b594d153d0a914a2e86889e0e55533b99dcbe6019a4dab40320b"
+  },
+  {
+    "code": "FY.AN.009",
+    "old_name": "",
+    "name": "Capibara con sandía",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.009.png",
+    "image_sha256": "6fee931519f02a1c0af16afeb934679228714494e1a9b703db72ad351185bf7e"
+  },
+  {
+    "code": "FY.AN.010",
+    "old_name": "",
+    "name": "Caracol",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.010.png",
+    "image_sha256": "69ec3b49530acc40c4b2327c87ad32611097ed5f4463b37a9f5e28f6169b092e"
+  },
+  {
+    "code": "FY.AN.011",
+    "old_name": "",
+    "name": "Cocodrilo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.011.png",
+    "image_sha256": "e05bf0acc9b11a42ddd502bfe66aabbf03b4d72d88809ecf415066e6fa0685c7"
+  },
+  {
+    "code": "FY.AN.012",
+    "old_name": "",
+    "name": "Elefante",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.012.png",
+    "image_sha256": "01c8f4f3c3fde7bdc40a0706ea3567b14d1ca6db0c76bc1a2a3dc31048f52fed"
+  },
+  {
+    "code": "FY.AN.013",
+    "old_name": "",
+    "name": "Oruga",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.013.png",
+    "image_sha256": "6199130306e0a2210ec9d17ebc3a1f1789a71fc46a649ca2357665fb89010dab"
+  },
+  {
+    "code": "FY.AN.014",
+    "old_name": "",
+    "name": "Ardilla",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.014.png",
+    "image_sha256": "75ed556a874ad4fb61e6364e3b28d8002cb0a1a8d99ca2cc8f9108e710287409"
+  },
+  {
+    "code": "FY.AN.015",
+    "old_name": "",
+    "name": "Hormiga",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.015.png",
+    "image_sha256": "2a9240cb590d51e3f0f3e554a6ef06732a7ec442eb4192ca71fe69a177357c53"
+  },
+  {
+    "code": "FY.AN.016",
+    "old_name": "",
+    "name": "Jirafa",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.016.png",
+    "image_sha256": "44d4e0aa71f0a95037eab06a4262612f58459aee097c6ab21aaba3e9626e9204"
+  },
+  {
+    "code": "FY.AN.017",
+    "old_name": "",
+    "name": "León",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.017.png",
+    "image_sha256": "7ca7a6f41bb3ee2e586baa5d793d0f73314966b570782184d6d4d380f5cfa117"
+  },
+  {
+    "code": "FY.AN.018",
+    "old_name": "",
+    "name": "Mariposa",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.018.png",
+    "image_sha256": "7d271915d02b2710424cba4a62f692ae3af04983c80f60902d4da666621b96f1"
+  },
+  {
+    "code": "FY.AN.019",
+    "old_name": "",
+    "name": "Mariquita",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.019.png",
+    "image_sha256": "18ab2b3c29c8cd93822e31d47c15b73434732b0e5c67ffb44ab18158886f0224"
+  },
+  {
+    "code": "FY.AN.020",
+    "old_name": "",
+    "name": "Mono",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.020.png",
+    "image_sha256": "8f6f3b93f02fe42bf69058db7dfef22fba448eb00aaed65e04d86f88ff92f811"
+  },
+  {
+    "code": "FY.AN.021",
+    "old_name": "",
+    "name": "Oso saludando",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.021.png",
+    "image_sha256": "4e41f5e3d4e2c3b8735fd17d88ae73f92da804bba10fe882e26c4d8f53538600"
+  },
+  {
+    "code": "FY.AN.022",
+    "old_name": "",
+    "name": "Oso sentado",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.022.png",
+    "image_sha256": "8ce5dc1ab8e0427a585e115edbc46f99ae99347dba6ac8cadc7f96760a4b0c54"
+  },
+  {
+    "code": "FY.AN.023",
+    "old_name": "",
+    "name": "Panda",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.023.png",
+    "image_sha256": "4ad7784613e6c14daaa45f5cfda8f494a50a926510d235b8e7076e576ed9dc47"
+  },
+  {
+    "code": "FY.AN.024",
+    "old_name": "",
+    "name": "Pelícano",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.024.png",
+    "image_sha256": "526d60832e469125b604d7941984393d16c498d6cb07b1047c66b042979a089b"
+  },
+  {
+    "code": "FY.AN.025",
+    "old_name": "",
+    "name": "Pollito",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.025.png",
+    "image_sha256": "236e01ee337a6c45d5d6811a200e7d3bd0af382070ed414c6dff114817702571"
+  },
+  {
+    "code": "FY.AN.026",
+    "old_name": "",
+    "name": "Insecto verde",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.026.png",
+    "image_sha256": "3bb88a67c08e4a7134b1955da2af45bcb5aa3c3ce34cde7ecb57142ad71bcbd9"
+  },
+  {
+    "code": "FY.AN.027",
+    "old_name": "",
+    "name": "Rana",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.027.png",
+    "image_sha256": "c52615af2a1444aef4ae8319375ee9df4ed634f02455a1f5cf146462a009216a"
+  },
+  {
+    "code": "FY.AN.028",
+    "old_name": "",
+    "name": "Serpiente",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.028.png",
+    "image_sha256": "e01249348290ca2ec06ca4ee7381921ae59f5f2fb9599d8161c0312227424022"
+  },
+  {
+    "code": "FY.AN.029",
+    "old_name": "",
+    "name": "Tortuga",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.029.png",
+    "image_sha256": "c08ded1dc09e9ba4cc530bc59910105baa1bd2d1d20a2fd68b2be85f6688b2be"
+  },
+  {
+    "code": "FY.AN.030",
+    "old_name": "",
+    "name": "Tigre",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.030.png",
+    "image_sha256": "a17d4e390ea93e4356ecc154c04f50a1a369b90725c5234674f9d12145ea4115"
+  },
+  {
+    "code": "FY.AN.031",
+    "old_name": "",
+    "name": "Cebra",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.031.png",
+    "image_sha256": "2bd5e1179bd809239a621642fccfd5c10878ed1459cd076c560ce8fea00b2210"
+  },
+  {
+    "code": "FY.AN.032",
+    "old_name": "",
+    "name": "Vaca",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.032.png",
+    "image_sha256": "2c2598f2ee248356c403968abdcb9f20ed7a8ef79e8dd8e901dc3eeceb07ab80"
+  },
+  {
+    "code": "FY.AN.033",
+    "old_name": "",
+    "name": "Loro",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.033.png",
+    "image_sha256": "acd078d97366bc089b6244ca476a1e7709f544a62d4ea8e4868d2225ec63cd4c"
+  },
+  {
+    "code": "FY.AN.034",
+    "old_name": "",
+    "name": "Dinosaurio",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.034.png",
+    "image_sha256": "01d2ecfc29090aefb99f3628909420126be5fede0aae76ee99fb732524c52deb"
+  },
+  {
+    "code": "FY.AN.035",
+    "old_name": "",
+    "name": "Unicornio",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.035.png",
+    "image_sha256": "8373e75cf98ec65166331a58c66fbec6a22a7812ee1689eff3604333228d4be6"
+  },
+  {
+    "code": "FY.AN.036",
+    "old_name": "",
+    "name": "Cerdo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.036.png",
+    "image_sha256": "b32747a327c05a97cb9cb4c04ef878e824b12d7c9576f422fbfef0445c82fa34"
+  },
+  {
+    "code": "FY.AN.037",
+    "old_name": "",
+    "name": "Paloma",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.037.png",
+    "image_sha256": "dd5e5342e111f3c79118632e8ca8bfaa328eeb09163b9934b3dad1dd7765e713"
+  },
+  {
+    "code": "FY.AN.038",
+    "old_name": "",
+    "name": "Conejo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.AN.038.png",
+    "image_sha256": "c5b763809c294a1bb9c7126ae148b193e385eee0763b836b4a284071799ee29b"
+  },
+  {
+    "code": "FY.CD.001",
+    "old_name": "",
+    "name": "Niño con bastón y gafas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CD.001.png",
+    "image_sha256": "f54a65b5e106b826478880eca8b41482a92896bc52b6b0f0b28cfca6cbcabdb1"
+  },
+  {
+    "code": "FY.CAR.001",
+    "old_name": "",
+    "name": "Bienvenidos al año lectivo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CAR.001.png",
+    "image_sha256": "40398ac58011126cbdeb8e7ee58490ad08b272f723d4bb8ee8b808346219bba1"
+  },
+  {
+    "code": "FY.CAR.002",
+    "old_name": "",
+    "name": "Banderín de bienvenida",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CAR.002.png",
+    "image_sha256": "88b92f866f7a6fbc869940e0af57299ab014b614774e0378cb291ac754783e41"
+  },
+  {
+    "code": "FY.CAR.003",
+    "old_name": "",
+    "name": "Bienvenidos al nuevo año lectivo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CAR.003.png",
+    "image_sha256": "24a110b432e44d45f7d953706546496ba9dde79751a8c2f23c73356e8aaf239a"
+  },
+  {
+    "code": "FY.CAR.004",
+    "old_name": "",
+    "name": "Bienvenida con nombre de profesora",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CAR.004.png",
+    "image_sha256": "b1a52f989c2a078fe1d380a353ee2863096aa231313dd763da2315a9aa9a16bf"
+  },
+  {
+    "code": "FY.CAR.005",
+    "old_name": "",
+    "name": "Banderín con nombre de profesora",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CAR.005.png",
+    "image_sha256": "8f32ee31861568390eec609e97cb5091c9906773f66f4d788732d7ce4aa21d4c"
+  },
+  {
+    "code": "FY.CH.001",
+    "old_name": "Digestivo",
+    "name": "Digestivo",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.001.png",
+    "image_sha256": "814cd4d8d6f3418ac3129a6c2715436bfda93125c7b5f6fab3e163c785375785"
+  },
+  {
+    "code": "FY.CH.002",
+    "old_name": "Circulatorio",
+    "name": "Circulatorio",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.002.png",
+    "image_sha256": "b7cbbb08978a529744cd330eca20be51628edde02144e7b22f6318a13497f6b5"
+  },
+  {
+    "code": "FY.CH.003",
+    "old_name": "Endocrino",
+    "name": "Sistema urinario",
+    "status": "corrected",
+    "reason": "El rótulo Endocrino contradice los riñones, uréteres y vejiga visibles. Se corrige a Sistema urinario.",
+    "image": "FY.CH.003.png",
+    "image_sha256": "712b8a918eb2c96a26b617a947ed877e34aee1c1ea4a0d9f69dafe8eb432056c"
+  },
+  {
+    "code": "FY.CH.004",
+    "old_name": "Nervioso",
+    "name": "Nervioso",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.004.png",
+    "image_sha256": "67dc6a5c7e2252e5fe06395312660a7981497db5dfb87edda8dcf8554ff8adab"
+  },
+  {
+    "code": "FY.CH.005",
+    "old_name": "Respiratorio",
+    "name": "Respiratorio",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.005.png",
+    "image_sha256": "3c0d8b53b965a836e632ed762f89de6ab6fa7943330f4d10f58e6ba574140eea"
+  },
+  {
+    "code": "FY.CH.006",
+    "old_name": "Reproductor femenino",
+    "name": "Reproductor femenino",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.006.png",
+    "image_sha256": "a3969f9d55dac74c43ddbbc90c843f9291877f06e881b65a6a79831b6a04e638"
+  },
+  {
+    "code": "FY.CH.007",
+    "old_name": "Reproductor masculino",
+    "name": "Reproductor masculino",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.007.png",
+    "image_sha256": "0da9ba4ba118814ed29df20627d2908bbb8366b36006c3f7549249345443931d"
+  },
+  {
+    "code": "FY.CH.008",
+    "old_name": "",
+    "name": "Esqueleto humano",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CH.008.png",
+    "image_sha256": "c3cfaa23294651006df83bb7d7ed5dcc8a77d9e0aafd6624132f0c1b8786e502"
+  },
+  {
+    "code": "FY.CH.009",
+    "old_name": "",
+    "name": "Cerebro",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CH.009.png",
+    "image_sha256": "9146dcbfcdf47ea1b634c2c3a647d0a35f77d5c3f1381083d5c59c980337c00a"
+  },
+  {
+    "code": "FY.CH.010",
+    "old_name": "",
+    "name": "Corazón humano",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.CH.010.png",
+    "image_sha256": "ed05d342759437721a109f6e9e1ab5082c4694f5085de5ba3fce437264aa1439"
+  },
+  {
+    "code": "FY.CH.011",
+    "old_name": "Célula animal",
+    "name": "Célula animal",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.011.png",
+    "image_sha256": "ec5a38b55386c6448fcf0dd612fbeb9b98c938e38c212e403d37d6552809ddf0"
+  },
+  {
+    "code": "FY.CH.012",
+    "old_name": "Célula procariota",
+    "name": "Célula procariota",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.012.png",
+    "image_sha256": "89e42336785aeb1c7e0ec4c971459d4c9cf86d911978faf57c570439163b1f66"
+  },
+  {
+    "code": "FY.CH.013",
+    "old_name": "Célula vegetal",
+    "name": "Célula vegetal",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.CH.013.png",
+    "image_sha256": "08fdbb03089aec106739919643d669650849a49e2c204ce027113f98bb8fcf86"
+  },
+  {
+    "code": "FY.ER.001",
+    "old_name": "",
+    "name": "Pareja con tocados de plumas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ER.001.png",
+    "image_sha256": "3e873237a2ebd2c9f7f32dd916315673481abb2a668fe2ba71eaa32210cd20ad"
+  },
+  {
+    "code": "FY.ER.002",
+    "old_name": "",
+    "name": "Pareja con pañuelo y falda",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ER.002.png",
+    "image_sha256": "75ff50954afb044d43807a695dee2a60857f850a0c235ab9da9288eea6600617"
+  },
+  {
+    "code": "FY.ER.003",
+    "old_name": "",
+    "name": "Pareja con sombreros",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ER.003.png",
+    "image_sha256": "b57ea044f08932e01e143d4a75e61e4456d3a550bbfce144368b99a4dd0c16c2"
+  },
+  {
+    "code": "FY.ER.004",
+    "old_name": "",
+    "name": "Pareja con pañuelos amarillos",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ER.004.png",
+    "image_sha256": "bfd5b8b704ed28f5dbbedd300209d8db96b08644e6aad22940a4ff753d13c44e"
+  },
+  {
+    "code": "FY.IM.001",
+    "old_name": "",
+    "name": "Bajo eléctrico",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.IM.001.png",
+    "image_sha256": "286a3c4e92e169cc01f254182d2b60679d8a85a209caea768e76d9da31a457d9"
+  },
+  {
+    "code": "FY.IM.002",
+    "old_name": "",
+    "name": "Guitarra",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.IM.002.png",
+    "image_sha256": "62b8aaee8ee47833cf7b2c5f0c4192bd4780b4486c553607da786b505504bc27"
+  },
+  {
+    "code": "FY.IM.003",
+    "old_name": "",
+    "name": "Maracas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.IM.003.png",
+    "image_sha256": "03592c8694498322c442d659acfe1ccf43d701ae18954cc81a73e4fdd6b2c205"
+  },
+  {
+    "code": "FY.IM.004",
+    "old_name": "",
+    "name": "Saxofón",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.IM.004.png",
+    "image_sha256": "01cd4aff5b4bc58b01b53a34576b7cbe5c1cb225dd0f5484f734c30e63c3165a"
+  },
+  {
+    "code": "FY.IM.005",
+    "old_name": "",
+    "name": "Tambor",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.IM.005.png",
+    "image_sha256": "6df11e7c52be7493ca22df0edf6a7825e4012f4db55e1e3fc1d4117f3440f8f1"
+  },
+  {
+    "code": "FY.IM.006",
+    "old_name": "",
+    "name": "Violín",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.IM.006.png",
+    "image_sha256": "3fe1045fd12661184001442d77b76662008da89112e701b9f02a46397a8bd21c"
+  },
+  {
+    "code": "FY.IM.007",
+    "old_name": "",
+    "name": "Arpa",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.IM.007.png",
+    "image_sha256": "9596f8246e2eb62567c17d5fd4dde51d9bd376159985b10bace9ca20eb70f93d"
+  },
+  {
+    "code": "FY.NAV.001",
+    "old_name": "Melchor",
+    "name": "Melchor",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.NAV.001.png",
+    "image_sha256": "c9aab855b47463712eae70384cee84b92c8beb7c32d803e5715a58ad260c468b"
+  },
+  {
+    "code": "FY.NAV.002",
+    "old_name": "Baltazar",
+    "name": "Baltazar",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.NAV.002.png",
+    "image_sha256": "f90a6a27b86d93f5f3aab9f608bb091257a20d870866bf84695081d2d15dd7b5"
+  },
+  {
+    "code": "FY.NAV.003",
+    "old_name": "Gaspar",
+    "name": "Gaspar",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.NAV.003.png",
+    "image_sha256": "99f4ee741d98adfb31dacf06155b58696a83b86fd82efb0231029116e0114462"
+  },
+  {
+    "code": "FY.NAV.004",
+    "old_name": "Bota navideña",
+    "name": "Bota navideña",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.NAV.004.png",
+    "image_sha256": "235e3925b94218cd599db45132fd6a5eb67bd1f5f740c3a5987f76b729002175"
+  },
+  {
+    "code": "FY.NAV.005",
+    "old_name": "Reno navideño",
+    "name": "Reno navideño",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.NAV.005.png",
+    "image_sha256": "8e43e839cad46d453f4167c871dce59133bceda3e56d02bf1bdfeb211a42c3af"
+  },
+  {
+    "code": "FY.NAV.006",
+    "old_name": "Muñeco de nieve",
+    "name": "Muñeco de nieve",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.NAV.006.png",
+    "image_sha256": "a1e48ce970291a49e6f74b80f1c24ba52247f0d4dffc26f0326b0ec837387cb6"
+  },
+  {
+    "code": "FY.ÑA.001",
+    "old_name": "",
+    "name": "Niña con lápiz y manzana",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.001.png",
+    "image_sha256": "73aeff50ec646e69a18169e64dd74aed6edd9e7c9588035feeff227563ef976d"
+  },
+  {
+    "code": "FY.ÑA.002",
+    "old_name": "",
+    "name": "Niña con libro azul",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.002.png",
+    "image_sha256": "1bc64c7ff156dda20f0170af0936e30ffa48010085c8fb503fcf1754a8f67ba0"
+  },
+  {
+    "code": "FY.ÑA.003",
+    "old_name": "",
+    "name": "Niña con lápiz y cuaderno",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.003.png",
+    "image_sha256": "cf032b5b231a7a52eda92dbab5c5e7015a89e40e2400ae00975423197985e713"
+  },
+  {
+    "code": "FY.ÑA.004",
+    "old_name": "",
+    "name": "Niña con vestido rosa",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.004.png",
+    "image_sha256": "180af67613180e4ddc409d6c1e159e77a40a7aabc20b6b96c6fb7b517b108eb4"
+  },
+  {
+    "code": "FY.ÑA.005",
+    "old_name": "",
+    "name": "Niña sentada leyendo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.005.png",
+    "image_sha256": "e3c46754a6b178dcadc1f786d3580066c17c13390ea9dce44dbe858b2a99a2c9"
+  },
+  {
+    "code": "FY.ÑA.006",
+    "old_name": "",
+    "name": "Niña abrazando un lápiz",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.006.png",
+    "image_sha256": "8dd08e99cfd4b8058b08d11a6417566088694b5bb7558c9deb9eef5e18c60d72"
+  },
+  {
+    "code": "FY.ÑA.007",
+    "old_name": "",
+    "name": "Niña escribiendo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.007.png",
+    "image_sha256": "7e99ea77d618a6b3f53fd026674dfcd1615c0803581df449c91852186c319a84"
+  },
+  {
+    "code": "FY.ÑA.008",
+    "old_name": "",
+    "name": "Niña con delantal y manzana",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.008.png",
+    "image_sha256": "0f2ba95c5ef3e217d368431073b43c77dba7e9275fab892584b12d9b71ba33a5"
+  },
+  {
+    "code": "FY.ÑA.009",
+    "old_name": "",
+    "name": "Niña con brazos abiertos",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.009.png",
+    "image_sha256": "6e9e10a5c213b88b69f12e549e2cddfa75205a2230eec0653bd96cdc0ce9db80"
+  },
+  {
+    "code": "FY.ÑA.010",
+    "old_name": "",
+    "name": "Niña con libros",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.010.png",
+    "image_sha256": "49ff7aa929d590cfa07b6bb41e6d10acde92dc1762bebefa8a6dfdc837ab2b38"
+  },
+  {
+    "code": "FY.ÑA.012",
+    "old_name": "",
+    "name": "Niña con libro rojo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.012.png",
+    "image_sha256": "a4a234b235960448f9060de805dba6d84a95ea7f93fe532fe9adc365fcfa6d76"
+  },
+  {
+    "code": "FY.ÑA.013",
+    "old_name": "",
+    "name": "Niña con vestido y diadema",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.013.png",
+    "image_sha256": "5e60e2d52913d2dc806b46e4ea42dee4ad24f58e0bfca98a6ffddd65b996ee59"
+  },
+  {
+    "code": "FY.ÑA.014",
+    "old_name": "",
+    "name": "Niña graduada",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.014.png",
+    "image_sha256": "fe883ec2e25599c36f39c760b4f201a6958e9a0f4aea3d8be456694ac799646c"
+  },
+  {
+    "code": "FY.ÑA.015",
+    "old_name": "",
+    "name": "Niña con cuaderno y lazo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.015.png",
+    "image_sha256": "6108e0b9bd4e243980b8d584164f329b56d8821cc7d8abcebceee020526dcf99"
+  },
+  {
+    "code": "FY.ÑA.016",
+    "old_name": "",
+    "name": "Niña leyendo un libro rojo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.016.png",
+    "image_sha256": "3083c5c4fdcf53e7b85525205ba1d000684d4c1b6217ec7164f720f60541b4d8"
+  },
+  {
+    "code": "FY.ÑA.017",
+    "old_name": "",
+    "name": "Niña con cuerda de saltar",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.017.png",
+    "image_sha256": "144ec74ea16a8759e5eda3e85b41ddf20e5281875980375ac0747cd26b294ae2"
+  },
+  {
+    "code": "FY.ÑA.018",
+    "old_name": "",
+    "name": "Niña con overol y lápiz",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑA.018.png",
+    "image_sha256": "c93ab6e2a27408d7f1f3b73be92ea60fe5105ea5984807ac3e71a21eb830dcd5"
+  },
+  {
+    "code": "FY.ÑO.001",
+    "old_name": "",
+    "name": "Niño con camiseta roja",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.001.png",
+    "image_sha256": "476f89bc1554233de17219ac59d2cf6b5ec94a06a25df365085088d59f0253f6"
+  },
+  {
+    "code": "FY.ÑO.002",
+    "old_name": "",
+    "name": "Niño con libro amarillo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.002.png",
+    "image_sha256": "1fee27550032e83a14434a1947911a17177cb1bb4ac776de3d6d54805bdbaa35"
+  },
+  {
+    "code": "FY.ÑO.003",
+    "old_name": "",
+    "name": "Niño con libro en la mano",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.003.png",
+    "image_sha256": "2593070c07284175835cbf8131a4c035300f7382d719a76fdb03d92b383bc730"
+  },
+  {
+    "code": "FY.ÑO.004",
+    "old_name": "",
+    "name": "Niño en patineta",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.004.png",
+    "image_sha256": "b64c423a5f2017b197d7f69b25e5b71cc99ef7fdab5a99319ba52e2566f03c94"
+  },
+  {
+    "code": "FY.ÑO.005",
+    "old_name": "",
+    "name": "Niño saludando",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.005.png",
+    "image_sha256": "d600455a4f70753e9a2dcb00a6bc93dc124c20e28d0a78bfb96a5f875337ae80"
+  },
+  {
+    "code": "FY.ÑO.006",
+    "old_name": "",
+    "name": "Niño con overol azul",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.006.png",
+    "image_sha256": "13ea9ca9ca9af54a44f77f047932c1221a3482a71dee33b27031711d86968fb5"
+  },
+  {
+    "code": "FY.ÑO.007",
+    "old_name": "",
+    "name": "Niño leyendo un libro verde",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.007.png",
+    "image_sha256": "810202f7e4fcad56bf94f5aba7ad0e0abe9e7125b8738e5c1d60c0dd6b842053"
+  },
+  {
+    "code": "FY.ÑO.008",
+    "old_name": "",
+    "name": "Niño con mochila",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.008.png",
+    "image_sha256": "387e1c99e188da1b05c05ca65e3cfb6f2744de2d32a45ee05ec7fb1502e53491"
+  },
+  {
+    "code": "FY.ÑO.009",
+    "old_name": "",
+    "name": "Niño graduado",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.009.png",
+    "image_sha256": "3ce8fa781e07a96201f039ff9c0deb90eab704f8335c6965b3c060c6c486b608"
+  },
+  {
+    "code": "FY.ÑO.010",
+    "old_name": "",
+    "name": "Niño con balón de fútbol",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.010.png",
+    "image_sha256": "a409c4afbcc009be27b03fcfface5ca171eb2129a2e4f690e353fa33b9a7c4f0"
+  },
+  {
+    "code": "FY.ÑO.011",
+    "old_name": "",
+    "name": "Niño con lápiz",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.ÑO.011.png",
+    "image_sha256": "33a92737982b6e5f15902c740f09f8c711583a692d8206940580604ec97187f6"
+  },
+  {
+    "code": "FY.OP.001",
+    "old_name": "",
+    "name": "Bombero",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.001.png",
+    "image_sha256": "13d99fae9ef5e9f628c9014aae07df94220a95d1b3be6d0b5b7e6b376432b66c"
+  },
+  {
+    "code": "FY.OP.002",
+    "old_name": "",
+    "name": "Mecánico",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.002.png",
+    "image_sha256": "677aac8d138bc8bb4624b4f3e5d52eaafec61cdb21ec68692ded187c7e83aaf0"
+  },
+  {
+    "code": "FY.OP.003",
+    "old_name": "",
+    "name": "Policía con uniforme verde",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.003.png",
+    "image_sha256": "36e869bdd5ea36fa586aa82fc08a52370a180be03339169be264d8f0c0b947d6"
+  },
+  {
+    "code": "FY.OP.004",
+    "old_name": "",
+    "name": "Enfermera con uniforme blanco",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.004.png",
+    "image_sha256": "d90e0e78ed8d872764a90a1d38330c7938322b5222131b079bcde31448dbaa69"
+  },
+  {
+    "code": "FY.OP.005",
+    "old_name": "",
+    "name": "Enfermera con uniforme azul",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.005.png",
+    "image_sha256": "cfe41d91828edbbb90816d3a6a87769ddc3e995d96d7b38f004a0c036766a60b"
+  },
+  {
+    "code": "FY.OP.006",
+    "old_name": "Maestra",
+    "name": "Maestra",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.OP.006.png",
+    "image_sha256": "fc6a242dc8d00a9ab1021d63ee4c2e20110f327ac42b4f8e4675b9b9bfcc3a9a"
+  },
+  {
+    "code": "FY.OP.007",
+    "old_name": "",
+    "name": "Policía con radio",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.007.png",
+    "image_sha256": "c6b20386185dc12c866b89d87400340b855417e62f1e7b044157862cdaef906c"
+  },
+  {
+    "code": "FY.OP.008",
+    "old_name": "",
+    "name": "Cocinero",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.008.png",
+    "image_sha256": "b53a465175ee7a11c0a204cbcd459ee34daff3be896de8408c2f1e72472116d3"
+  },
+  {
+    "code": "FY.OP.009",
+    "old_name": "",
+    "name": "Carpintero",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.OP.009.png",
+    "image_sha256": "b991e1f0c451db59c6f46181d6519da6d24e92a41b93a3596839fe67d6905830"
+  },
+  {
+    "code": "FY.PAQ.001",
+    "old_name": "",
+    "name": "Paquete de útiles escolares",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PAQ.001.png",
+    "image_sha256": "80afdf1e3fae97c073c643aa1b2f9536120d230602a1257624a06030f36d3cfd"
+  },
+  {
+    "code": "FY.PAQ.002",
+    "old_name": "",
+    "name": "Paquete de estrellas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PAQ.002.png",
+    "image_sha256": "f70645d73f2bf460f1490668c4454a22cefe49a9c274b5207dff3a4b64fb07d6"
+  },
+  {
+    "code": "FY.PAQ.003",
+    "old_name": "",
+    "name": "Paquete de los cinco sentidos",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PAQ.003.png",
+    "image_sha256": "9f045e8c891878a3c9777d37cc6b1b694661e8bb4ee7e7068e833b4998d7a7a7"
+  },
+  {
+    "code": "FY.PAQ.004",
+    "old_name": "",
+    "name": "Paquete de corazones",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PAQ.004.png",
+    "image_sha256": "9d40aecfe3753e65a4923791267dd8e08fa80ec81adf4b514bea4caa83a261d7"
+  },
+  {
+    "code": "FY.PAQ.005",
+    "old_name": "",
+    "name": "Paquete de flores",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PAQ.005.png",
+    "image_sha256": "08975b478c5e853dea3fd143a0a1bbc20a6f1762cbc84b66b841727134a288cf"
+  },
+  {
+    "code": "FY.PAQ.006",
+    "old_name": "",
+    "name": "Paquete de huellas y huesos",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PAQ.006.png",
+    "image_sha256": "5f18ee795e231ab2e71c81b41f0e5d40e6980fd42ed4bc87c22f1aeaeef4aca1"
+  },
+  {
+    "code": "FY.PE.001",
+    "old_name": "",
+    "name": "Pez azul y amarillo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PE.001.png",
+    "image_sha256": "84c0f3df459954b5043ed6e87ca5986ff7a302dd2cac8a3e26473a93d07ea81d"
+  },
+  {
+    "code": "FY.PE.002",
+    "old_name": "",
+    "name": "Pez verde y rosa",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PE.002.png",
+    "image_sha256": "b2bac66e8dc6ea480a7153cee65a5a712202da441e4200b14f676493d16b9003"
+  },
+  {
+    "code": "FY.PE.003",
+    "old_name": "",
+    "name": "Pez naranja y amarillo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PE.003.png",
+    "image_sha256": "0939e5076aca1146e8729c39147cd6c314c50d24c82b88b952bee063f800055d"
+  },
+  {
+    "code": "FY.PE.004",
+    "old_name": "",
+    "name": "Pez amarillo y verde",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PE.004.png",
+    "image_sha256": "f0bc4618b24b8955af5bdbc844bba73489a8659d970a74120e58f44e58f701ec"
+  },
+  {
+    "code": "FY.PE.005",
+    "old_name": "",
+    "name": "Pez azul",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PE.005.png",
+    "image_sha256": "a2336ed57f382b09db4ef8ed871f4b1441d3b08cdd91ae666b0990358bfd682e"
+  },
+  {
+    "code": "FY.PE.006",
+    "old_name": "",
+    "name": "Pez naranja con franjas blancas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PE.006.png",
+    "image_sha256": "b374ddb3826d7c1c9eb4453112cc460124eaabfa910f6cfcdd44c843f7755151"
+  },
+  {
+    "code": "FY.PER.001",
+    "old_name": "",
+    "name": "Oso con vaso",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.001.png",
+    "image_sha256": "2b629ad611180c865b12d12ea1e376fcbbf2a1c91d8c3e5fb7512e3ab2bb9e1e"
+  },
+  {
+    "code": "FY.PER.002",
+    "old_name": "",
+    "name": "Criatura azul de orejas grandes",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.002.png",
+    "image_sha256": "0d5d41ed82e2816eb431c330e8946874ecfb694eb91c2f771f289de9edfc2db2"
+  },
+  {
+    "code": "FY.PER.003",
+    "old_name": "",
+    "name": "Erizo azul",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.003.png",
+    "image_sha256": "dc5cddb9bec33b5abf384f70ae09fc23bc1944782f4167b86acf13adafbe614a"
+  },
+  {
+    "code": "FY.PER.004",
+    "old_name": "",
+    "name": "Superhéroe con telarañas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.004.png",
+    "image_sha256": "58350a2240124bfac6b376dc50edce6caad4d769dcd2de7bb6fa2e821b3d6c44"
+  },
+  {
+    "code": "FY.PER.005",
+    "old_name": "",
+    "name": "Auto de carreras rojo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.005.png",
+    "image_sha256": "3f741d96c0f39d5fda7ceca931551a3da1e800776f1c381096cab921aa92653b"
+  },
+  {
+    "code": "FY.PER.006",
+    "old_name": "",
+    "name": "Perro con libro",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.006.png",
+    "image_sha256": "9bb09b768012fe0b8e4708a015318be8937c7616ae1de7a9533e3c4218dd5c45"
+  },
+  {
+    "code": "FY.PER.007",
+    "old_name": "",
+    "name": "Niño con traje rojo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.007.png",
+    "image_sha256": "c28d6135a8d618607adf4cb02b488bf33e9b3742a49f1c7a847d954440f388e4"
+  },
+  {
+    "code": "FY.PER.008",
+    "old_name": "",
+    "name": "Gatita con flor",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.008.png",
+    "image_sha256": "745d44b21f698c4f37c5697db5dac6594af66cbe97f03e11fbaa5446101a960a"
+  },
+  {
+    "code": "FY.PER.009",
+    "old_name": "",
+    "name": "Hada con vestido verde",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.009.png",
+    "image_sha256": "61121bbfc25bb52ea0e00d2a28f111c60c4f1dcca948fe01cc3008a487968a8d"
+  },
+  {
+    "code": "FY.PER.010",
+    "old_name": "",
+    "name": "Perro bombero con cartel",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.010.png",
+    "image_sha256": "66818a07d708fbcd941815ba523fecf78d5124e6161419d402d515b5b5080f13"
+  },
+  {
+    "code": "FY.PER.011",
+    "old_name": "",
+    "name": "Perro policía con cartel",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.011.png",
+    "image_sha256": "cc18abc8349aa2c4d02c4f884a7e8e44a3634ede53e28314e94859241903e327"
+  },
+  {
+    "code": "FY.PER.012",
+    "old_name": "",
+    "name": "Perro constructor con cartel",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.012.png",
+    "image_sha256": "81b3947d14e3099f8e3fc1ed9945e08716ff13e8a93071f0321332c43c62377a"
+  },
+  {
+    "code": "FY.PER.013",
+    "old_name": "",
+    "name": "Ratona con lazo rojo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.013.png",
+    "image_sha256": "4aa7559a06b09e534cbdfcf516bc921c102d47d0fa71933cd2fac062c69a6185"
+  },
+  {
+    "code": "FY.PER.014",
+    "old_name": "",
+    "name": "Cara de perro policía",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.014.png",
+    "image_sha256": "4162cc8f7517f6a18180b0259c1980c1569c331af2fe55203058fc87151a7bef"
+  },
+  {
+    "code": "FY.PER.015",
+    "old_name": "",
+    "name": "Cara de perro bombero",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.015.png",
+    "image_sha256": "09793e649c31b3b5b5ec3a2f49cbaef70bbc36bf8252b4df4bfe623185ecb263"
+  },
+  {
+    "code": "FY.PER.016",
+    "old_name": "",
+    "name": "Cara de perro constructor",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.PER.016.png",
+    "image_sha256": "5776ab3955ede09248f570193e5b7fb2dde946b3facfa5f60bffb7211e28d941"
+  },
+  {
+    "code": "FY.RE.001",
+    "old_name": "",
+    "name": "Sacerdote",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.001.png",
+    "image_sha256": "2c1123309582b81f4f8ea6980134242190c57b0257d79139317a695f1310d8c8"
+  },
+  {
+    "code": "FY.RE.002",
+    "old_name": "",
+    "name": "Ángel con alas rosas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.002.png",
+    "image_sha256": "f4cb93e980b2cdee40521c2d8fe79543d4a0ee25c1b3ce95d0d54afdcbf76ade"
+  },
+  {
+    "code": "FY.RE.003",
+    "old_name": "",
+    "name": "Ángel con alas azules",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.003.png",
+    "image_sha256": "c59d31967828439b5a892801be8ac09e65ce6aee5b0defe62b5a8ef84e6a8db0"
+  },
+  {
+    "code": "FY.RE.004",
+    "old_name": "",
+    "name": "Hombre con túnica",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.004.png",
+    "image_sha256": "217f83f9e3aa083958dfa68ed61dc225c59f2bde86f8d17696a450cfca6a9d3c"
+  },
+  {
+    "code": "FY.RE.005",
+    "old_name": "",
+    "name": "Monja con rosario",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.005.png",
+    "image_sha256": "e955e79e002e0531131f888f3373af53c289ca2c4e8d16589d55e6ff38ec01bc"
+  },
+  {
+    "code": "FY.RE.006",
+    "old_name": "",
+    "name": "Virgen con manto verde",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.006.png",
+    "image_sha256": "138052ceb8af4b0a6f804293fe670b01b0fa506f4a9d5ea37a141311741ed885"
+  },
+  {
+    "code": "FY.RE.007",
+    "old_name": "Virgen de la Medalla Milagrosa",
+    "name": "Virgen de la Medalla Milagrosa",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.RE.007.png",
+    "image_sha256": "740204445a55eff97a442a4a57b8212c72307db222c73ce3767784dd29a02863"
+  },
+  {
+    "code": "FY.RE.008",
+    "old_name": "",
+    "name": "Virgen con manto azul",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.008.png",
+    "image_sha256": "afabff2752d0bd1ccffb51397fd7cc07a5359e3f43f8629b719bcc682ac61825"
+  },
+  {
+    "code": "FY.RE.009",
+    "old_name": "",
+    "name": "Bebé en pesebre",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.RE.009.png",
+    "image_sha256": "14395ee32765cf8851863db9c5538b77d7a62241a24883722630d8772f68f302"
+  },
+  {
+    "code": "FY.RE.010",
+    "old_name": "María",
+    "name": "María",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.RE.010.png",
+    "image_sha256": "a1bb30e3f030d5272ef3351110cc892d0df844b2e207ebb1cc21bd9fa5696b8c"
+  },
+  {
+    "code": "FY.RE.011",
+    "old_name": "José",
+    "name": "José",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.RE.011.png",
+    "image_sha256": "e85575e159185e97c0686b5af908b1f059e06fd1050b1c23d5bd355d2c20141b"
+  },
+  {
+    "code": "FY.TOP.001",
+    "old_name": "",
+    "name": "Topper Felicitaciones",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.TOP.001.png",
+    "image_sha256": "d5a8eb33add784cb4017c22a052b48fa503ed958e8379b31730d7bf770dbf391"
+  },
+  {
+    "code": "FY.TOP.002",
+    "old_name": "",
+    "name": "Topper Feliz Día Mamá",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.TOP.002.png",
+    "image_sha256": "dccb4fd6e3c1260f2c8303426210db401ce434b741620ecebcd2f376922f8b9f"
+  },
+  {
+    "code": "FY.TOP.003",
+    "old_name": "",
+    "name": "Topper Feliz Cumple",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.TOP.003.png",
+    "image_sha256": "6afbe59c5d146afd9b87a6c33db394dcfc4de48ecebb2367fd9031fc7d269298"
+  },
+  {
+    "code": "FY.TOP.004",
+    "old_name": "",
+    "name": "Topper Feliz Día",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.TOP.004.png",
+    "image_sha256": "c79c931bb73ddb27f69c6940030d7df95bf30db0a0e2973471ab39b10466a068"
+  },
+  {
+    "code": "FY.VAR.001",
+    "old_name": "",
+    "name": "Mazo de juez",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.001.png",
+    "image_sha256": "d93e043826434f87204034b3f9b0da61fbe6a157a6a21a16bea47437eaf54111"
+  },
+  {
+    "code": "FY.VAR.002",
+    "old_name": "",
+    "name": "Frasco con pastillas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.002.png",
+    "image_sha256": "77749d77d315ac868021cde9802e1dfdc15d458762ca7b59d241edfc3b95fa83"
+  },
+  {
+    "code": "FY.VAR.003",
+    "old_name": "Identificativos",
+    "name": "Identificativos",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.VAR.003.png",
+    "image_sha256": "74a2a5b3724bf06f895170752db554e1c859bea239abad348618e022410143b0"
+  },
+  {
+    "code": "FY.VAR.004",
+    "old_name": "",
+    "name": "Volcán",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.004.png",
+    "image_sha256": "0ce30c5230520fb5007782a22e355a2fd71d4c9233c2ab950338867cac24af47"
+  },
+  {
+    "code": "FY.VAR.005",
+    "old_name": "",
+    "name": "Estetoscopio",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.005.png",
+    "image_sha256": "fffc6283ba9e36bde881917748b1a84bfc04223fedc0dae18672c51409c8ce88"
+  },
+  {
+    "code": "FY.VAR.006",
+    "old_name": "",
+    "name": "Planeta Tierra en una mano",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.006.png",
+    "image_sha256": "48a0b242f75def0cfe85d40558a453a11e04b5575808a726449c571c0c7b36b5"
+  },
+  {
+    "code": "FY.VAR.007",
+    "old_name": "",
+    "name": "Esposas",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.007.png",
+    "image_sha256": "b2f6b002d899a9943a6a8079934b3573fbae59e823bd78087ef30f2bb95df2ed"
+  },
+  {
+    "code": "FY.VAR.008",
+    "old_name": "Ciclo del agua",
+    "name": "Ciclo del agua",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.VAR.008.png",
+    "image_sha256": "ee8f77d3880c33d35ee9e8a1133fa1c237c4c6811688fadde8a9147d810e0184"
+  },
+  {
+    "code": "FY.VAR.009",
+    "old_name": "",
+    "name": "Chaleco de policía",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.009.png",
+    "image_sha256": "bfb4e63bdaa1599b395db928c8f543ea16a6196a1998413cea594dfe19c60b4f"
+  },
+  {
+    "code": "FY.VAR.010",
+    "old_name": "",
+    "name": "Botiquín",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.010.png",
+    "image_sha256": "5cff8db76b4781fd82b6b4e8e944a4e58911810ed60ce16d38a5937cc85778da"
+  },
+  {
+    "code": "FY.VAR.011",
+    "old_name": "",
+    "name": "Bandera tricolor",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.011.png",
+    "image_sha256": "dcc23b2dfebab4c4c6aef8936bc3423d1b78a6f1e9e22466fa4bb33996001278"
+  },
+  {
+    "code": "FY.VAR.012",
+    "old_name": "",
+    "name": "Animal con cartel Feliz Día",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.012.png",
+    "image_sha256": "46160877e90f2b241acd149930b903e20b4fe392a34da2fee86b799e3f1b2752"
+  },
+  {
+    "code": "FY.VAR.013",
+    "old_name": "",
+    "name": "Iglesia",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.013.png",
+    "image_sha256": "811becc8b0158693870e1691ccc4aab81c327671848c6d92c5003e3963071297"
+  },
+  {
+    "code": "FY.VAR.014",
+    "old_name": "",
+    "name": "Mapa del Ecuador",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.014.png",
+    "image_sha256": "01e9d2e117e1505c731e00fbbe00b13c5a3597a751dd563ec456a730c3539e36"
+  },
+  {
+    "code": "FY.VAR.015",
+    "old_name": "",
+    "name": "Casa",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.015.png",
+    "image_sha256": "ee788d270d272287e2eba283f816d52e9f3f8fc9fecfc90c969d8938a1f84117"
+  },
+  {
+    "code": "FY.VAR.016",
+    "old_name": "Identificativos",
+    "name": "Identificativos",
+    "status": "retained",
+    "reason": "Nombre previo compatible con la imagen.",
+    "image": "FY.VAR.016.png",
+    "image_sha256": "c669c79ad74ab8e2b0adcac43f465378341043b10838e732c783e0bf7fbefd1d"
+  },
+  {
+    "code": "FY.VAR.017",
+    "old_name": "",
+    "name": "Cerdo con órganos internos",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.017.png",
+    "image_sha256": "87f7db1c241f7c4affeda201a2481fe9840806fe50128cfe39f8edabe52d0ec6"
+  },
+  {
+    "code": "FY.VAR.018",
+    "old_name": "",
+    "name": "Anatomía interna del cerdo",
+    "status": "named",
+    "reason": "Nombre descriptivo de la figura y sus elementos visibles; sin atribución de marca, etnia ni personaje.",
+    "image": "FY.VAR.018.png",
+    "image_sha256": "9d0abbb32389fe783e299adf53bd1d38f27cbe4d24ede910190b8ed8ade791d6"
+  },
+  {
+    "code": "FY.VAR.019",
+    "old_name": "",
+    "name": "",
+    "status": "pending",
+    "reason": "Se ve un corte anatómico parcial, pero no se distinguen con suficiente certeza el animal ni el sistema representado. Se conserva el código.",
+    "image": "FY.VAR.019.png",
+    "image_sha256": "daaca653fc9a81378eb5eb9b1dec5746e51d20d79102bec7914856d2f86db695"
+  }
+]

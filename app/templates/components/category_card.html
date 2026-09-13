@@ -1,0 +1,5 @@
+<a class="category-card" href="{{ url_for('catalog.catalog', categoria=category.slug) }}">
+<span class="category-number">{{ '%02d'|format(category_index) }}</span>
+<h3>{{ category.name }}</h3>
+<span class="category-arrow" aria-hidden="true">↗</span>
+</a>

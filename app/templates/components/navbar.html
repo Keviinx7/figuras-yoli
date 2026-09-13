@@ -1,0 +1,25 @@
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="{{ url_for('main.index') }}" aria-label="Yoli Figuras de Fomix, inicio">
+<span class="brand-symbol" aria-hidden="true">y<span>•</span>
+</span>
+<span>
+<strong>Yoli</strong>
+<small>FIGURAS DE FOMIX</small>
+</span>
+</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navigation">Menú ☰</button>
+    <nav id="navigation" aria-label="Navegación principal">
+      <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}aria-current="page"{% endif %}>Inicio</a>
+      <a href="{{ url_for('catalog.catalog') }}" {% if request.endpoint == 'catalog.catalog' %}aria-current="page"{% endif %}>Catálogo</a>
+      <a href="{{ url_for('catalog.categories') }}">Categorías</a>
+      <a href="{{ url_for('main.contact') }}">Contacto</a>
+    </nav>
+    <div class="nav-actions">
+<a href="{{ url_for('main.favorites') }}" aria-label="Favoritos">♡ <span class="action-label">Favoritos</span> <span data-favorites-count class="count">0</span>
+</a>
+<a class="bag-link" href="{{ url_for('orders.cart') }}">Mi carrito <span data-cart-count class="count">0</span>
+</a>
+</div>
+  </div>
+</header>

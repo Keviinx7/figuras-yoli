@@ -1,0 +1,15 @@
+{
+  "reviewed": 173,
+  "new_names": 149,
+  "corrected_names": 1,
+  "retained_names": 22,
+  "pending": [
+    "FY.VAR.019"
+  ],
+  "products": 173,
+  "named_products": 172,
+  "integrity": "ok",
+  "unrelated_database_fields": "unchanged",
+  "csv_and_sqlite": "identical",
+  "uncoded_designs": 9
+}

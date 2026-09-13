@@ -1,0 +1,18 @@
+<article class="product-card">
+  <div class="product-visual">
+<a href="{{ url_for('catalog.detail', slug=product.slug) }}">
+<img src="{{ url_for('static', filename=product.image_path) }}" data-placeholder="{{ url_for('static', filename='img/placeholder.svg') }}" alt="{{ product.images[0].alt_text or product.display_name if product.images else 'Fotografía pendiente: ' ~ product.display_name }}" width="640" height="480" loading="lazy">
+</a>
+<button class="favorite-button" type="button" data-favorite="{{ product.code }}" aria-label="Guardar {{ product.code }} en favoritos" aria-pressed="false">♡</button>
+</div>
+  <div class="product-info">
+<span class="eyebrow">{{ product.category.name }}</span>
+<h3>
+<a href="{{ url_for('catalog.detail', slug=product.slug) }}">{{ product.display_name }}</a>
+</h3>
+<p class="product-code">Código: {{ product.code }}</p>
+<p class="price-note">Precio por confirmar</p>
+<button class="button button-outline full-width" type="button" data-add-cart="{{ product.code }}">Agregar al carrito <span aria-hidden="true">+</span>
+</button>
+</div>
+</article>

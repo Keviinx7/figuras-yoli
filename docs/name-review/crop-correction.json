@@ -1,0 +1,41 @@
+{
+  "before": {
+    "page": 26,
+    "slot": 3,
+    "printed_code": "FY.VAR. 003",
+    "code": "FY.VAR.003",
+    "image": "FY.VAR.003.png",
+    "crop_pixels": [
+      1133,
+      403,
+      1697,
+      941
+    ],
+    "source_pixels": [
+      1697,
+      2400
+    ],
+    "image_sha256": "c424180d42a0ac32d0ecf8c070811d514b5042a9f1825980a4f37e1913df1af9",
+    "status": "importable"
+  },
+  "after": {
+    "page": 26,
+    "slot": 3,
+    "printed_code": "FY.VAR. 003",
+    "code": "FY.VAR.003",
+    "image": "FY.VAR.003.png",
+    "crop_pixels": [
+      1095,
+      403,
+      1697,
+      941
+    ],
+    "source_pixels": [
+      1697,
+      2400
+    ],
+    "image_sha256": "74a2a5b3724bf06f895170752db554e1c859bea239abad348618e022410143b0",
+    "status": "importable"
+  },
+  "reason": "El recorte anterior cortaba el oso izquierdo. Se amplía desde el render ya existente de la página 26; no se reextrae el PDF."
+}
