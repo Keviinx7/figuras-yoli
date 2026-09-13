@@ -1,9 +1,8 @@
 """Current production inputs; document snapshots never call these on read."""
 from copy import deepcopy
-from decimal import Decimal
 from app.extensions import db
 from app.models.commercial import Material
-from app.services.costing import calculate_cost, quantize_money, precise
+from app.services.costing import calculate_cost, commercial_summary
 
 
 def normalized_name(value):
@@ -29,15 +28,8 @@ def recipe_data(recipe):
         profit_method=recipe.profit_method,profit_percentage=recipe.profit_percentage,surcharge=recipe.surcharge,discount='0',quantity='1'))
 
 
-@precise
 def recipe_preview(data,tax):
-    result=calculate_cost(data,tax.percentage if tax else None)
-    price=quantize_money(result['unit_price'])
-    discount=quantize_money(result['discount'])
-    if discount>price*result['quantity']: raise ValueError('El descuento supera el subtotal comercial redondeado.')
-    subtotal=quantize_money(price*result['quantity']-discount)
-    iva=quantize_money(subtotal*result['tax_percentage']/Decimal('100')) if result['tax_percentage'] is not None else None
-    return dict(cost=result['production_cost'],price=price,subtotal=subtotal,tax=iva,total=subtotal+(iva or Decimal('0')))
+    return commercial_summary(calculate_cost(data,tax.percentage if tax else None))
 
 
 def canonical_unit(value):

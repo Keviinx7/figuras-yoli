@@ -4,7 +4,7 @@ from app.extensions import db
 from app.models import Product
 from app.models.commercial import Material,ProductCostRecipe,ProductCostMaterial,CostEstimate
 from app.services.commercial import roles_required,settings,record,commit
-from app.services.costing import calculate_cost,decimal_value,text_value,json_decimals
+from app.services.costing import calculate_cost,commercial_summary,decimal_value,text_value,json_decimals
 from app.services.production import recipe_data, resolve_materials, recipe_preview, normalized_name
 from . import bp
 
@@ -41,7 +41,7 @@ def calculator():
     if request.method=='POST':
         data=cost_form_data()
         result=calculate_cost(data,tax.percentage if tax else None)
-        commercial=recipe_preview(data,tax)
+        commercial=commercial_summary(result)
         product_id=request.form.get('product_id',type=int)
         if product_id: db.get_or_404(Product,product_id)
         size=text_value(request.form.get('requested_size',''),'Tamaño',120)

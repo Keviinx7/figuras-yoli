@@ -67,6 +67,20 @@ def quantize_money(value):
         return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
 
+@precise
+def commercial_summary(result):
+    """Convert an internal cost result to visible commercial amounts without mutating it."""
+    price=quantize_money(result['unit_price'])
+    discount=quantize_money(result['discount'])
+    if discount>price*result['quantity']:
+        raise ValueError('El descuento supera el subtotal comercial redondeado.')
+    subtotal=quantize_money(price*result['quantity']-discount)
+    rate=result['tax_percentage']
+    tax=quantize_money(subtotal*rate/HUNDRED) if rate is not None else None
+    return dict(cost=result['production_cost'],price=price,discount=discount,
+                subtotal=subtotal,tax=tax,total=quantize_money(subtotal+(tax or ZERO)))
+
+
 def json_decimals(value):
     if isinstance(value, Decimal):
         return format(value, 'f')

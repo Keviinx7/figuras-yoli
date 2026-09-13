@@ -14,7 +14,7 @@ from app.models import Product,Category
 from app.models.commercial import (User,Customer,Quote,Invoice,NumberSequence,Material,ProductCostRecipe,
                                   ProductCostMaterial,CostEstimate,AuditEvent,BusinessSettings,TaxSetting)
 from app.services.commercial import initialize_settings
-from app.services.costing import calculate_cost,decimal_value
+from app.services.costing import calculate_cost,commercial_summary,decimal_value
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -33,6 +33,23 @@ class DecimalTests(unittest.TestCase):
         self.assertEqual(result['unit_price'],Decimal('2.880'))
         self.assertEqual(result['tax'],Decimal('0.288'))
         self.assertEqual(result['total'],Decimal('3.168'))
+
+    def test_commercial_half_cent_preserves_internal_precision(self):
+        data=self.data()
+        data.update(materials=[dict(name='Prueba',unit='hoja',quantity='0.5',unit_cost='0.75')],
+                    indirects=[],labor_time='0.75',labor_unit='hours',hourly_cost='0.25',profit_percentage='100')
+        internal=calculate_cost(data,'15')
+        before=internal.copy()
+        commercial=commercial_summary(internal)
+        self.assertEqual(internal['materials_cost'],Decimal('0.375'))
+        self.assertEqual(internal['labor_cost'],Decimal('0.1875'))
+        self.assertEqual(internal['production_cost'],Decimal('0.5625'))
+        self.assertEqual(internal['unit_price'],Decimal('1.125'))
+        self.assertEqual(internal['total'],Decimal('1.29375'))
+        self.assertEqual(internal,before)
+        self.assertEqual([commercial[k] for k in ('price','subtotal','tax','total')],
+                         list(map(Decimal,['1.13','1.13','0.17','1.30'])))
+        self.assertEqual(commercial['subtotal']+commercial['tax'],commercial['total'])
 
     def test_markup_and_margin_are_distinct(self):
         data=self.data();data['profit_method']='margin'
@@ -615,6 +632,32 @@ class CommercialTests(unittest.TestCase):
         html=self.client.get('/admin/cotizaciones/nueva').get_data(as_text=True)
         self.assertNotIn('Costo unitario manual',html)
         self.assertNotIn('Abrir calculadora',html)
+
+    def test_calculator_commercial_summary_and_quote_half_cent(self):
+        from app.services.production import recipe_preview
+        self.login();self.configure_iva()
+        payload=self.cost_payload()
+        payload.update(material_quantity=['0.5'],material_cost=['0.75'],indirect_name=[''],indirect_amount=[''],
+                       labor_time='0.75',labor_unit='hours',hourly_cost='0.25',profit_percentage='100',quantity='1')
+        response=self.post('/admin/costos',payload)
+        self.assertEqual(response.status_code,200)
+        html=response.get_data(as_text=True)
+        self.assertIn('Precio unitario: 1.13 · Subtotal: 1.13 · IVA: 0.17 · Total sugerido: 1.30 USD',html)
+        self.assertIn('<dt>Precio sugerido del pedido</dt><dd>1.30 USD</dd>',html)
+        self.assertNotIn('1.29',html)
+        estimate=CostEstimate.query.one()
+        self.assertEqual(Decimal(estimate.result['unit_price']),Decimal('1.125'))
+        self.assertEqual(Decimal(estimate.result['total']),Decimal('1.29375'))
+        preview=recipe_preview(estimate.input_data,db.session.get(TaxSetting,1))
+        self.assertEqual([preview[k] for k in ('price','tax','total')],list(map(Decimal,['1.13','0.17','1.30'])))
+        self.assertEqual(self.client.get(f'/admin/cotizaciones/nueva?calculo={estimate.id}').status_code,200)
+        quote_payload=self.quote_payload(estimate.id);quote_payload['item_quantity']=['1']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',quote_payload).status_code,302)
+        quote=Quote.query.one()
+        self.assertEqual(quote.items[0].unit_price,Decimal('1.13'))
+        self.assertEqual(quote.subtotal,Decimal('1.13'))
+        self.assertEqual(quote.tax,Decimal('0.17'))
+        self.assertEqual(quote.total,Decimal('1.30'))
 
     def test_commercial_preview_matches_rounding_policy(self):
         from app.services.production import recipe_data,recipe_preview
