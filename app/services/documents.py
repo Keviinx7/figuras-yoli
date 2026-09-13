@@ -7,7 +7,7 @@ from flask_login import current_user
 from app.extensions import db
 from app.models import Product
 from app.models.commercial import Customer,Quote,QuoteItem,Invoice,InvoiceItem,NumberSequence,CostEstimate,ProductCostRecipe
-from app.services.costing import decimal_value,text_value,calculate_cost,json_decimals,precise,ZERO,money
+from app.services.costing import decimal_value,text_value,calculate_cost,json_decimals,precise,ZERO,money,quantize_money
 from app.services.commercial import settings,record
 
 
@@ -54,15 +54,18 @@ def document_items(rows):
             cost=result['production_cost']
         else:
             price=decimal_value(manual,'Precio unitario');cost=decimal_value(row.get('unit_cost'),'Costo unitario')
-        surcharge=decimal_value(row.get('surcharge','0'),'Recargo manual')
-        discount=decimal_value(row.get('discount','0'),'Descuento de línea')
+        surcharge=quantize_money(decimal_value(row.get('surcharge','0'),'Recargo manual'))
+        discount=quantize_money(decimal_value(row.get('discount','0'),'Descuento de línea'))
         if current_user.role!='admin' and (discount>0 or surcharge>0): abort(403)
-        gross=(price+surcharge)*quantity
+        price=quantize_money(price)
+        per_unit=price+surcharge
+        gross=per_unit*quantity
         if discount>gross: raise ValueError('El descuento supera el importe de la línea.')
+        subtotal=quantize_money(gross-discount)
         if manual not in ('',None): cost_snapshot['manual_price']=format(price,'f');cost_snapshot['authorized_by']=current_user.id
         output.append(dict(product_id=product.id,product_code_snapshot=product.code,product_name_snapshot=product.display_name,
             quantity=quantity,requested_size=text_value(row.get('requested_size',''),'Tamaño',120),personalization=text_value(row.get('personalization',''),'Personalización',500),
-            unit_cost=cost,unit_price=price,surcharge=surcharge,discount=discount,subtotal=gross-discount,cost_snapshot=cost_snapshot))
+            unit_cost=cost,unit_price=price,surcharge=surcharge,discount=discount,subtotal=subtotal,cost_snapshot=cost_snapshot))
     return output
 
 
@@ -71,16 +74,16 @@ def save_quote(customer_id,rows,discount='0',notes='',expires_at='',quote=None):
     business,tax=settings()
     if not business or not tax: raise ValueError('Ejecute upgrade-db.')
     customer=db.get_or_404(Customer,int(customer_id or 0));items=document_items(rows)
-    discount=decimal_value(discount,'Descuento general')
+    discount=quantize_money(decimal_value(discount,'Descuento general'))
     if discount>0 and current_user.role!='admin': abort(403)
-    subtotal=sum((item['subtotal'] for item in items),ZERO)
+    subtotal=quantize_money(sum((item['subtotal'] for item in items),ZERO))
     if discount>subtotal: raise ValueError('El descuento general supera el subtotal.')
-    amount=subtotal-discount
-    rate=tax.percentage;tax_amount=amount*rate/Decimal('100') if rate is not None else None
+    amount=quantize_money(subtotal-discount)
+    rate=tax.percentage;tax_amount=quantize_money(amount*rate/Decimal('100')) if rate is not None else None
     if quote and quote.status!='draft': raise ValueError('Solo se pueden editar borradores.')
     quote=quote or Quote(quote_number=next_number('quote',business.quote_prefix),user_id=current_user.id,status='draft')
     quote.customer_id=customer.id;quote.subtotal=subtotal;quote.discount=discount;quote.tax=tax_amount;quote.tax_percentage=rate
-    quote.total=amount+(tax_amount or ZERO);quote.currency=business.currency
+    quote.total=quantize_money(amount+(tax_amount or ZERO));quote.currency=business.currency
     quote.customer_snapshot,quote.business_snapshot=snapshots(customer,business,tax)
     quote.notes=text_value(notes,'Observaciones',3000)
     if expires_at:

@@ -12,7 +12,7 @@ from app import create_app
 from app.extensions import db
 from app.models import Product,Category
 from app.models.commercial import (User,Customer,Quote,Invoice,NumberSequence,Material,ProductCostRecipe,
-                                  CostEstimate,AuditEvent,BusinessSettings,TaxSetting)
+                                  ProductCostMaterial,CostEstimate,AuditEvent,BusinessSettings,TaxSetting)
 from app.services.commercial import initialize_settings
 from app.services.costing import calculate_cost,decimal_value
 
@@ -330,12 +330,129 @@ class CommercialTests(unittest.TestCase):
         self.login('seller');self.configure();self.post('/admin/costos',self.cost_payload());e=CostEstimate.query.one()
         payload=self.quote_payload(e.id);payload['total']='0.01'
         self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
-        self.assertEqual(Quote.query.one().total,Decimal('6.336'))
+        self.assertEqual(Quote.query.one().total,Decimal('6.34'))
         payload['item_unit_price']=['0.01'];self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,403)
         payload['item_unit_price']=[''];payload['item_discount']=['1'];self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,403)
 
     def test_seller_manual_quote_denied(self):
         self.login('seller');self.configure();self.assertEqual(self.post('/admin/cotizaciones/nueva',self.quote_payload()).status_code,400)
+
+    def configure_iva(self,percentage='15'):
+        business,tax=db.session.get(BusinessSettings,1),db.session.get(TaxSetting,1)
+        business.currency='USD';tax.name='IVA';tax.percentage=Decimal(str(percentage));db.session.commit()
+
+    def good_estimate(self):
+        payload=dict(product_id=str(self.pid),requested_size='20 cm',personalization='Texto de prueba',
+                     material_name=['Fomix prueba'],material_unit=['hoja'],material_quantity=['0.5'],material_cost=['0.60'],
+                     indirect_name=[''],indirect_amount=[''],labor_time='0.75',labor_unit='hours',hourly_cost='0.25',
+                     profit_method='markup',profit_percentage='100',surcharge='0',discount='0',quantity='1')
+        self.assertEqual(self.post('/admin/costos',payload).status_code,200)
+        return CostEstimate.query.order_by(CostEstimate.id.desc()).first()
+
+    def good_recipe(self):
+        recipe=ProductCostRecipe(product_id=self.pid,name='Receta fomix 0.975',labor_hours=Decimal('0.75'),hourly_cost=Decimal('0.25'),
+                                 indirect_costs=[],profit_method='markup',profit_percentage=Decimal('100'),surcharge=Decimal('0'),notes='')
+        recipe.materials=[ProductCostMaterial(name='Fomix',unit='hoja',quantity=Decimal('0.5'),unit_cost=Decimal('0.60'))]
+        db.session.add(recipe);db.session.commit();return recipe
+
+    def test_rounding_commercial_qty10(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['item_quantity']=['10'];payload['item_unit_price']=['0.975']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one();item=q.items[0]
+        self.assertEqual(item.unit_price,Decimal('0.98'))
+        self.assertEqual(item.subtotal,Decimal('9.80'))
+        self.assertEqual(q.subtotal,Decimal('9.80'));self.assertEqual(q.tax,Decimal('1.47'));self.assertEqual(q.total,Decimal('11.27'))
+
+    def test_rounding_commercial_qty1(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['item_quantity']=['1'];payload['item_unit_price']=['0.975']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        self.assertEqual(q.subtotal,Decimal('0.98'));self.assertEqual(q.tax,Decimal('0.15'));self.assertEqual(q.total,Decimal('1.13'))
+
+    def test_rounding_manual_price_qty10_no_overrounding(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['item_quantity']=['10'];payload['item_unit_price']=['5.00']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        self.assertEqual(q.subtotal,Decimal('50.00'));self.assertEqual(q.tax,Decimal('7.50'));self.assertEqual(q.total,Decimal('57.50'))
+
+    def test_rounding_price_from_recipe(self):
+        self.login();self.configure_iva();recipe=self.good_recipe()
+        payload=self.quote_payload();payload['item_estimate_id']=[''];payload['item_recipe_id']=[str(recipe.id)]
+        payload['item_unit_cost']=[''];payload['item_unit_price']=[''];payload['item_quantity']=['10']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one();self.assertEqual(q.items[0].unit_price,Decimal('0.98'))
+        self.assertEqual(q.subtotal,Decimal('9.80'));self.assertEqual(q.tax,Decimal('1.47'));self.assertEqual(q.total,Decimal('11.27'))
+
+    def test_rounding_price_from_saved_calculation(self):
+        self.login();self.configure_iva();e=self.good_estimate()
+        payload=self.quote_payload(e.id);payload['item_quantity']=['10']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one();self.assertEqual(q.items[0].unit_price,Decimal('0.98'))
+        self.assertEqual(q.subtotal,Decimal('9.80'));self.assertEqual(q.tax,Decimal('1.47'));self.assertEqual(q.total,Decimal('11.27'))
+
+    def test_rounding_surcharge_per_unit(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['item_quantity']=['3'];payload['item_unit_price']=['0.975'];payload['item_surcharge']=['1.50']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        self.assertEqual(q.subtotal,Decimal('7.44'));self.assertEqual(q.tax,Decimal('1.12'));self.assertEqual(q.total,Decimal('8.56'))
+
+    def test_rounding_line_discount(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['item_discount']=['1.00']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        self.assertEqual(q.subtotal,Decimal('9.00'));self.assertEqual(q.tax,Decimal('1.35'));self.assertEqual(q.total,Decimal('10.35'))
+
+    def test_rounding_general_discount(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['discount']='2'
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        self.assertEqual(q.subtotal,Decimal('10.00'));self.assertEqual(q.discount,Decimal('2.00'));self.assertEqual(q.tax,Decimal('1.20'));self.assertEqual(q.total,Decimal('9.20'))
+
+    def test_rounding_tax_zero(self):
+        self.login();self.configure_iva('0')
+        payload=self.quote_payload();payload['item_quantity']=['10'];payload['item_unit_price']=['0.975']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        self.assertEqual(q.subtotal,Decimal('9.80'));self.assertEqual(q.tax,Decimal('0'));self.assertEqual(q.total,Decimal('9.80'))
+
+    def test_rounding_tax_pending(self):
+        self.login()
+        payload=self.quote_payload();payload['item_quantity']=['10'];payload['item_unit_price']=['0.975']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        self.assertIsNone(q.tax_percentage);self.assertIsNone(q.tax);self.assertEqual(q.total,Decimal('9.80'))
+
+    def test_rounding_quote_to_invoice_exact_amounts(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['item_quantity']=['10'];payload['item_unit_price']=['0.975']
+        self.post('/admin/cotizaciones/nueva',payload);q=Quote.query.one()
+        for state in ['sent','accepted']:
+            self.assertEqual(self.post(f'/admin/cotizaciones/{q.id}/estado',dict(status=state)).status_code,302)
+        self.assertEqual(self.post(f'/admin/cotizaciones/{q.id}/facturar').status_code,302)
+        invoice=Invoice.query.filter_by(quote_id=q.id).one()
+        self.assertEqual(invoice.items[0].unit_price,Decimal('0.98'));self.assertEqual(invoice.items[0].subtotal,Decimal('9.80'))
+        self.assertEqual(invoice.subtotal,q.subtotal);self.assertEqual(invoice.tax,q.tax);self.assertEqual(invoice.total,q.total)
+
+    def test_rounding_historical_documents_keep_amounts_after_config_change(self):
+        self.login();self.configure_iva()
+        payload=self.quote_payload();payload['item_quantity']=['10'];payload['item_unit_price']=['0.975']
+        self.assertEqual(self.post('/admin/cotizaciones/nueva',payload).status_code,302)
+        q=Quote.query.one()
+        for state in ['sent','accepted']:
+            self.post(f'/admin/cotizaciones/{q.id}/estado',dict(status=state))
+        self.post(f'/admin/cotizaciones/{q.id}/facturar');invoice=Invoice.query.filter_by(quote_id=q.id).one()
+        stored=(q.subtotal,q.tax,q.total,invoice.subtotal,invoice.tax,invoice.total)
+        self.assertEqual(self.post('/admin/configuracion',self.config_payload(tax_percentage='7.25')).status_code,302)
+        db.session.expire_all()
+        self.assertEqual((q.subtotal,q.tax,q.total,invoice.subtotal,invoice.tax,invoice.total),stored)
+        html=self.client.get(f'/admin/cotizaciones/{q.id}/imprimir').get_data(as_text=True)
+        self.assertIn('11.27',html)
 
     def test_wrong_product_cost_reference_rejected(self):
         self.login();self.configure();self.post('/admin/costos',self.cost_payload());e=CostEstimate.query.one()

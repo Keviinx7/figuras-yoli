@@ -55,6 +55,18 @@ def pct(value):
         return format(Decimal(value).normalize(), 'f')
 
 
+def quantize_money(value):
+    """Política monetaria comercial: 2 decimales, redondeo HALF_UP y sin float.
+
+    Es el ÚNICO punto de redondeo para precios e importes que se guardan en un
+    documento. La calculadora de costos conserva precisión interna completa;
+    al convertir un precio unitario en precio comercial se aplica esta función.
+    """
+    with localcontext() as context:
+        context.prec = 50
+        return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
 def json_decimals(value):
     if isinstance(value, Decimal):
         return format(value, 'f')
