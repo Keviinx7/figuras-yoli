@@ -2,6 +2,7 @@ import secrets
 import os
 import sqlite3
 import logging
+import re
 from pathlib import Path
 import click
 from flask import Flask, render_template, session, request, abort
@@ -33,11 +34,23 @@ def configure_secret(app):
         app.config['SECRET_KEY'] = secret
 
 
+class RedactAccountLinks(logging.Filter):
+    def filter(self, record):
+        record.msg = re.sub(r'(/cuenta/(?:verificar|restablecer|recuperar)/)[^\s?"<>]+',
+                            r'\1[redacted]', record.getMessage())
+        record.args = ()
+        return True
+
+
 def configure_logging(app):
     level_name = (app.config.get('LOG_LEVEL') or 'INFO').upper()
     level = getattr(logging, level_name, logging.INFO)
     app.logger.setLevel(level)
+    if not any(isinstance(f, RedactAccountLinks) for f in app.logger.filters):
+        app.logger.addFilter(RedactAccountLinks())
     werkzeug_logger = logging.getLogger('werkzeug')
+    if not any(isinstance(f, RedactAccountLinks) for f in werkzeug_logger.filters):
+        werkzeug_logger.addFilter(RedactAccountLinks())
     werkzeug_logger.setLevel(logging.WARNING if app.config.get('ENVIRONMENT') in ('staging', 'production') else logging.INFO)
     # The default StreamHandler already goes to stderr so Gunicorn can capture it.
     if app.config.get('LOG_FILE'):
@@ -55,6 +68,8 @@ def create_app(test_config=None):
         app.config.update(test_config)
     configure_secret(app)
     configure_logging(app)
+    from app.services.mail import configure_mail
+    configure_mail(app)
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
     if app.config.get('BEHIND_PROXY'):
         # Trust the documented reverse proxy (Nginx) hop for scheme/host/client IP.

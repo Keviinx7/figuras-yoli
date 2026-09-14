@@ -10,7 +10,6 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import current_app, request, redirect, url_for, session
 from flask_login import logout_user
-from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from werkzeug.security import generate_password_hash
 from app.extensions import db
 from app.models import Product
@@ -167,26 +166,21 @@ def save_customer_request(cart_json, account, delivery, notes=''):
     db.session.flush()
     db.session.add(AuditEvent(entity='customer_request', entity_id=request_record.id,
                               action='created_by_customer'))
+    from app.services.mail import queue_order_email, deliver_order_mail
+    notification = queue_order_email(request_record)
     db.session.commit()
-    return request_record.id
-
-
-def recovery_serializer():
-    return URLSafeTimedSerializer(current_app.config['SECRET_KEY'], salt='account-recovery')
+    request_id = request_record.id
+    deliver_order_mail(notification.id if notification else None)
+    return request_id
 
 
 def recovery_token(account):
-    """Signed, one-time link whose nonce is the account's current session token."""
-    return recovery_serializer().dumps({'id': account.id, 'nonce': account.session_token})
+    from app.services.account_email import issue_token
+    return issue_token(account, 'reset_password')
 
 
 def consume_recovery_token(token):
-    max_age = int(current_app.config.get('ACCOUNT_RECOVERY_LIFETIME_HOURS', 1)) * 3600
-    try:
-        data = recovery_serializer().loads(token, max_age=max_age)
-    except (BadSignature, SignatureExpired, TypeError, ValueError):
-        return None
-    account = db.session.get(CustomerAccount, data.get('id'))
-    if not account or not account.is_active or account.session_token != data.get('nonce'):
-        return None
-    return account
+    # Compatibility helper is a read-only validity check; routes consume atomically.
+    from app.services.account_email import find_token
+    row = find_token(token, 'reset_password')
+    return db.session.get(CustomerAccount, row.account_id) if row else None

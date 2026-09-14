@@ -17,6 +17,7 @@ ExecStart=/home/yoli/figuras-yoli/.venv/bin/gunicorn \
     --workers 2 --threads 2 \
     --timeout 30 \
     --access-logfile - --error-logfile - \
+    --access-logformat "%%(m)s %%(s)s %%(L)s" \
     wsgi:app
 Restart=always
 RestartSec=3

@@ -53,6 +53,13 @@ def _int_env(name, default):
         return default
 
 
+def _mail_int_env(name, default):
+    try:
+        return int(os.environ.get(name, default))
+    except (TypeError, ValueError):
+        raise RuntimeError(f'{name}: se requiere un número entero válido.') from None
+
+
 def detect_environment():
     raw = (os.environ.get('APP_ENV') or os.environ.get('FLASK_ENV')
            or os.environ.get('YOLI_ENV') or 'development')
@@ -100,11 +107,22 @@ def get_config():
         'HSTS_MAX_AGE': _int_env('HSTS_MAX_AGE', 31536000),
         'BACKUP_DIR': os.environ.get('BACKUP_DIR') or None,
         'CATALOG_PDF': os.environ.get('CATALOG_PDF') or str(ROOT / 'docs' / 'catalogo-productos.pdf'),
-        # Cuentas de clientes. La recuperación automática y la verificación por
-        # correo requieren un envío real que aún no está contratado; se mantienen
-        # apagadas por defecto y nunca simulan haberse ejecutado.
+        # Mail stays disabled in development unless explicitly configured.
+        'MAIL_ENABLED': _truthy(os.environ.get('MAIL_ENABLED')),
+        'MAIL_BACKEND': os.environ.get('MAIL_BACKEND', 'smtp'),
+        'SMTP_HOST': os.environ.get('SMTP_HOST', ''),
+        'SMTP_PORT': _mail_int_env('SMTP_PORT', 587),
+        'SMTP_USERNAME': os.environ.get('SMTP_USERNAME', ''),
+        'SMTP_PASSWORD': os.environ.get('SMTP_PASSWORD', ''),
+        'SMTP_USE_TLS': _truthy(os.environ.get('SMTP_USE_TLS'), True),
+        'SMTP_USE_SSL': _truthy(os.environ.get('SMTP_USE_SSL')),
+        'MAIL_FROM_ADDRESS': os.environ.get('MAIL_FROM_ADDRESS', ''),
+        'MAIL_FROM_NAME': os.environ.get('MAIL_FROM_NAME', 'Yoli Figuras de Fomix'),
+        'PUBLIC_BASE_URL': os.environ.get('PUBLIC_BASE_URL', 'http://localhost:5000'),
+        'ORDER_EMAIL_NOTIFICATIONS_ENABLED': _truthy(os.environ.get('ORDER_EMAIL_NOTIFICATIONS_ENABLED')),
+        'EMAIL_VERIFICATION_LIFETIME_HOURS': _mail_int_env('EMAIL_VERIFICATION_LIFETIME_HOURS', 24),
         'ACCOUNT_RECOVERY_ENABLED': _truthy(os.environ.get('ACCOUNT_RECOVERY_ENABLED')),
-        'ACCOUNT_RECOVERY_LIFETIME_HOURS': _int_env('ACCOUNT_RECOVERY_LIFETIME_HOURS', 1),
+        'ACCOUNT_RECOVERY_LIFETIME_HOURS': _mail_int_env('ACCOUNT_RECOVERY_LIFETIME_HOURS', 1),
         'EMAIL_VERIFICATION_ENABLED': _truthy(os.environ.get('EMAIL_VERIFICATION_ENABLED')),
     }
 

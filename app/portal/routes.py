@@ -1,7 +1,9 @@
 """Public customer portal: registration, access, profile and persisted requests."""
 import json
-from flask import render_template, request, redirect, url_for, session, flash, current_app
+from flask import render_template, request, redirect, url_for, session, flash, current_app, abort
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
+from werkzeug.security import check_password_hash
 from app.extensions import db
 from app.models.commercial import Customer, AuditEvent
 from app.models.customer_account import (CustomerAccount, CustomerRequest,
@@ -10,8 +12,11 @@ from app.services.customer_portal import (current_account, account_login, accoun
                                           customer_required, safe_next, normalize_email,
                                           clean_phone, clean_notes, login_blocked,
                                           register_login_failure, delete_login_peak,
-                                          save_customer_request, consume_recovery_token,
-                                          PASSWORD_RULE)
+                                          save_customer_request,
+                                          PASSWORD_RULE, DUMMY_HASH)
+from app.services.account_email import (throttle, send_account_email, revoke_tokens,
+                                         find_token, consume_token, feature_enabled)
+from app.services.mail import available
 from app.services.whatsapp import clean_text, DELIVERY
 from app.portal import bp
 
@@ -22,6 +27,7 @@ def register():
         return redirect(url_for('portal.panel'))
     error = None
     if request.method == 'POST':
+        throttle('register', limit=10)
         try:
             if login_blocked():
                 return render_template('public/account_register.html',
@@ -47,10 +53,13 @@ def register():
                                       action='created'))
             db.session.commit()
             account_login(account)
+            if current_app.config.get('EMAIL_VERIFICATION_ENABLED'):
+                verification_notice(send_account_email(account, 'verify_email'))
+                return redirect(url_for('portal.verification_pending'))
             return redirect(url_for('portal.panel'))
-        except ValueError as exc:
+        except (ValueError, IntegrityError) as exc:
             db.session.rollback()
-            error = str(exc)
+            error = str(exc) if isinstance(exc, ValueError) else 'Ya existe una cuenta con ese correo.'
     return render_template('public/account_register.html', error=error), 400 if error else 200
 
 
@@ -69,8 +78,8 @@ def login():
             return render_template('public/account_login.html',
                                    error='Demasiados intentos. Espere 15 minutos.'), 429
         account = CustomerAccount.query.filter_by(email=email).first()
-        valid = account is not None and account.is_active and \
-            account.check_password(password) and len(password) <= 200
+        password_valid = check_password_hash(account.password_hash if account else DUMMY_HASH, password[:200])
+        valid = account is not None and account.is_active and password_valid and len(password) <= 200
         if valid:
             delete_login_peak()
             account_login(account)
@@ -107,6 +116,18 @@ def profile():
     error = None
     if request.method == 'POST':
         try:
+            email = normalize_email(request.form.get('email', account.email))
+            changed_email = email != account.email
+            if changed_email:
+                throttle('change-email', str(account.id))
+                if not account.check_password(request.form.get('current_password', '')[:200]):
+                    raise ValueError('Confirma tu contraseña actual para cambiar el correo.')
+                if CustomerAccount.query.filter(CustomerAccount.email == email, CustomerAccount.id != account.id).first():
+                    raise ValueError('Ese correo ya pertenece a una cuenta.')
+                revoke_tokens(account)
+                account.email = email
+                account.email_verified = False
+                customer.email = email
             customer.name = clean_text(request.form.get('name', ''), 'Nombre', 180, True)
             customer.phone = clean_phone(request.form.get('phone', ''))
             customer.address = clean_text(request.form.get('address', ''), 'Dirección', 300) or None
@@ -114,11 +135,15 @@ def profile():
             db.session.add(AuditEvent(entity='customer', entity_id=customer.id,
                                       action='edited_by_customer'))
             db.session.commit()
+            if changed_email:
+                account_login(account)
+                if current_app.config.get('EMAIL_VERIFICATION_ENABLED'):
+                    verification_notice(send_account_email(account, 'verify_email'))
             flash('Tu perfil se actualizó.')
             return redirect(url_for('portal.profile'))
-        except ValueError as exc:
+        except (ValueError, IntegrityError) as exc:
             db.session.rollback()
-            error = str(exc)
+            error = str(exc) if isinstance(exc, ValueError) else 'Ese correo ya pertenece a una cuenta.'
     return render_template('public/account_profile.html', account=account,
                            customer=customer, error=error), 400 if error else 200
 
@@ -165,43 +190,92 @@ def submit_request():
     return redirect(url_for('portal.request_detail', request_id=request_id))
 
 
-@bp.route('/cuenta/recuperar', methods=['GET', 'POST'])
-def recover():
-    """Honest recovery: automated delivery is off until an SMTP sender exists.
+def verification_notice(result):
+    if result == 'sent':
+        flash('Revisa tu correo para verificar tu cuenta.')
+    elif result == 'disabled':
+        flash('El envío de correo no está disponible. Tu cuenta sigue guardada; puedes continuar y contactar a Yoli por WhatsApp.')
+    else:
+        flash('No pudimos entregar la verificación. Puedes volver a intentarlo más tarde.')
 
-    The store never claims to have emailed a link: without a provider the only
-    path is to contact the team, so accounts stay safe and unguessable.
-    """
+
+@bp.get('/cuenta/verificacion-pendiente')
+@customer_required
+def verification_pending():
+    return render_template('public/account_verification.html', invalid=False, token=None)
+
+
+@bp.post('/cuenta/reenviar-verificacion')
+@customer_required
+def resend_verification():
+    account = current_account()
+    throttle('verification', str(account.id), limit=3)
+    if not account.email_verified:
+        verification_notice(send_account_email(account, 'verify_email'))
+    return redirect(url_for('portal.verification_pending'))
+
+
+@bp.route('/cuenta/verificar/<token>', methods=['GET', 'POST'])
+def verify(token):
+    if not feature_enabled('verify_email'):
+        abort(404)
+    if request.method == 'POST':
+        throttle('verify-consume', limit=20)
+        account = consume_token(token, 'verify_email')
+        if account:
+            account.email_verified = True
+            db.session.commit()
+            flash('Tu correo quedó verificado. Ya puedes iniciar sesión o volver a tu cuenta.')
+            return redirect(url_for('portal.panel' if current_account() else 'portal.login'))
+        db.session.rollback()
+    valid = find_token(token, 'verify_email') is not None
+    return render_template('public/account_verification.html', invalid=not valid, token=token), 200 if valid else 400
+
+
+@bp.route('/cuenta/recuperar', methods=['GET', 'POST'])
+@bp.route('/cuenta/olvide-contrasena', methods=['GET', 'POST'])
+def recover():
+    enabled = feature_enabled('reset_password') and available()
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()[:180]
-        account = CustomerAccount.query.filter_by(email=email).first()
-        if account and account.is_active:
-            db.session.add(AuditEvent(entity='customer_account', entity_id=account.id,
-                                      action='recovery_requested'))
-            db.session.commit()
-        flash('Registramos tu solicitud. Como la recuperación automática aún no está '
-              'activa, escríbenos por WhatsApp para restablecer tu acceso.')
-    return render_template('public/account_recover.html')
+        throttle('recovery', email)
+        if enabled:
+            account = CustomerAccount.query.filter_by(email=email, is_active=True).first()
+            if account:
+                send_account_email(account, 'reset_password')
+            flash('Si existe una cuenta activa con ese correo, intentaremos enviarte un enlace para restablecer tu contraseña. Revisa también spam; si no llega, inténtalo más tarde.')
+        else:
+            flash('La recuperación automática no está activa o el envío no está disponible. Escríbenos por WhatsApp para recibir ayuda.')
+    return render_template('public/account_recover.html', enabled=enabled)
 
 
 @bp.route('/cuenta/recuperar/<token>', methods=['GET', 'POST'])
+@bp.route('/cuenta/restablecer/<token>', methods=['GET', 'POST'])
 def reset(token):
-    account = consume_recovery_token(token)
-    if not account:
+    if not feature_enabled('reset_password'):
+        abort(404)
+    row = find_token(token, 'reset_password')
+    if not row:
         return render_template('public/account_reset.html', invalid=True), 400
     error = None
     if request.method == 'POST':
+        throttle('reset-consume', limit=20)
         password = request.form.get('password', '')
         if password != request.form.get('confirm', ''):
             error = 'Las contraseñas no coinciden.'
         elif not 12 <= len(password) <= 200:
             error = PASSWORD_RULE
         else:
+            account = consume_token(token, 'reset_password')
+            if not account:
+                db.session.rollback()
+                return render_template('public/account_reset.html', invalid=True), 400
             account.set_password(password)
+            revoke_tokens(account)
             db.session.add(AuditEvent(entity='customer_account', entity_id=account.id,
                                       action='password_reset'))
             db.session.commit()
-            account_login(account)
-            flash('Tu contraseña se restableció.')
-            return redirect(url_for('portal.panel'))
-    return render_template('public/account_reset.html', invalid=False, error=error, token=token)
+            session.clear()
+            flash('Tu contraseña se restableció. Inicia sesión con tu nueva contraseña.')
+            return redirect(url_for('portal.login'))
+    return render_template('public/account_reset.html', invalid=False, error=error, token=token), 400 if error else 200

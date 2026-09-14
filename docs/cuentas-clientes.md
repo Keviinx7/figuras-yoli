@@ -38,6 +38,14 @@ sesión del personal activa, y viceversa (verificado en
 Estas tres tablas se crean de forma aditiva al migrar: `db.create_all()`
 sobre `instance/tienda.db` NO toca ninguna tabla existente.
 
+El correo añade además (ver `docs/email-clientes.md`):
+
+- **`account_email_tokens`**: digests SHA-256 de tokens de verificación y
+  recuperación (expiración, un solo uso, propósito y credencial ligada).
+- **`email_rate_limits`**: contadores atómicos por IP e identidad.
+- **`order_email_outbox`**: cola durable de confirmaciones/cambios de estado;
+  la fila vive en la misma transacción que el pedido y se entrega tras commit.
+
 ### Nada económico se guarda
 
 Las tablas nuevas no tienen columnas de precios, costos ni márgenes. El
@@ -60,25 +68,39 @@ formulario del carrito es ignorado por el backend.
 - **Rate limit por IP**: reutiliza `LoginAttempt` (10 fallos / 15 minutos →
   429).
 - **Verificación de correo**: `email_verified` nunca se activa
-  automáticamente (flag `EMAIL_VERIFICATION_ENABLED`, default `False`).
-- **Recuperación honesta**: `ACCOUNT_RECOVERY_ENABLED` (default `False`).
-  Sin un remitente SMTP configurado el sitio no finge haber enviado un
-  correo: orienta al cliente a escribir por WhatsApp (ver `recover()`).
+  automáticamente (flag `EMAIL_VERIFICATION_ENABLED`, default `False`). Cuando
+  el flag y un transporte SMTP están activos, el registro/envío envía un enlace
+  temporal de un solo uso; en caso contrario el portal funciona igual y avisa
+  por WhatsApp.
+- **Recuperación**: `ACCOUNT_RECOVERY_ENABLED` (default `False`). Sin un
+  remitente SMTP configurado el sitio no finge haber enviado un correo: orienta
+  al cliente a escribir por WhatsApp (ver `recover()`). Con SMTP activo envía
+  un enlace de un solo uso que rota la contraseña y anula sesiones y enlaces
+  anteriores. Los tokens se guardan solo como digest, caducan y se revocan al
+  desactivar la cuenta o cambiar el correo.
 
 ## Rutas
 
 Portal (`app/portal/routes.py`, blueprint `portal`):
 
 `/registro`, `/cuenta/login`, `/cuenta` (panel), `/cuenta/perfil`,
-`/cuenta/pedidos`, `/cuenta/pedido/<id>`, `/cuenta/recuperar`,
-`/cuenta/recuperar/<token>`, `/cuenta/logout`.
+`/cuenta/pedidos`, `/cuenta/pedido/<id>`, `/cuenta/recuperar`
+(también `/cuenta/olvide-contrasena`), `/cuenta/recuperar/<token>`
+(también `/cuenta/restablecer/<token>`), `/cuenta/verificacion-pendiente`,
+`/cuenta/verificar/<token>`, `/cuenta/reenviar-verificacion`,
+`/cuenta/logout`. El perfil permite cambiar el correo confirmando la
+contraseña actual; al cambiar, se invalidan los enlaces anteriores y se
+pide una nueva verificación. Las rutas de verificación/recuperación
+responden 404 cuando su flag está apagado.
 
 Administración (`app/requests_admin/routes.py`, blueprint `requests_admin`,
 prefijo `/admin/pedidos`, sólo staff):
 
 `/`, `/admin/pedidos/<id>`, `/admin/pedidos/<id>/estado`,
 `/admin/pedidos/clientes/<id>/cuenta` (toggle `is_active`, sólo admin; nunca
-toca contraseñas y rota `session_token` al desactivar).
+toca contraseñas, rota `session_token` y revoca los enlaces pendientes al
+desactivar; reactivar no revive enlaces antiguos). El cambio real de estado
+encola una notificación de correo; guardar el mismo estado no duplica envíos.
 
 ## Flujo del carrito
 
@@ -111,12 +133,21 @@ simplemente exige cuenta para no "robar" clientes al canal actual.
   rate-limit, logout, separación staff/cliente en ambos sentidos, CSRF en
   todas las rutas, pedidos persistidos sin precios, IDOR, perfil,
   recuperación honesta.
-- `tests/browser_customer.mjs` (32 checks en Chrome headless): registro,
-  carrito → pedido persistido, edición de perfil, logout/login, cierre del
-  portal tras logout, cierre de `/admin` para cliente, cambio de estado por
-  staff y seguimiento por el cliente; viewports 1440/768/390/320.
-- Suite existente intacta: 159 Python, 11 storage, 6 admin JS, 89 + 69
-  browser checks.
+- `tests/test_customer_email.py` (hereda `PortalTests` + casos propios):
+  ciclo de vida de verificación/reenvío, expiración, propósito, revocación
+  por desactivación/reactivación, recuperación genérica, rate-limit,
+  E2E HTTP completo de verificación → pedido → estado → recuperación,
+  cambio de correo sin apropiación de cuentas, fallo SMTP que preserva el
+  pedido y reintenta, host-header poisoning, enmascarado de tokens en logs,
+  validación de configuración de producción y consumo atómico.
+- `tests/browser_customer.mjs` (36 checks en Chrome headless contra el
+  fixture de correo fake, `--email-e2e`): registro → verificación por correo
+  fake → login → carrito → solicitud → confirmación por correo fake →
+  cambio de estado del admin → un solo correo por cambio real → seguimiento
+  del cliente; olvidé contraseña → reset → la anterior falla → la nueva
+  funciona; viewports 1440/768/390/320.
+- Suite existente intacta: 195 Python, 11 storage, 6 admin JS, 89 + 69
+  browser checks (`test_customer_email.py` ya incluye los 23 de portal).
 
 ## Configuración
 
@@ -126,6 +157,12 @@ comportamiento actual):
 - `ACCOUNT_RECOVERY_ENABLED`
 - `ACCOUNT_RECOVERY_LIFETIME_HOURS` (default `1`)
 - `EMAIL_VERIFICATION_ENABLED`
+- `EMAIL_VERIFICATION_LIFETIME_HOURS` (default `24`)
+- `ORDER_EMAIL_NOTIFICATIONS_ENABLED`
 
-`tests/test_production.py` comprueba que los tres existan y preserven sus
-defaults.
+Y transporte en `config.py` + `.env.example`: `MAIL_ENABLED`, `MAIL_BACKEND`,
+`SMTP_*`, `MAIL_FROM_*`, `PUBLIC_BASE_URL`. En producción el arranque exige
+SMTP real y `PUBLIC_BASE_URL` https (ver `docs/email-clientes.md`).
+
+`tests/test_production.py` comprueba que los flags originales existan y
+preserven sus defaults.

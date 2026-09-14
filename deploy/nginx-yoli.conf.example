@@ -5,6 +5,9 @@ server {
     listen 80;
     listen [::]:80;
     server_name example.com www.example.com;
+    # Do not record bearer-token URLs in access/error logs.
+    access_log off;
+    error_log /dev/null crit;
     # Redirige todo a HTTPS en los primeros despliegues.
     location / {
         return 301 https://$host$request_uri;
@@ -16,6 +19,9 @@ server {
     listen [::]:443 ssl;
     http2 on;
     server_name example.com www.example.com;
+    # Do not record bearer-token URLs in access/error logs.
+    access_log off;
+    error_log /dev/null crit;
 
     ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;

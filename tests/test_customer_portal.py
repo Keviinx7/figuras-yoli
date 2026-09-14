@@ -356,6 +356,7 @@ class PortalTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         account = CustomerAccount.query.filter_by(email='olvido@example.com').one()
         original_hash = account.password_hash
+        self.app.config['ACCOUNT_RECOVERY_ENABLED'] = True
         token = recovery_token(account)
         self.assertIsNotNone(consume_recovery_token(token))
         self.assertIsNone(consume_recovery_token(token + 'corrompido'))

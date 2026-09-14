@@ -117,6 +117,38 @@ sudo certbot --nginx -d example.com -d www.example.com
 
 Solo cuando el certificado exista, activar `HSTS_ENABLED=1` y recargar.
 
+## Correo a clientes
+
+El portal puede verificar correos, enviar recuperación de contraseña y
+notificar solicitudes/cambios de estado. Todo esto es opcional y **debe estar
+apagado hasta tener un remitente real**. Detalles en
+[docs/email-clientes.md](email-clientes.md).
+
+Al autorizar el correo en staging/production:
+
+1. Fijar en `/etc/yoli/yoli.env`: `MAIL_ENABLED=1`, `MAIL_BACKEND=smtp`,
+   `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`
+   (ambas o ninguna), `SMTP_USE_TLS`/`SMTP_USE_SSL` (nunca ambas),
+   `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME`.
+2. `PUBLIC_BASE_URL=https://tienda.example` es **obligatoria y https** en
+   staging/production: los enlaces de verificación/reset se construyen con esa
+   base, nunca con el `Host` del navegador. El arranque la valida y aborta con
+   un error claro si falta o es inválida.
+3. Activar solo los flujos necesarios:
+   `EMAIL_VERIFICATION_ENABLED`, `ACCOUNT_RECOVERY_ENABLED`,
+   `ORDER_EMAIL_NOTIFICATIONS_ENABLED`. Con SMTP sin configurar estas flags
+   hacen que el arranque falle en producción (por diseño).
+4. Un fallo de entrega **no borra ni revierte** pedidos/solicitudes: la fila
+   queda pendiente en `order_email_outbox` y se reintenta con
+   `.venv/bin/flask retry-order-mail` (también se reintenta en el siguiente
+   cambio de estado). No hay Redis/Celery.
+5. `deploy/nginx-yoli.conf.example` y `deploy/yoli.service.example` apagan el
+   registro de rutas para que las URLs con token portador no queden en logs;
+   los tokens tampoco se imprimen en la app ni se muestran al admin.
+
+Secretos: SMTP y `SECRET_KEY` solo en el `.env` del servidor; nunca en Git,
+logs, documentación ni capturas.
+
 ## Verificación del despliegue
 
 - `curl -fsS https://example.com/health` → `{"database":"ok","status":"ok"}`.

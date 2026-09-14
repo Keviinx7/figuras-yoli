@@ -8,6 +8,8 @@ instance/*.db
 instance/backups/
 instance/commercial-check/
 instance/.session_key
+instance/.secret_key
+instance/com.google.Chrome.*/
 .env
 .env.*
 !.env.example

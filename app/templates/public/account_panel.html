@@ -2,6 +2,7 @@
 <span class="eyebrow">MI CUENTA</span>
 <h1>Hola, {{ customer.name }}</h1>
 <p class="muted">{{ customer.email }} {% if customer.phone %}· {{ customer.phone }}{% endif %}</p>
+<p class="muted">Correo: {% if account.email_verified %}verificado{% else %}no verificado{% if config.EMAIL_VERIFICATION_ENABLED %} · <a class="text-link" href="{{ url_for('portal.verification_pending') }}">Verificar correo</a>{% endif %}{% endif %}</p>
 <div class="account-menu">
 <a class="button" href="{{ url_for('portal.requests_index') }}">Mis pedidos →</a>
 <a class="button button-outline" href="{{ url_for('portal.profile') }}">Editar perfil</a>

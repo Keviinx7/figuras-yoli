@@ -35,7 +35,7 @@ class CustomerAccount(db.Model):
         if not isinstance(password, str) or not 12 <= len(password) <= 200:
             raise ValueError('La contraseña debe tener entre 12 y 200 caracteres.')
         self.password_hash = generate_password_hash(password, method='scrypt')
-        # Rotating the token invalidates every existing session and recovery link.
+        # Session rotation invalidates every login; email links also bind to the password hash.
         self.session_token = secrets.token_hex(24)
 
     def check_password(self, password):

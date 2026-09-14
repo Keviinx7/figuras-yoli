@@ -1,8 +1,8 @@
 {% extends 'public/account_base.html' %}{% block title %}Nueva contraseña · Yoli Figuras de Fomix{% endblock %}{% block account %}<section class="container section narrow account-form">
 <span class="eyebrow">RESTABLECER ACCESO</span>
 <h1>Elige una nueva contraseña</h1>
-{% if invalid %}<p class="notice" role="alert">Este enlace no es válido o ya fue usado. Escríbenos por WhatsApp para recuperar tu acceso.</p>
-<a class="button" href="{{ url_for('portal.recover') }}">Pedir ayuda por WhatsApp</a>
+{% if invalid %}<p class="notice" role="alert">Este enlace no es válido o ya fue usado. Solicita un enlace nuevo para recuperar tu acceso.</p>
+<a class="button" href="{{ url_for('portal.recover') }}">Solicitar otro enlace</a>
 {% else %}{% if error %}<p class="notice" role="alert">{{ error }}</p>{% endif %}
 <form method="post" action="{{ url_for('portal.reset', token=token) }}">
 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

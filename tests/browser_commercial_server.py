@@ -37,11 +37,35 @@ def main():
         database=folder/('browser-'+secrets.token_hex(6)+'.db')
     with sqlite3.connect('file:'+str(ROOT/'instance/tienda.db')+'?mode=ro',uri=True) as source,sqlite3.connect(database) as target:
         source.backup(target)
-    app=create_app({'TESTING':True,'SECRET_KEY':secrets.token_hex(32),'SQLALCHEMY_DATABASE_URI':'sqlite:///'+str(database)})
+    port=int(os.environ.get('BROWSER_PORT','5001'))
+    email_e2e=os.environ.get('BROWSER_EMAIL_E2E') == '1' or '--email-e2e' in sys.argv
+    app=create_app({'TESTING':True,'ENVIRONMENT':'testing','SECRET_KEY':secrets.token_hex(32),
+                    'SESSION_COOKIE_SECURE':False,'BEHIND_PROXY':False,
+                    'SQLALCHEMY_DATABASE_URI':'sqlite:///'+str(database),
+                    'MAIL_ENABLED':email_e2e,'MAIL_BACKEND':'fake',
+                    'MAIL_FROM_ADDRESS':'yoli@example.test','PUBLIC_BASE_URL':f'http://127.0.0.1:{port}',
+                    'EMAIL_VERIFICATION_ENABLED':email_e2e,'ACCOUNT_RECOVERY_ENABLED':email_e2e,
+                    'ORDER_EMAIL_NOTIFICATIONS_ENABLED':email_e2e})
     credentials={'admin':secrets.token_urlsafe(24),'vendedor':secrets.token_urlsafe(24)}
+    if email_e2e:
+        # Test fixture only: secret protected capture, never registered by create_app.
+        from flask import request, abort, jsonify
+        credentials['mail_capture'] = secrets.token_urlsafe(32)
+        @app.get('/__test/mail')
+        def capture_mail():
+            if request.remote_addr != '127.0.0.1' or not secrets.compare_digest(
+                    request.headers.get('X-Test-Key', ''), credentials['mail_capture']):
+                abort(404)
+            response = jsonify([{'to': str(m['To']), 'subject': str(m['Subject']), 'body': m.get_content()}
+                                for m in app.extensions['mail_outbox']])
+            response.headers['Cache-Control'] = 'no-store'
+            return response
     with app.app_context():
-        db.create_all();initialize_settings();seed_portal_product()
-        for role,password in credentials.items():
+        db.create_all();initialize_settings()
+        if os.environ.get('BROWSER_PUBLIC_ONLY') != '1':
+            seed_portal_product()
+        for role in ('admin', 'vendedor'):
+            password=credentials[role]
             u=User(username='browser_'+role,role=role);u.set_password(password);db.session.add(u)
         business=db.session.get(BusinessSettings,1);business.currency='USD'
         tax=db.session.get(TaxSetting,1);tax.percentage=Decimal('10');tax.name='Impuesto de prueba'
