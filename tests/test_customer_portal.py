@@ -261,6 +261,33 @@ class PortalTests(unittest.TestCase):
             self.assertNotIn(forbidden, body.lower())
         self.assertIn(REQUEST_STATUS_LABELS['pending'], body)
 
+    def test_submission_key_retries_and_conflicts(self):
+        self.register()
+        payload = dict(self.cart_payload(), submission_key='test-submission-123456')
+        first = self.post('/cuenta/pedidos', payload)
+        second = self.post('/cuenta/pedidos', payload)
+        self.assertEqual(first.location, second.location)
+        self.assertEqual(CustomerRequest.query.count(), 1)
+        conflict = self.client.post('/cuenta/pedidos', data=dict(
+            payload, notes='Changed', csrf_token=self.token()),
+            headers={'Accept': 'application/json'})
+        self.assertEqual(conflict.status_code, 400)
+        self.assertEqual(CustomerRequest.query.count(), 1)
+
+    def test_json_confirmation_only_after_success_and_failed_key_can_retry(self):
+        self.register()
+        payload = dict(self.cart_payload(), submission_key='test-submission-123456',
+                       csrf_token=self.token())
+        failed = self.client.post('/cuenta/pedidos', data=dict(payload, delivery='invalid'),
+                                  headers={'Accept': 'application/json'})
+        self.assertEqual(failed.status_code, 400)
+        self.assertNotIn('created', failed.json)
+        self.assertEqual(CustomerRequest.query.count(), 0)
+        success = self.client.post('/cuenta/pedidos', data=payload,
+                                   headers={'Accept': 'application/json'})
+        self.assertTrue(success.json['created'])
+        self.assertEqual(success.json['request_id'], CustomerRequest.query.one().id)
+
     def test_invalid_cart_is_rejected_without_persistence(self):
         self.register()
         response = self.post('/cuenta/pedidos', dict(cart='[{"product_code":"NO.EXISTE","quantity":1}]',

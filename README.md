@@ -124,6 +124,8 @@ Claves de localStorage:
 - `yoli.favorites.v1`: lista de códigos.
 - `yoli.cart.v1`: lista de objetos `product_code`, `quantity`, `requested_size`, `personalization`.
 
+Las solicitudes de clientes autenticados limpian únicamente las cantidades y variantes enviadas cuando el servidor confirma la creación. Los errores conservan el carrito y los favoritos. El botón queda bloqueado durante el envío; una clave de reintento en `sessionStorage` (`yoli.request.v1`) permite recuperar la misma solicitud si se pierde la respuesta. El servidor registra la clave y la huella del contenido en la auditoría de creación, dentro de la misma transacción, sin cambiar el formato del carrito ni el esquema de la base de datos.
+
 Selecciones con igual código, tamaño y personalización suman cantidades. Con personalizaciones o tamaños distintos permanecen separadas. Límites de interfaz: 100 favoritos, 50 líneas por solicitud, 1–99 unidades por línea. La selección persiste solo en ese navegador; se puede perder al borrar sus datos. Los cambios se sincronizan entre pestañas del mismo origen.
 
 No se guarda nombre, ciudad ni entrega en localStorage o en la sesión Flask. La sesión solo contiene un token CSRF. La vista previa se devuelve con `Cache-Control: no-store`.

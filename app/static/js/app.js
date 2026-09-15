@@ -51,6 +51,19 @@
     }
     if (write('cart', cart)) notify('Figura agregada a tu solicitud.');
   }
+  function removeSubmitted(sent) {
+    const cart = read('cart');
+    for (const line of sent) {
+      let remaining = line.quantity;
+      for (const current of cart) {
+        if (current.product_code !== line.product_code || current.requested_size !== line.requested_size
+            || current.personalization !== line.personalization) continue;
+        const removed = Math.min(current.quantity, remaining);
+        current.quantity -= removed; remaining -= removed;
+      }
+    }
+    return write('cart', cart.filter(line => line.quantity > 0));
+  }
   function node(tag, className, text) {
     const el = document.createElement(tag);
     if (className) el.className = className;
@@ -69,7 +82,7 @@
     img.width = 640; img.height = 480; img.loading = 'lazy'; img.dataset.placeholder = '/static/img/placeholder.svg';
     return img;
   }
-  window.Yoli = {read, write, counters, addCart, notify, node, lookup, productImage};
+  window.Yoli = {removeSubmitted, read, write, counters, addCart, notify, node, lookup, productImage};
   document.addEventListener('yoli:change', counters);
   window.addEventListener('storage', event => {
     const kind = Object.keys(keys).find(key => keys[key] === event.key);

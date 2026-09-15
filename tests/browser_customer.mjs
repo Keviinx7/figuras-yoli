@@ -36,6 +36,7 @@ try{
  await call('Page.enable');await call('Runtime.enable');await call('Network.enable');await call('Network.setCacheDisabled',{cacheDisabled:true});await call('Network.clearBrowserCookies');
  await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
  await navigate('/');
+ await evaluate(`localStorage.clear();sessionStorage.clear();Yoli.counters()`);
  await check('Anonymous navbar links to Cuenta',`!!document.querySelector('a[href="/cuenta/login"]')`);
  const email='e2e.'+Date.now()+'@example.com';
  await navigate('/registro');
@@ -61,7 +62,44 @@ try{
  await until(`document.querySelectorAll('.cart-item').length===1`);
  await check('Cart uses the account form',`!!document.querySelector('form[action="/cuenta/pedidos"]') && document.querySelector('#quote-submit').textContent.includes('Guardar mi solicitud')`);
  await fill({delivery:'shipping',notes:'Solicitud E2E para coordinar'});
- await submit('#quote-form',String.raw`/^\/cuenta\/pedido\/\d+$/.test(location.pathname)`);
+ await evaluate(`Yoli.write('favorites', ['FY.EZE.777']); window.originalCart = localStorage.getItem('yoli.cart.v1'); window.realFetch = window.fetch; window.fetch = async (...args) => { if(args[1]?.method === 'POST') throw new Error('Simulated network failure'); return window.realFetch(...args); }; document.querySelector('#quote-form').requestSubmit();`);
+ await until(`!document.querySelector('#quote-submit').disabled`);
+ await check('Failed submission preserves quantities sizes customization and favorites', `localStorage.getItem('yoli.cart.v1')===window.originalCart && Yoli.read('favorites')[0]==='FY.EZE.777' && document.querySelector('[data-cart-count]').textContent==='2'`);
+ await evaluate(`window.fetch = async (...args) => {
+   if (args[1]?.method !== 'POST') return window.realFetch(...args);
+   args[1].body.set('delivery', 'invalid');
+   return window.realFetch(...args);
+ }; document.querySelector('#quote-form').requestSubmit();`);
+ await until(`!document.querySelector('#quote-submit').disabled`);
+ await check('Server validation error preserves the full cart', `localStorage.getItem('yoli.cart.v1')===window.originalCart`);
+ await evaluate(`window.fetch = async (...args) => {
+   const response = await window.realFetch(...args);
+   if (args[1]?.method === 'POST') {
+     const result = await response.json();
+     window.savedRequest = result.request_id;
+     throw Error('Simulated lost confirmation');
+   }
+   return response;
+ }; document.querySelector('#quote-form').requestSubmit();`);
+ await until(`!document.querySelector('#quote-submit').disabled`);
+ await check('Lost confirmation preserves cart for safe retry', `Number.isInteger(window.savedRequest) && localStorage.getItem('yoli.cart.v1')===window.originalCart`);
+ await evaluate(`document.addEventListener('yoli:change', () => {
+   if(Yoli.read('cart').length===0) sessionStorage.setItem('e2e-header', document.querySelector('[data-cart-count]').textContent);
+ });`);
+ await evaluate(`window.fetch = async (...args) => {
+   if (args[1]?.method !== 'POST') return window.realFetch(...args);
+   window.postCount = (window.postCount || 0) + 1;
+   const [a,b] = await Promise.all([window.realFetch(...args), window.realFetch(...args)]);
+   const first = await a.clone().json(), second = await b.json();
+   if(first.request_id !== second.request_id || first.request_id !== window.savedRequest) throw Error('Duplicate request');
+   sessionStorage.setItem('e2e-deduplicated', String(first.request_id));
+   return a;
+ }; const form=document.querySelector('#quote-form');form.requestSubmit();form.requestSubmit();`);
+ await check('Double click disables submission and sends once', `document.querySelector('#quote-submit').disabled && window.postCount===1`);
+ await until(String.raw`/^\/cuenta\/pedido\/\d+$/.test(location.pathname) && document.readyState==='complete'`);
+ await check('Success clears cart and header and preserves favorites', `Yoli.read('cart').length===0 && document.querySelector('[data-cart-count]').textContent==='0' && Yoli.read('favorites')[0]==='FY.EZE.777'`);
+ await check('Header updates before navigation', `sessionStorage.getItem('e2e-header')==='0'`);
+ await check('Concurrent server resubmission returns the same request', `sessionStorage.getItem('e2e-deduplicated')===location.pathname.split('/').pop()`);
  if(emailE2E){assert.equal((await capture(email)).length,2);results.push('Request confirmation delivered through fake backend');}
  const requestId=await evaluate(`location.pathname.split('/').pop()`);
  const requestUrl='/cuenta/pedido/'+requestId;

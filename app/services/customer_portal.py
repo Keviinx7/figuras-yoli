@@ -4,7 +4,9 @@ The portal never records prices, costs or margins: public requests are the
 starting point that staff later turns into an internal quote or invoice.
 """
 import hashlib
+import json
 import re
+from sqlalchemy import text
 import secrets
 from datetime import datetime, timedelta, timezone
 from functools import wraps
@@ -130,8 +132,30 @@ def delete_login_peak():
         db.session.delete(attempt)
 
 
-def save_customer_request(cart_json, account, delivery, notes=''):
+def save_customer_request(cart_json, account, delivery, notes='', submission_key=''):
     """Validate the cart (server side) and persist a request WITHOUT any price data."""
+    receipt = None
+    if submission_key:
+        if not re.fullmatch(r'[a-zA-Z0-9-]{16,80}', submission_key):
+            raise ValueError('Identificador de envío inválido.')
+        # Serialize retries before checking the receipt, including concurrent POSTs.
+        if db.engine.dialect.name == 'sqlite':
+            db.session.execute(text('BEGIN IMMEDIATE'))
+        else:
+            db.session.execute(db.select(CustomerAccount).where(
+                CustomerAccount.id == account.id).with_for_update())
+        prefix = f'{account.id}:{submission_key}:'
+        fingerprint = hashlib.sha256(json.dumps(
+            [cart_json, delivery, notes], sort_keys=True).encode()).hexdigest()
+        receipt = prefix + fingerprint
+        previous = AuditEvent.query.filter_by(entity='customer_request',
+            action='created_by_customer').filter(AuditEvent.detail.startswith(prefix)).first()
+        if previous:
+            if previous.detail != receipt:
+                raise ValueError('Este envío ya fue utilizado con otra solicitud.')
+            request_id = previous.entity_id
+            db.session.rollback()
+            return request_id
     if delivery not in DELIVERY:
         raise ValueError('Seleccione una modalidad de entrega válida.')
     lines = validate_cart(cart_json)
@@ -165,7 +189,7 @@ def save_customer_request(cart_json, account, delivery, notes=''):
     db.session.add(request_record)
     db.session.flush()
     db.session.add(AuditEvent(entity='customer_request', entity_id=request_record.id,
-                              action='created_by_customer'))
+                              action='created_by_customer', detail=receipt))
     from app.services.mail import queue_order_email, deliver_order_mail
     notification = queue_order_email(request_record)
     db.session.commit()

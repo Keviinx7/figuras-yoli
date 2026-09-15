@@ -76,4 +76,25 @@ test('Rejects oversized or non-text customization before saving', () => {
     assert.equal(values.has('yoli.cart.v1'), false);
   }
 });
+
+test('Confirmed submission clears cart, updates counters and preserves favorites', () => {
+  yoli.addCart('FY.AN.001', 2, '20 cm', 'Ana');
+  yoli.write('favorites', ['FY.AN.001']);
+  const sent = yoli.read('cart');
+  assert.equal(yoli.removeSubmitted(sent), true);
+  assert.equal(yoli.read('cart').length, 0);
+  assert.equal(cartCount.textContent, 0);
+  assert.equal(favoriteCount.textContent, 1);
+  assert.equal(yoli.read('favorites')[0], 'FY.AN.001');
+});
+test('Only submitted quantities and variants are removed', () => {
+  yoli.addCart('FY.AN.001', 2, '20 cm', 'Ana');
+  const sent = yoli.read('cart');
+  yoli.addCart('FY.AN.001', 3, '20 cm', 'Ana');
+  yoli.addCart('FY.AN.001', 1, '30 cm', 'Luis');
+  yoli.removeSubmitted(sent);
+  assert.equal(cartCount.textContent, 4);
+  assert.equal(yoli.read('cart')[0].quantity, 3);
+  assert.equal(yoli.read('cart')[1].personalization, 'Luis');
+});
 console.log(`${tests} JavaScript storage tests passed.`);

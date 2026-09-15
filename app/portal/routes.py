@@ -1,6 +1,6 @@
 """Public customer portal: registration, access, profile and persisted requests."""
 import json
-from flask import render_template, request, redirect, url_for, session, flash, current_app, abort
+from flask import render_template, request, redirect, url_for, session, flash, current_app, abort, jsonify
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash
@@ -170,22 +170,31 @@ def request_detail(request_id):
 @bp.post('/cuenta/pedidos')
 @customer_required
 def submit_request():
+    wants_json = request.accept_mimetypes.best == 'application/json'
     try:
         cart = json.loads(request.form.get('cart', '[]'))
     except json.JSONDecodeError:
         cart = None
     if cart is None:
+        if wants_json:
+            return jsonify(error='No se pudo leer tu carrito.'), 400
         flash('No se pudo leer tu carrito. Vuelve a revisarlo e intenta de nuevo.')
         return redirect(url_for('orders.cart'))
     account = current_account()
     try:
         request_id = save_customer_request(cart, account,
                                            request.form.get('delivery', ''),
-                                           request.form.get('notes', ''))
+                                           request.form.get('notes', ''),
+                                           request.form.get('submission_key', ''))
     except ValueError as exc:
         db.session.rollback()
+        if wants_json:
+            return jsonify(error=str(exc)), 400
         flash('No pudimos guardar tu solicitud: ' + str(exc))
         return redirect(url_for('orders.cart'))
+    if wants_json:
+        return jsonify(created=True, request_id=request_id,
+                       url=url_for('portal.request_detail', request_id=request_id))
     flash('Tu solicitud quedó guardada. Te responderemos por WhatsApp o correo.')
     return redirect(url_for('portal.request_detail', request_id=request_id))
 
