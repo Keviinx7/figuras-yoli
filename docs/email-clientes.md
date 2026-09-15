@@ -87,6 +87,8 @@ registran direcciones, cuerpos, tokens ni credenciales SMTP en logs.
 
 ## Configuración
 
+Procedimiento operativo: [SMTP real sin publicar](smtp-real.md).
+
 Ver `.env.example` para todos los valores. Resumen:
 
 | Variable | Default | Uso |
@@ -106,7 +108,7 @@ Ver `.env.example` para todos los valores. Resumen:
 
 Reglas importantes:
 
-- En staging/production el arranque exige `MAIL_ENABLED=1` con backend `smtp`,
+- Si se activan features en staging/production, el arranque exige `MAIL_ENABLED=1` con backend `smtp`,
   TLS o SSL activo, `MAIL_FROM_ADDRESS` válido y `PUBLIC_BASE_URL` https.
   `MAIL_BACKEND=fake` está prohibido fuera de pruebas.
 - Los enlaces de verificación/recuperación usan `PUBLIC_BASE_URL`; cambiar
