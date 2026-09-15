@@ -99,13 +99,16 @@ def consume_token(token, purpose):
 
 def send_account_email(account, purpose):
     if not feature_enabled(purpose) or not available() or not account.is_active:
+        current_app.logger.info('account mail skipped: feature or transport disabled, or account inactive')
         return 'disabled'
     token = issue_token(account, purpose)
+    current_app.logger.info('account mail purpose=%s token created; delivery started', purpose)
     endpoint = 'portal.verify' if purpose == 'verify_email' else 'portal.reset'
     subject = 'Verifica tu correo' if purpose == 'verify_email' else 'Restablece tu contraseña'
     result = send_mail(account.email, 'Yoli · ' + subject,
                        subject + '\n\n' + public_link(url_for(endpoint, token=token, _external=False))
                        + '\n\nEste enlace es temporal y de un solo uso. Si no lo solicitaste, ignóralo.')
+    current_app.logger.info('account mail purpose=%s result=%s', purpose, result)
     if result != 'sent':
         row = find_token(token, purpose)
         if row:

@@ -15,7 +15,7 @@ WEAK_SECRETS = {'dev', 'development', 'debug', 'secret', 'changeme', 'password',
                 'your-secret-key-change-me-in-production', '0', 'true', '1'}
 
 
-def _load_dotenv(path):
+def _load_dotenv(path, *, required=False):
     """Minimal .env loader: KEY=VALUE lines with '#' comments.
 
     Real environment variables always win; a project .env never overrides
@@ -24,6 +24,8 @@ def _load_dotenv(path):
     try:
         lines = path.read_text(encoding='utf-8').splitlines()
     except OSError:
+        if required:
+            raise RuntimeError("No se pudo leer el archivo de entorno solicitado.") from None
         return
     for line in lines:
         line = line.strip()
@@ -71,7 +73,8 @@ def detect_environment():
 
 def get_config():
     """Return the active configuration as a plain dict, read at call time."""
-    _load_dotenv(ROOT / '.env')
+    selected = os.environ.get('YOLI_ENV_FILE')
+    _load_dotenv(Path(selected) if selected else ROOT / '.env', required=bool(selected))
     env = detect_environment()
     is_prod = env in ('staging', 'production')
     secure = _truthy(os.environ.get('SESSION_COOKIE_SECURE'), is_prod)

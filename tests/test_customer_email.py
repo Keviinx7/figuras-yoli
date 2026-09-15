@@ -244,6 +244,62 @@ class EmailTests(portal_tests.PortalTests):
         self.assertNotIn('smtp-secret', str(logs.output))
         self.assertEqual(AccountEmailToken.query.filter_by(purpose='reset_password', used_at=None).count(), 0)
 
+    def test_registration_smtp_once_and_no_secret_logs(self):
+        self.app.config.update(EMAIL_VERIFICATION_ENABLED=True, MAIL_BACKEND='smtp',
+                               SMTP_HOST='smtp.example.test', SMTP_USERNAME='test-user',
+                               SMTP_PASSWORD='synthetic-secret', SMTP_USE_TLS=True, SMTP_USE_SSL=False)
+        with patch('app.services.mail.smtplib.SMTP') as smtp, self.assertLogs(self.app.logger, level='INFO') as logs:
+            response, account = self.register()
+            self.assertEqual(response.status_code, 302)
+            connection = smtp.return_value.__enter__.return_value
+            connection.send_message.assert_called_once()
+            message = connection.send_message.call_args.args[0]
+            token = re.search(r'/cuenta/verificar/(\S+)', message.get_content()).group(1)
+            self.assertIsNotNone(find_token(token, 'verify_email'))
+            # Repeated authenticated registration does not issue another email.
+            self.register()
+            self.client.get(response.location)
+            connection.send_message.assert_called_once()
+        self.assertEqual(AccountEmailToken.query.count(), 1)
+        for secret in (token, 'synthetic-secret', account.email):
+            self.assertNotIn(secret, str(logs.output))
+        self.assertIn('delivery accepted', str(logs.output))
+        context = connection.starttls.call_args.kwargs['context']
+        self.assertTrue(context.check_hostname)
+        self.assertEqual(context.verify_mode, __import__('ssl').CERT_REQUIRED)
+
+    def test_registration_smtp_failure_preserves_account(self):
+        self.app.config.update(EMAIL_VERIFICATION_ENABLED=True, MAIL_BACKEND='smtp')
+        with patch('app.services.mail.smtplib.SMTP', side_effect=OSError('synthetic-secret')), self.assertLogs(self.app.logger, level='WARNING') as logs:
+            response, account = self.register()
+        self.assertEqual(response.status_code, 302)
+        self.assertIsNotNone(account)
+        self.assertFalse(account.email_verified)
+        self.assertEqual(AccountEmailToken.query.filter_by(used_at=None).count(), 0)
+        self.assertNotIn('synthetic-secret', str(logs.output))
+        self.assertIn('reason=connection', str(logs.output))
+
+    def test_registration_feature_off_never_connects(self):
+        self.app.config.update(EMAIL_VERIFICATION_ENABLED=False, MAIL_BACKEND='smtp')
+        with patch('app.services.mail.smtplib.SMTP') as smtp:
+            self.register()
+        smtp.assert_not_called()
+        self.assertEqual(AccountEmailToken.query.count(), 0)
+
+    def test_smtp_check_authenticates_without_sending_and_redacts_failure(self):
+        self.app.config.update(MAIL_BACKEND='smtp', SMTP_USE_TLS=True, SMTP_USE_SSL=False)
+        runner = self.app.test_cli_runner()
+        with patch('app.services.mail.smtplib.SMTP') as smtp:
+            result = runner.invoke(args=['smtp-check'])
+            self.assertEqual(result.exit_code, 0)
+            self.assertIn('SMTP_AUTH_OK', result.output)
+            smtp.return_value.__enter__.return_value.send_message.assert_not_called()
+        with patch('app.services.mail.smtplib.SMTP', side_effect=__import__('ssl').SSLCertVerificationError('synthetic-secret')):
+            result = runner.invoke(args=['smtp-check'])
+        self.assertNotEqual(result.exit_code, 0)
+        self.assertIn('certificate_verification', result.output)
+        self.assertNotIn('synthetic-secret', result.output)
+
     def test_token_atomic_consumption_and_rollback(self):
         _, account = self.register()
         token = issue_token(account, 'reset_password')

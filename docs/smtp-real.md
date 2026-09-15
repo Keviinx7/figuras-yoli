@@ -1,72 +1,85 @@
-# Configurar SMTP real sin publicar la aplicación
+# Brevo SMTP: diagnóstico y prueba local de verificación
 
-Estado: procedimiento preparado; entrega real pendiente de credenciales y ejecución
-manual. No se activa correo por instalar estos cambios. El transporte existente
-`app/services/mail.py` y la lectura de `config.py` no necesitan cambios.
+## Diagnóstico del 2026-09-14
 
-## 1. Proveedor de referencia
+La auditoría de `create_app()` reprodujo dos configuraciones diferentes:
 
-Se propone **Brevo**; no hay una cuenta/proveedor confirmado para este proyecto.
-En Settings → SMTP & API → SMTP, copiar el **SMTP login** y generar una clave
-SMTP dedicada a esta prueba, con vencimiento. Guardarla en un gestor de secretos.
-No usar la contraseña de la cuenta ni una API key. Para otros proveedores que
-exijan contraseña de aplicación/token, nunca usar la contraseña normal.
+| Valor efectivo | Arranque normal sin archivo seleccionado | Archivo privado cargado explícitamente |
+|---|---|---|
+| MAIL_ENABLED | false | true |
+| MAIL_BACKEND | smtp | smtp |
+| SMTP_HOST | vacío | smtp-relay.sendinblue.com |
+| SMTP_PORT | 587 | 587 |
+| SMTP_USE_TLS / SMTP_USE_SSL | true / false | true / false |
+| SMTP_USERNAME_PRESENT / SMTP_PASSWORD_PRESENT | false / false | true / true |
+| MAIL_FROM_ADDRESS_PRESENT | false | true |
+| EMAIL_VERIFICATION_ENABLED | false | true |
+| ACCOUNT_RECOVERY_ENABLED | false | false |
+| ORDER_EMAIL_NOTIFICATIONS_ENABLED | false | false |
 
-Registrar y verificar el remitente en el proveedor y completar la autenticación
-DNS del dominio que indique su panel (DKIM y política DMARC; SPF según proveedor,
-sin crear registros SPF duplicados). Verificar que permite correo transaccional,
-el destinatario de prueba y la cuota necesaria antes de activar.
+El cargador anterior solo leía `.env`. Tener `.env.smtp-manual` en disco no lo
+activaba. Con la feature apagada, el registro guardaba la cuenta y no generaba
+el token ni invocaba SMTP. No hay discrepancia entre nombres de variables.
+El archivo privado también apuntaba a la DB principal: se debe sobrescribir
+`DATABASE_URL` para esta prueba. No se modificó esa DB.
 
-Referencias oficiales consultadas el 2026-09-14:
-[relay SMTP](https://help.brevo.com/hc/en-us/articles/7924908994450-Send-transactional-emails-using-Brevo-SMTP),
-[claves SMTP](https://help.brevo.com/hc/en-us/articles/7959631848850-Create-and-manage-your-SMTP-keys).
+El registro existente ya implementa cuenta → token → construcción del mensaje →
+`send_mail`. La corrección conserva ese flujo y añade selección explícita del
+archivo y diagnóstico seguro. Un fallo de transporte conserva la cuenta y revoca
+el token del intento fallido; el usuario puede solicitar otro tras resolverlo.
+No hay cola durable de verificaciones: se envían sincrónicamente. La tabla
+`order_email_outbox` corresponde únicamente a notificaciones de solicitudes.
 
-## 2. Variables exactas
+### Incidente TLS regional
 
-| Variable | Valor para la prueba / significado |
+En este entorno/región el desarrollador comprobó que `smtp-relay.brevo.com:587`
+respondía con un certificado incompatible con el hostname; los nombres observados
+incluían `smtp-relay-offshore-southamerica-east-v2.sendinblue.com` y
+`smtp-relay.sendinblue.com`. Luego `smtp-relay.sendinblue.com:587` obtuvo
+`Verify return code: 0 (ok)` y `SMTP_AUTH_OK` con STARTTLS.
+
+Se conserva ese host explícito. No es un fallback automático ni una garantía para
+otras regiones. Nunca desactivar certificate verification, `check_hostname` o usar
+`ssl._create_unverified_context()`. El transporte y el diagnóstico usan
+`ssl.create_default_context()`. Si otro hostname falla, detenerse y resolver el
+certificado/host con el proveedor; no eludir TLS.
+
+## Variables privadas
+
+| Variable | Valor/uso |
 |---|---|
-| `MAIL_ENABLED` | `false` al preparar; `true` al iniciar la prueba manual |
-| `MAIL_BACKEND` | `smtp`; `fake` solo para pruebas automatizadas/locales |
-| `SMTP_HOST` | `smtp-relay.brevo.com` para Brevo |
-| `SMTP_PORT` | `465` en este procedimiento |
-| `SMTP_USERNAME` | SMTP login del panel; no asumir que es el correo de la cuenta |
-| `SMTP_PASSWORD` | Clave SMTP dedicada, solo en archivo privado/gestor de secretos |
-| `SMTP_USE_TLS` | `false` con 465; significa STARTTLS en este código |
-| `SMTP_USE_SSL` | `true` con 465; TLS desde el inicio de la conexión |
-| `MAIL_FROM_ADDRESS` | Dirección real verificada por el proveedor |
-| `MAIL_FROM_NAME` | `Yoli Figuras de Fomix` (puede añadir «PRUEBA») |
-| `PUBLIC_BASE_URL` | Local: `http://127.0.0.1:5003`; staging/production: origen HTTPS real |
-| `EMAIL_VERIFICATION_ENABLED` | `false` al preparar; `true` para verificación |
-| `ACCOUNT_RECOVERY_ENABLED` | `false` al preparar; `true` para recuperación |
-| `ORDER_EMAIL_NOTIFICATIONS_ENABLED` | `false` al preparar; `true` para confirmación y estado |
+| MAIL_ENABLED | true durante esta prueba |
+| MAIL_BACKEND | smtp |
+| SMTP_HOST | smtp-relay.sendinblue.com |
+| SMTP_PORT | 587 |
+| SMTP_USE_TLS | true (STARTTLS) |
+| SMTP_USE_SSL | false |
+| SMTP_USERNAME | SMTP login de Brevo |
+| SMTP_PASSWORD | Clave SMTP dedicada, nunca contraseña normal ni API key |
+| MAIL_FROM_ADDRESS | Remitente verificado de Brevo |
+| MAIL_FROM_NAME | Nombre visible del remitente |
+| PUBLIC_BASE_URL | http://127.0.0.1:5003 para prueba local |
+| EMAIL_VERIFICATION_ENABLED | true |
+| ACCOUNT_RECOVERY_ENABLED | false |
+| ORDER_EMAIL_NOTIFICATIONS_ENABLED | false |
 
-Alternativa si el proveedor ofrece STARTTLS: puerto `587`, TLS `true`, SSL `false`.
-Nunca activar ambos. El código admite credenciales vacías solo si ambas están
-vacías (relay sin autenticación); el proveedor propuesto requiere ambas.
-`EMAIL_VERIFICATION_LIFETIME_HOURS=24` y `ACCOUNT_RECOVERY_LIFETIME_HOURS=1`
-son opcionales, aceptan enteros de 1 a 168.
+Vigencias opcionales: `EMAIL_VERIFICATION_LIFETIME_HOURS=24`,
+`ACCOUNT_RECOVERY_LIFETIME_HOURS=1`; enteros entre 1 y 168. TLS implícito, si se
+utiliza en otra configuración, requiere puerto 465, SSL=true y TLS=false.
+Nunca ambos flags a la vez.
 
-## 3. Crear el archivo privado y aislar los datos
+## Arranque limpio con archivo privado
 
-Antes de activar, desde la raíz:
+`YOLI_ENV_FILE` es una variable **del proceso** que selecciona un archivo en lugar
+de `.env`; puede tener cualquier nombre. Si no se indica, continúa la lectura
+normal de `.env`. Si el archivo seleccionado no se puede leer, el arranque falla
+con un mensaje genérico. Las variables ya exportadas prevalecen sobre el archivo.
+Reiniciar la aplicación después de cambiar configuración. El cargador no ejecuta
+shell ni expande variables; admite comillas exteriores y comentarios en líneas
+propias, no comentarios al final de valores. No usar `source`, `set -x`, volcados
+de entorno/configuración, depuración SMTP ni secretos en argumentos.
 
-```bash
-git status --short --branch
-git fetch origin
-git rev-list --left-right --count main...origin/main
-```
-
-Continuar con rama `main`, árbol limpio y resultado `0 0`. Si hay divergencias,
-resolverlas antes de probar; no hacer reset ni sobrescribir trabajo.
-
-La prueba usa una **base nueva**, no una copia comercial (que podría contener
-notificaciones pendientes para clientes reales). No requiere respaldo de
-`instance/tienda.db` porque no se utiliza. Si en otra intervención fuera
-imprescindible escribir una DB existente, primero ejecutar `flask --app run
-backup-db` con el entorno de esa DB y el correo apagado; verificar el respaldo.
-Para PostgreSQL seguir `docs/production-backup.md`.
-
-Crear un archivo exclusivo sin sobrescribir uno existente:
+Si ya existe el archivo privado, no sobrescribirlo. Para una instalación nueva:
 
 ```bash
 (umask 077; cp -n .env.example .env.smtp-manual)
@@ -74,146 +87,120 @@ chmod 600 .env.smtp-manual
 git check-ignore .env .env.smtp-manual
 ```
 
-Editar `.env.smtp-manual` en un editor local. Introducir los valores de la tabla
-manteniendo los cuatro interruptores en `false`. Además configurar:
-
-```dotenv
-APP_ENV=development
-DATABASE_URL=sqlite:////home/kevin/Documentos/figuras-yoli/instance/smtp-manual.db
-PUBLIC_BASE_URL=http://127.0.0.1:5003
-SESSION_COOKIE_SECURE=0
-BEHIND_PROXY=0
-HSTS_ENABLED=0
-TRUSTED_HOSTS=127.0.0.1
-LOG_LEVEL=WARNING
-FLASK_DEBUG=0
-```
-
-Eliminar comentarios al final de valores: el cargador mínimo no los elimina.
-Admite comillas exteriores, pero no expansión `${VARIABLE}` ni secretos multilínea.
-No usar `source`, `set -x`, `printenv`, volcado de configuración, depuración SMTP,
-capturas del archivo o secretos en argumentos/historial. No imprimir SMTP_PASSWORD.
-`.env` y `.env.*` están ignorados; nunca usar `git add -f` sobre ellos.
-
-La aplicación carga automáticamente solo `.env`, y las variables del proceso
-prevalecen. Para no tocar el `.env` habitual, abrir una terminal nueva y ejecutar
-este lanzador interactivo: carga el archivo privado y permite únicamente las
-operaciones indicadas. No imprime configuración ni credenciales.
+Editar localmente sin capturas ni logs. Jamás usar `git add -f`. Antes de probar:
 
 ```bash
-.venv/bin/python - <<'PY'
-import os
-from pathlib import Path
-from config import _load_dotenv
-# Terminal dedicada: evita heredar valores de otro entorno.
-for key in list(os.environ):
-    if key.startswith(('SMTP_', 'MAIL_', 'EMAIL_VERIFICATION_', 'ACCOUNT_RECOVERY_', 'ORDER_EMAIL_')) or key in ('APP_ENV', 'DATABASE_URL', 'PUBLIC_BASE_URL'):
-        os.environ.pop(key)
-_load_dotenv(Path('.env.smtp-manual'))
-expected = 'sqlite:////home/kevin/Documentos/figuras-yoli/instance/smtp-manual.db'
-assert os.environ.get('DATABASE_URL') == expected, 'DB de prueba incorrecta'
-assert os.environ.get('APP_ENV') == 'development', 'Entorno incorrecto'
-from app import create_app
-app = create_app()
-# El heredoc ocupa stdin; recuperar el terminal para los prompts interactivos.
-import sys
-sys.stdin = open('/dev/tty')
-choice = input('Operación: init-db / import-catalog / create-user / serve: ')
-if choice == 'serve':
-    app.run(host='127.0.0.1', port=5003, debug=False, use_reloader=False)
-elif choice in ('init-db', 'import-catalog', 'create-user'):
-    if choice == 'init-db':
-        assert not Path('instance/smtp-manual.db').exists(), 'Use una DB nueva'
-    args = [choice, 'data/catalog_seed.csv', '--reviewed'] if choice == 'import-catalog' else [choice]
-    app.cli.main(args=args, prog_name='smtp-manual', standalone_mode=False)
-else:
-    raise SystemExit('Operación no permitida')
-PY
-```
-
-Ejecutar el bloque tres veces: `init-db`, `import-catalog`, `create-user`.
-Crear un administrador ficticio mediante el prompt de contraseña sin eco.
-No ejecutar fixtures de navegador para enviar correo real. No programar reintentos.
-
-## 4. Una sesión manual real: cuatro correos
-
-1. Editar el archivo privado: activar `MAIL_ENABLED` y las tres features.
-   Ejecutar el lanzador y elegir `serve`. Usar solo este equipo y
-   `http://127.0.0.1:5003`; los enlaces locales deben abrirse en el mismo equipo.
-   No hace falta dominio público, túnel, deploy ni publicación.
-2. **Verificación:** registrar una cuenta nueva con un buzón de prueba controlado
-   por quien ejecuta la prueba. Abrir el único correo y verificar la cuenta.
-   Confirmar «verificado» en el panel. No pulsar reenviar.
-3. **Recuperación:** cerrar sesión, solicitar recuperación una vez para esa
-   cuenta, abrir el enlace y cambiar a otra contraseña de prueba. Comprobar que
-   la anterior falla y que la nueva permite entrar.
-4. **Confirmación:** añadir un producto del catálogo, cantidad 1, y crear una
-   única solicitud marcada «PRUEBA SMTP — NO PRODUCIR» en su observación.
-   Comprobar un correo con número de solicitud, estado y cantidades correctas,
-   sin datos internos. No generar cotización, factura ni producción.
-5. **Cambio de estado:** entrar con el administrador ficticio y cambiar esa
-   solicitud una sola vez de pendiente a en proceso. Confirmar un correo nuevo.
-   Guardar el mismo estado otra vez debe producir cero correos adicionales.
-6. Registrar únicamente fecha, proveedor, tipo y resultado recibido/no recibido;
-   nunca tokens, contraseñas, enlaces completos ni cuerpos. Resultado esperado:
-   cuatro correos en total. Revisar spam y panel del proveedor si falta alguno.
-7. Detener con Ctrl+C, apagar los cuatro interruptores en el archivo y revocar
-   la clave SMTP de prueba. Conservar o retirar la DB desechable según necesidad;
-   no mezclarla con la DB comercial. Reabrir desarrollo con su configuración usual.
-
-Si falla un envío, detener la sesión y revisar host/puerto/cifrado, login, clave,
-remitente, cuota y conectividad sin revelar secretos. No reintentar toda la
-sesión a ciegas: SMTP puede aceptar un mensaje aunque se pierda la respuesta.
-`retry-order-mail` reintenta pendientes de la base seleccionada y puede enviar
-varios; no ejecutarlo sobre una DB comercial como parte de esta prueba.
-
-## 5. Staging/production y control de features
-
-Preparar un `.env` privado independiente en cada entorno, con permisos 600,
-`APP_ENV=staging` o `production`, `SECRET_KEY` aleatoria de al menos 32 caracteres,
-DB propia y `PUBLIC_BASE_URL=https://dominio-real` sin ruta, credenciales, query
-ni fragmento. Configurar cookies seguras y proxy conforme a `docs/deployment.md`.
-No reutilizar la clave SMTP de prueba. Esto se prepara para una activación futura;
-no ejecutar deploy en este procedimiento.
-
-- Verificación: `EMAIL_VERIFICATION_ENABLED=true/false`.
-- Recuperación: `ACCOUNT_RECOVERY_ENABLED=true/false`.
-- Confirmación y cambios de estado juntos: `ORDER_EMAIL_NOTIFICATIONS_ENABLED=true/false`.
-- Apagado total: poner **las tres features y MAIL_ENABLED en false** y reiniciar.
-- Activación: SMTP válido, `MAIL_ENABLED=true`, features deseadas en `true`, reiniciar.
-
-Staging/production rechaza `fake`, features activas con transporte apagado,
-SMTP activo sin cifrado y base pública sin HTTPS si el correo está activo.
-Puede arrancar con todo el correo apagado. Cambiar un archivo no modifica un
-proceso que ya está arrancado: reiniciar es obligatorio. Apagar una feature no
-borra tokens ni la cola; al reactivarla pueden seguir existiendo pendientes.
-
-## 6. Validación automatizada sin envío
-
-Ejecutar la suite con lectura de `.env` anulada, entorno de correo limpio y
-conexiones SMTP bloqueadas. Los casos de correo usan `fake`; los casos del
-transporte usan mocks (nunca red):
-
-```bash
-.venv/bin/python - <<'PY'
-import os
-import unittest
-from unittest.mock import patch
-for key in list(os.environ):
-    if key.startswith(('SMTP_', 'MAIL_', 'EMAIL_VERIFICATION_', 'ACCOUNT_RECOVERY_', 'ORDER_EMAIL_')):
-        os.environ.pop(key)
-os.environ['APP_ENV'] = 'development'
-with patch('config._load_dotenv'), patch('smtplib.SMTP', side_effect=AssertionError('SMTP real bloqueado')), patch('smtplib.SMTP_SSL', side_effect=AssertionError('SMTP real bloqueado')):
-    result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.discover('tests'))
-raise SystemExit(not result.wasSuccessful())
-PY
-node --test tests/test_storage.cjs tests/test_admin_js.cjs
-git diff --check
 git status --short --branch
+git branch --show-current
+git fetch origin
+git rev-list --left-right --count main...origin/main
 ```
 
-La suite no acredita entrega real: solo la recepción manual de los cuatro mensajes
-la confirma. Riesgos restantes: rechazo/spam, cuota del proveedor, puertos bloqueados,
-URL incorrecta, secretos expuestos por herramientas externas, datos personales en
-el proveedor y duplicados ante respuesta SMTP incierta. No registrar URLs con
-tokens en proxies, terminales ni capturas. Nunca desactivar validación de certificados.
+Trabajar con `main` limpio y `0 0`. Usar una DB nueva; no copiar clientes ni colas
+comerciales. Si fuera imprescindible modificar una DB existente, hacer antes un
+respaldo verificado con `flask --app run backup-db` (SQLite). Aquí no se necesita.
+
+En una terminal nueva, desde la raíz, exportar solo estas variables no secretas:
+
+```bash
+unset SMTP_HOST SMTP_PORT SMTP_USERNAME SMTP_PASSWORD SMTP_USE_TLS SMTP_USE_SSL
+unset MAIL_FROM_ADDRESS MAIL_FROM_NAME
+export YOLI_ENV_FILE="$PWD/.env.smtp-manual"
+export APP_ENV=development
+export DATABASE_URL="sqlite:///$PWD/instance/smtp-verification-audit.db"
+export PUBLIC_BASE_URL=http://127.0.0.1:5003
+export MAIL_ENABLED=true MAIL_BACKEND=smtp
+export EMAIL_VERIFICATION_ENABLED=true
+export ACCOUNT_RECOVERY_ENABLED=false ORDER_EMAIL_NOTIFICATIONS_ENABLED=false
+export SESSION_COOKIE_SECURE=false BEHIND_PROXY=false HSTS_ENABLED=false
+export TRUSTED_HOSTS=127.0.0.1 LOG_LEVEL=INFO LOG_FILE= FLASK_DEBUG=0
+.venv/bin/python -m flask --app run mail-status
+```
+
+`mail-status` imprime flags y presencia de host/remitente/credenciales, nunca sus
+contenidos. Confirmar `smtp`, correo y verificación activos, recovery y orders
+apagados. No usar el fixture fake de navegador para correo real.
+
+### Comprobar SMTP sin enviar
+
+Con ese mismo entorno:
+
+```bash
+.venv/bin/python -m flask --app run smtp-check
+```
+
+Solo conecta, negocia TLS y autentica. No ejecuta MAIL, RCPT o DATA y no genera
+correo ni tokens. Debe terminar en `SMTP_AUTH_OK (sin envío)`. Los fallos muestran
+solo categorías fijas: `certificate_verification`, `authentication`, `connection`,
+`sender_refused`, `recipient_refused`, `message_rejected` o `transport`. No se
+imprimen excepciones crudas, respuestas del servidor, claves ni destinatarios.
+
+### Una sola verificación real
+
+Primero ejecutar todas las suites fake/mock. Luego, con el entorno anterior y
+solo si el archivo DB indicado todavía no existe:
+
+```bash
+.venv/bin/python -m flask --app run init-db
+.venv/bin/python -m flask --app run run --host 127.0.0.1 --port 5003 --no-reload
+```
+
+1. Registrar una cuenta nueva con un buzón del desarrollador autorizado. No usar
+   clientes reales. No es necesario importar catálogo ni crear pedidos/admin.
+2. Esperar un solo correo. No reenviar ni repetir el registro para diagnosticar.
+   Los logs INFO indican token creado, intento SMTP y aceptación; no contienen
+   el token, URL, credenciales, cuerpo ni dirección. Un error muestra categoría
+   segura y la pantalla informa el fallo sin destruir la cuenta.
+3. Confirmar el evento en Brevo → Transactional → Logs y recepción en el buzón,
+   incluido spam. `delivery accepted` significa aceptación SMTP, no recepción.
+4. Abrir el enlace desde el mismo equipo y confirmar el formulario. GET permite
+   ver la página; POST con CSRF marca el correo como verificado. No copiar el
+   enlace en terminales, informes ni capturas. Un segundo uso debe fallar.
+5. Conservar el servidor local mientras se confirma el enlace, luego detenerlo.
+   Mantener recovery y order emails apagados; probarlos únicamente con fake/mock.
+
+No ejecutar `retry-order-mail` durante esta prueba: actúa sobre pendientes de
+pedidos de la DB seleccionada. SMTP puede aceptar un correo aunque se pierda la
+respuesta; no reintentar a ciegas. Registrar solo resultado y fecha, sin secretos.
+
+## Desarrollo, staging y producción
+
+Desarrollo habitual sigue funcionando sin SMTP con los cuatro interruptores en
+false. En staging/production usar variables del servicio o un archivo privado
+de nombre propio; no dependen de `.env.smtp-manual`. Requieren SECRET_KEY robusta,
+DB propia y, con correo activo, PUBLIC_BASE_URL HTTPS y TLS/SSL válido. No aceptan
+backend fake. Con todo apagado pueden arrancar sin correo.
+
+Cada feature se controla por su flag y requiere transporte disponible. Para
+apagado total poner MAIL_ENABLED y las tres features en false y reiniciar.
+Apagar no elimina tokens ni cola. No se hace deploy, dominio ni migración de DB.
+
+## Pruebas y límites de evidencia
+
+Las suites existentes cubren fake, expiración, uso único, CSRF, throttling,
+recuperación, notificaciones y reintentos. Las nuevas regresiones comprueban
+archivo explícito, precedencia del entorno, archivo ausente, SMTP en registro,
+un solo envío, cuenta preservada ante fallo, TLS verificado y ausencia de secretos
+en logs/CLI. Los tests SMTP usan mocks y nunca deben recibir credenciales reales.
+Los fixtures de navegador usan DB aislada y backend fake.
+
+Ejecutar Python completo, JS storage/admin, customer E2E con `--email-e2e`,
+commercial browser y public browser (este último con fixture `BROWSER_PUBLIC_ONLY=1`),
+con artefactos fuera de Git. Terminar con `git diff --check`. No commit/push si
+falla una suite importante. Recepción y evento Brevo requieren evidencia del buzón
+/panel; autenticación por sí sola no los acredita.
+
+### Evidencia de esta intervención
+
+- Reproducción HTTP con DB nueva y transporte mock: sin selección privada,
+  HTTP 302 / 1 cuenta / 0 tokens / 0 conexiones; con selección privada,
+  HTTP 302 / 1 cuenta / 1 token / 1 conexión / 1 mensaje.
+- `smtp-check` ejecutado contra el host privado con red autorizada:
+  `SMTP_AUTH_OK (sin envío)`, TLS verificado. El sandbox sin acceso de red había
+  devuelto la categoría segura `connection`.
+- Prueba de entrega real pendiente de identificar un destinatario controlado y
+  confirmar recepción/evento Brevo; no se confunde autenticación con entrega.
+
+Validación completada: 205 tests Python, JS storage/admin, 43 customer E2E,
+69 commercial browser y 89 public browser. `git diff --check` correcto.
+El hash de `instance/tienda.db` no cambió. No hubo envío real de mensajes.

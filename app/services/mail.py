@@ -1,5 +1,6 @@
 """Reusable transport. Never log addresses, message bodies or SMTP exceptions."""
 import re
+from contextlib import contextmanager
 import smtplib
 import ssl
 from email.message import EmailMessage
@@ -54,6 +55,8 @@ def configure_mail(app):
         raise RuntimeError('Configuración de correo inválida; revise transporte, TLS y PUBLIC_BASE_URL.')
     app.extensions['mail_outbox'] = []  # Exists only in process memory; never an HTTP endpoint.
     app.cli.add_command(retry_order_mail)
+    app.cli.add_command(mail_status)
+    app.cli.add_command(smtp_check)
 
 
 def available():
@@ -79,20 +82,74 @@ def send_mail(recipient, subject, body):
         if cfg['MAIL_BACKEND'] == 'fake':
             current_app.extensions['mail_outbox'].append(message)
             return 'sent'
-        transport = smtplib.SMTP_SSL if cfg.get('SMTP_USE_SSL') else smtplib.SMTP
-        kwargs = {'timeout': 10}
-        if cfg.get('SMTP_USE_SSL'):
-            kwargs['context'] = ssl.create_default_context()
-        with transport(cfg['SMTP_HOST'], cfg['SMTP_PORT'], **kwargs) as smtp:
-            if cfg.get('SMTP_USE_TLS'):
-                smtp.starttls(context=ssl.create_default_context())
-            if cfg.get('SMTP_USERNAME'):
-                smtp.login(cfg['SMTP_USERNAME'], cfg['SMTP_PASSWORD'])
+        current_app.logger.info('mail backend=smtp delivery started')
+        with smtp_connection(cfg) as smtp:
             smtp.send_message(message)
+        current_app.logger.info('mail backend=smtp delivery accepted')
         return 'sent'
-    except Exception:
-        current_app.logger.warning('No se pudo entregar un correo; revise el transporte configurado.')
+    except Exception as error:
+        current_app.logger.warning('mail delivery failed reason=%s', smtp_failure_reason(error))
         return 'failed'
+
+
+def smtp_failure_reason(error):
+    """Fixed categories only: server replies and exception text may contain secrets."""
+    if isinstance(error, ssl.SSLCertVerificationError):
+        return 'certificate_verification'
+    if isinstance(error, smtplib.SMTPAuthenticationError):
+        return 'authentication'
+    if isinstance(error, smtplib.SMTPRecipientsRefused):
+        return 'recipient_refused'
+    if isinstance(error, smtplib.SMTPSenderRefused):
+        return 'sender_refused'
+    if isinstance(error, smtplib.SMTPDataError):
+        return 'message_rejected'
+    if isinstance(error, (OSError, smtplib.SMTPServerDisconnected)):
+        return 'connection'
+    return 'transport'
+
+
+@contextmanager
+def smtp_connection(cfg):
+    transport = smtplib.SMTP_SSL if cfg.get('SMTP_USE_SSL') else smtplib.SMTP
+    kwargs = {'timeout': 10}
+    if cfg.get('SMTP_USE_SSL'):
+        kwargs['context'] = ssl.create_default_context()
+    with transport(cfg['SMTP_HOST'], cfg['SMTP_PORT'], **kwargs) as smtp:
+        if cfg.get('SMTP_USE_TLS'):
+            smtp.starttls(context=ssl.create_default_context())
+        if cfg.get('SMTP_USERNAME'):
+            smtp.login(cfg['SMTP_USERNAME'], cfg['SMTP_PASSWORD'])
+        yield smtp
+
+
+@click.command('mail-status')
+@with_appcontext
+def mail_status():
+    """Print only non-secret operational flags; never dump application config."""
+    cfg = current_app.config
+    for key in ('MAIL_ENABLED', 'MAIL_BACKEND', 'SMTP_PORT', 'SMTP_USE_TLS',
+                'SMTP_USE_SSL', 'EMAIL_VERIFICATION_ENABLED', 'ACCOUNT_RECOVERY_ENABLED',
+                'ORDER_EMAIL_NOTIFICATIONS_ENABLED'):
+        click.echo(f'{key}={cfg[key]}')
+    for key in ('SMTP_HOST', 'SMTP_USERNAME', 'SMTP_PASSWORD', 'MAIL_FROM_ADDRESS'):
+        click.echo(f'{key}_PRESENT={bool(cfg.get(key))}')
+
+
+@click.command('smtp-check')
+@with_appcontext
+def smtp_check():
+    """Connect, validate TLS and authenticate. Never send MAIL/RCPT/DATA."""
+    cfg = current_app.config
+    if not available() or cfg['MAIL_BACKEND'] != 'smtp' or not (cfg['SMTP_USE_TLS'] or cfg['SMTP_USE_SSL']):
+        raise click.ClickException('Se requiere SMTP activo con TLS o SSL.')
+    try:
+        with smtp_connection(cfg):
+            pass
+    except Exception as error:
+        raise click.ClickException('SMTP_CHECK_FAILED reason=' + smtp_failure_reason(error)) from None
+    click.echo('SMTP_AUTH_OK (sin envío)')
+
 
 
 def queue_order_email(req):
